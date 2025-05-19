@@ -1,0 +1,122 @@
+.about-products-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ 
+  padding: 40px 20px;
+  z-index: 1;
+  overflow: hidden;
+
+}
+
+/* Glowing sunset background */
+.about-product-bg {
+  position: absolute;
+  left: 0;
+  margin-left: 8%;
+  width: 80%;
+  height: 220px;
+  background: linear-gradient(135deg, #f9c46b, #e67e7e);
+  opacity: 0.3;
+  transform: rotate(-2deg);
+  border-radius: 30px;
+  z-index: 0;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* Animated sunset sun */
+.sun-animation {
+  position: absolute;
+  top: 10%;
+  right: -50px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, #ffd27f, #ff5e00);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: sunSetDrift 12s linear infinite;
+  z-index: 0;
+}
+
+@keyframes sunSetDrift {
+  0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+  50% { transform: translateY(30px) translateX(-30px); opacity: 0.8; }
+  100% { transform: translateY(60px) translateX(-60px); opacity: 0.4; }
+}
+
+.about-product {
+  max-width: 85%;
+  margin: auto;
+  padding: 3rem 2rem;
+  background: #f3ecec;
+  color: #1e1e1e;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: rotate(2deg) scale(1);
+  text-align: center;
+  z-index: 2;
+  transition: all 0.4s ease;
+}
+
+.about-product:hover {
+  background: #2c2c2c;
+  color: #ffffff;
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Title with gradient sunset text */
+.about-product h2 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #ff9a8b, #ff6a00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: 0.4s ease;
+}
+
+.about-product:hover h2 {
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.about-product p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2d2d2d;
+  max-width: 720px;
+  margin: 0 auto;
+  transition: color 0.4s ease;
+}
+
+.about-product:hover p {
+  color: #eaeaea;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-product {
+    padding: 2rem 1.5rem;
+  }
+  .about-product h2 {
+    font-size: 2rem;
+  }
+  .about-product p {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-product {
+    padding: 1.5rem 1rem;
+  }
+  .about-product h2 {
+    font-size: 1.6rem;
+  }
+  .about-product p {
+    font-size: 0.95rem;
+  }
+}

@@ -1,0 +1,46 @@
+.carousel-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem 1rem;
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  transition: all 0.4s ease-in-out;
+}
+
+.carousel-item {
+  flex: 0 0 24%; /* 4 per row */
+  box-sizing: border-box;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Controls */
+.carousel-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.carousel-controls button {
+  padding: 0.5rem 1rem;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.carousel-controls button:hover {
+  background: #555;
+}

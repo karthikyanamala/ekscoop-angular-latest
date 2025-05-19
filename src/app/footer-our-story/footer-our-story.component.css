@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap');
+
+
+
+.our-story-hero {
+  background-image: url('../../assets/images/Our-story.png');
+    background-size: cover;               /* ✅ Fully cover screen */
+  background-position: center;          /* ✅ Keep centered */
+  background-repeat: no-repeat;
+  background-attachment: fixed;         /* ✅ Parallax-like on desktop */
+ 
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 4rem 2rem; */
+  position: relative;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+.our-story-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+
+.our-story-content {
+  z-index: 1;
+  max-width: 900px;
+  padding: 2rem;
+}
+
+.story-title {
+font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+}
+
+.story-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
+  color: #f0f0f0;
+  margin-bottom: 2rem;
+  text-shadow: 0.5px 0.5px 3px rgba(0,0,0,0.2);
+}
+
+.story-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.2rem;
+  line-height: 2;
+  color: #f5f5f5;
+  white-space: pre-line;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+
+.typewriter {
+  white-space: pre-line;
+}
+
+@media (max-width: 1024px) {
+  .story-title {
+    font-size: 2.8rem;
+  }
+
+  .story-subtitle {
+    font-size: 1.3rem;
+  }
+
+  .story-body {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .our-story-hero {
+    background-image: url('../../assets/images/our-story-mobile.png');
+    
+    background-size: cover;     /* ✅ keeps full image visible */
+    /* background-position: center top; */
+    padding: 0rem 0rem;
+  
+  }
+
+  .story-title {
+    font-size: 2.4rem;
+  }
+
+  .story-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .story-body {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .story-title {
+    font-size: 2rem;
+  }
+
+  .story-subtitle {
+    font-size: 1rem;
+  }
+
+  .story-body {
+    font-size: 0.95rem;
+  }
+}

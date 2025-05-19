@@ -1,0 +1,75 @@
+.story-section {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  border-radius: 0; /* Remove round edges if it's a full cover hero */
+  margin: 0;
+  padding: 5rem 2rem;
+  height: 100vh; /* 💡 This makes it fill the screen */
+  display: flex;
+  flex-direction: column;
+  
+  align-items: flex-start;
+}
+
+
+.story-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.4));
+  z-index: 0;
+}
+
+.story-section * {
+  position: relative;
+  z-index: 1;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2e2e2e;
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+  letter-spacing: -0.5px;
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+}
+
+.section-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  color: #444;
+  max-width: 720px;
+  padding-left: 2rem;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.8);
+  display: inline-block;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.subtext {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  color: #3a3a3a;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: 8px;
+  line-height: 1.8;
+  letter-spacing: 0.15px;
+  max-width: 720px;
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  .section-title, .section-subtitle, .subtext {
+    text-align: center;
+    padding-left: 0;
+  }
+}

@@ -1,0 +1,81 @@
+.contact-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 2rem;
+  background: linear-gradient(to right, #e4c7aa, #f3dfc6);
+  position: relative;
+  min-height: 100vh;
+}
+
+.thank-you-image {
+  width: 300px;
+  height: auto;
+  flex-shrink: 0;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 16px;
+}
+
+.panel {
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 300px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: #3e2a1b;
+}
+
+.left-panel h2,
+.right-panel h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.left-panel p {
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.right-panel form {
+  display: flex;
+  flex-direction: column;
+}
+
+.right-panel input,
+.right-panel textarea {
+  margin-bottom: 1rem;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
+.right-panel button {
+  padding: 0.8rem;
+  border: none;
+  background-color: #8d5c35;
+  color: white;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.right-panel button:hover {
+  background-color: #6b4224;
+}
+
+@media (max-width: 960px) {
+  .contact-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .thank-you-image {
+    margin: 1.5rem 0;
+  }
+}

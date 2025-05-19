@@ -1,0 +1,111 @@
+<!-- <div class="admin-shop-list">
+    <h2>Admin - Shop Management</h2>
+  
+    <form (ngSubmit)="addShop()">
+      <input type="text" [(ngModel)]="newShop.name" name="name" placeholder="Shop Name" required />
+      <input type="number" [(ngModel)]="newShop.latitude" name="latitude" placeholder="Latitude" required />
+      <input type="number" [(ngModel)]="newShop.longitude" name="longitude" placeholder="Longitude" required />
+      <input type="text" [(ngModel)]="newShop.products" name="products" placeholder="Products (comma-separated)" required />
+      <input type="text" [(ngModel)]="newShop.whatsappNumber" name="whatsappNumber" placeholder="WhatsApp Number" required />
+      <button type="submit">Add Shop</button>
+    </form>
+  
+    <hr />
+  
+    <div *ngFor="let shop of shops" class="shop-card">
+      <h3>{{ shop.name }}</h3>
+      <p>Location: {{ shop.latitude }}, {{ shop.longitude }}</p>
+      <p>Products: {{ shop.products?.join(', ') }}</p>
+      <p>WhatsApp: {{ shop.whatsappNumber }}</p>
+      <button (click)="deleteShop(shop.id)">Delete</button>
+    </div>
+  </div>
+
+  
+   -->
+
+   <!-- src/app/admin/shop-list/shop-list.component.html -->
+<div class="admin-shop-list">
+  <h2>Admin - Shop Management</h2>
+
+  <!-- Add Shop Form -->
+  <form (ngSubmit)="addShop()">
+    <input type="text" [(ngModel)]="newShop.name" name="name" placeholder="Shop Name" required />
+    <input type="number" [(ngModel)]="newShop.latitude" name="latitude" placeholder="Latitude" required />
+    <input type="number" [(ngModel)]="newShop.longitude" name="longitude" placeholder="Longitude" required />
+    <input type="text" [(ngModel)]="newShop.products" name="products" placeholder="Products (comma-separated)" required />
+    <input type="text" [(ngModel)]="newShop.whatsappNumber" name="whatsappNumber" placeholder="WhatsApp Number" required />
+    <button type="submit">Add Shop</button>
+  </form>
+
+  <hr />
+
+  <!-- Hero Section Update Form -->
+  <h3>Update Hero Section</h3>
+  <form (ngSubmit)="updateHeroSection()">
+    <input type="text" [(ngModel)]="heroSectionData.title" name="title" placeholder="Title" required />
+    <textarea [(ngModel)]="heroSectionData.description" name="description" placeholder="Description" required></textarea>
+    <button type="submit">Update Hero Section</button>
+  </form>
+
+  <hr />
+
+  <!-- Similar forms for other sections (About Product, How It Works, etc.) -->
+  <h3>Update About Product Section</h3>
+  <form (ngSubmit)="updateAboutProduct()">
+    <input type="text" [(ngModel)]="aboutProductData.title" name="title" placeholder="Title" required />
+    <textarea [(ngModel)]="aboutProductData.description" name="description" placeholder="Description" required></textarea>
+    <button type="submit">Update About Product Section</button>
+  </form>
+
+  <hr />
+
+  <h3>Update - For Shop Owners Section</h3>
+<form (ngSubmit)="updateForShopOwners()">
+  <input type="text" [(ngModel)]="forShopOwnersData.title" name="shopOwnersTitle" placeholder="Title" required />
+  <textarea [(ngModel)]="forShopOwnersData.description" name="shopOwnersDescription" placeholder="Description" required></textarea>
+  <button type="submit">Update For Shop Owners</button>
+</form>
+<hr />
+
+<!-- <h3>Update - How It Works Section</h3>
+<form (ngSubmit)="updateHowItWorks()">
+  <input type="text" [(ngModel)]="howItWorksData.title" name="howItWorksTitle" placeholder="Title" required />
+  <textarea [(ngModel)]="howItWorksData.description" name="howItWorksDescription" placeholder="Description" required></textarea>
+  <button type="submit">Update How It Works</button>
+</form> -->
+
+<h3>Update - How It Works Section</h3>
+<form (ngSubmit)="updateHowItWorks()">
+  <input type="text" [(ngModel)]="howItWorksData.title" name="howItWorksTitle" placeholder="Title" required />
+  <textarea [(ngModel)]="howItWorksData.description" name="howItWorksDescription" placeholder="Description" required></textarea>
+  <div *ngFor="let step of howItWorksData.steps; let i = index">
+    <h4>Step {{ step.number }}</h4>
+    <input type="text" [(ngModel)]="howItWorksData.steps[i].title" name="stepTitle{{i}}" placeholder="Step Title" required />
+    <textarea [(ngModel)]="howItWorksData.steps[i].description" name="stepDesc{{i}}" placeholder="Step Description" required></textarea>
+  </div>
+  
+  <button type="submit">Update How It Works</button>
+</form>
+<hr />
+
+<h3>Update - Why Protein Matters Section</h3>
+<form (ngSubmit)="updateWhyProteinMatters()">
+  <input type="text" [(ngModel)]="whyProteinMattersData.title" name="proteinMattersTitle" placeholder="Title" required />
+  <textarea [(ngModel)]="whyProteinMattersData.description" name="proteinMattersDescription" placeholder="Description" required></textarea>
+  <button type="submit">Update Why Protein Matters</button>
+</form>
+<hr />
+
+
+
+  <!-- Display Shops -->
+  <div *ngFor="let shop of shops" class="shop-card">
+    <h3>{{ shop.name }}</h3>
+    <p>Location: {{ shop.latitude }}, {{ shop.longitude }}</p>
+    <p>Products: {{ shop.products?.join(', ') }}</p>
+    <p>WhatsApp: {{ shop.whatsappNumber }}</p>
+    <button (click)="deleteShop(shop.id)">Delete</button>
+  </div>
+</div>
+

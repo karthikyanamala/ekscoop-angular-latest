@@ -1,0 +1,246 @@
+/* --- SUNSET SECTION STYLING --- */
+.sun-to-sunset {
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f09819, #ff512f, #1d2671); /* Evening gradient */
+    margin-bottom: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    animation: fadeInUp 1.2s ease both;
+  }
+  
+  .sun-to-sunset h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #ff7043, #e91e63);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+  
+  .sun-to-sunset p {
+    font-size: 1.2rem;
+    color: #f5f5f5;
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+  
+  .floating-elements {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  .leaf, .glow {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.1;
+    animation: floaty 20s infinite ease-in-out;
+  }
+  
+  .leaf {
+    width: 40px; height: 40px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/616/616408.png');
+  }
+  
+  .leaf-1 { top: 10%; left: 5%; animation-delay: 0s; }
+  .leaf-2 { top: 60%; left: 80%; animation-delay: 4s; }
+  
+  .glow {
+    width: 25px; height: 25px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/744/744465.png');
+    filter: blur(2px);
+  }
+  
+  .glow-1 { top: 40%; left: 30%; animation-delay: 2s; }
+  .glow-2 { top: 20%; left: 70%; animation-delay: 6s; }
+  
+  @keyframes floaty {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+    50% { transform: translateY(-40px) rotate(15deg); opacity: 0.2; }
+    100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sun-to-sunset { padding: 3rem 1.5rem; }
+    .sun-to-sunset h2 { font-size: 2rem; }
+    .sun-to-sunset p { font-size: 1.05rem; }
+  }
+  @media (max-width: 480px) {
+    .sun-to-sunset { padding: 2rem 1rem; }
+    .sun-to-sunset h2 { font-size: 1.6rem; }
+    .sun-to-sunset p { font-size: 0.95rem; }
+  }
+  
+  /* --- MIDNIGHT FOOTER STYLING --- */
+  .sunset-footer {
+    position: relative;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: white;
+    padding: 4rem 2rem 2rem;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    border-top-left-radius: 3rem;
+    border-top-right-radius: 3rem;
+  }
+  
+  /* Moon and Stars */
+  .night-elements {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  .moon {
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at center, #fffde7, #fbc02d);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 255, 200, 0.4);
+    animation: floatMoon 8s infinite ease-in-out;
+  }
+  
+  @keyframes floatMoon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .star {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: twinkle 3s infinite ease-in-out alternate;
+  }
+  .star-1 { top: 10%; left: 20%; animation-delay: 0s; }
+  .star-2 { top: 25%; left: 70%; animation-delay: 1s; }
+  .star-3 { top: 40%; left: 50%; animation-delay: 2s; }
+  
+  @keyframes twinkle {
+    0% { opacity: 0.2; transform: scale(1); }
+    100% { opacity: 0.9; transform: scale(1.5); }
+  }
+  
+  /* Floating Icons */
+  .floating-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .floating-icons i {
+    position: absolute;
+    font-size: 1.8rem;
+    opacity: 0.1;
+    color: white;
+    animation: floatIcons 15s infinite ease-in-out alternate;
+  }
+  .floating-icons i:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+  .floating-icons i:nth-child(2) { top: 40%; left: 80%; animation-delay: 4s; }
+  .floating-icons i:nth-child(3) { top: 60%; left: 30%; animation-delay: 2s; }
+  .floating-icons i:nth-child(4) { top: 75%; left: 60%; animation-delay: 6s; }
+  
+  @keyframes floatIcons {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.08; }
+    100% { transform: translateY(-30px) rotate(360deg); opacity: 0.15; }
+  }
+  
+  /* Footer Content */
+  .footer-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .footer-column {
+    flex: 1 1 200px;
+  }
+  .footer-column h3 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, #fff, #fbd786);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .footer-column h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  .footer-column p,
+  .footer-column a {
+    color: #fefefe;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.4rem;
+    transition: all 0.3s ease;
+  }
+  .footer-column a:hover {
+    transform: translateX(5px);
+    color: #ffeeba;
+  }
+  .footer-column.social a {
+    display: inline-block;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  .footer-column.social a:hover {
+    color: #fff0c1;
+    transform: scale(1.2);
+  }
+  
+  /* Footer Bottom */
+  .footer-bottom {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: #fffbe6;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 1s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .footer-inner {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .footer-column {
+      flex: 1 1 100%;
+      margin-bottom: 2rem;
+    }
+  }
+  

@@ -1,0 +1,220 @@
+.for-shop-owners {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #fff5e1, #ffd89b, #ffb87a);
+  margin-bottom: 0rem;
+  border-radius: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 1.2s ease both;
+  
+ 
+}
+
+/* Ashoka Chakra */
+.for-shop-owners::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 150px;
+  height: 150px;
+
+  background-size: contain;
+  opacity: 0.05;
+  animation: slowSpin 50s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Animated Fitness Icons */
+.animated-fitness-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.animated-fitness-icons i {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.08;
+  color: #ff7043;
+  animation: floatGymIcons 12s ease-in-out infinite alternate;
+}
+
+.animated-fitness-icons i:nth-child(1) {
+  top: 20%;
+  left: 15%;
+  animation-delay: 0s;
+}
+.animated-fitness-icons i:nth-child(2) {
+  top: 35%;
+  left: 80%;
+  animation-delay: 3s;
+}
+.animated-fitness-icons i:nth-child(3) {
+  top: 60%;
+  left: 25%;
+  animation-delay: 6s;
+}
+.animated-fitness-icons i:nth-child(4) {
+  top: 75%;
+  left: 70%;
+  animation-delay: 9s;
+}
+
+/* Headline */
+.for-shop-owners h2 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #b44600;
+  background: linear-gradient(90deg, #e65100, #ffb74d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+/* Description */
+.for-shop-owners p {
+  font-size: 1.25rem;
+  color: #4e342e;
+  max-width: 760px;
+  margin: 0 auto;
+  line-height: 1.75;
+  font-weight: 400;
+  position: relative;
+  z-index: 2;
+}
+
+/* Entrance Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icon Floating */
+@keyframes floatGymIcons {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.06;
+  }
+  100% {
+    transform: translateY(-30px) scale(1.2) rotate(10deg);
+    opacity: 0.12;
+  }
+}
+
+/* Chakra Slow Spin */
+@keyframes slowSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .for-shop-owners {
+    padding: 3rem 1.5rem;
+  }
+
+  .for-shop-owners h2 {
+    font-size: 2rem;
+  }
+
+  .for-shop-owners p {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .for-shop-owners {
+    padding: 2rem 1rem;
+  }
+
+  .for-shop-owners h2 {
+    font-size: 1.6rem;
+  }
+
+  .for-shop-owners p {
+    font-size: 0.95rem;
+  }
+}
+.find-shops-btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #ff8a00, #e52e71);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 0 18px rgba(255, 138, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: floatButton 3s ease-in-out infinite;
+}
+
+.find-shops-btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 20%, transparent 60%);
+  transform: rotate(45deg);
+  animation: glowSweep 4s linear infinite;
+  pointer-events: none;
+}
+
+.find-shops-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 28px rgba(255, 138, 0, 0.6);
+}
+
+/* Floating animation */
+@keyframes floatButton {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Glow sweeping animation */
+@keyframes glowSweep {
+  0% {
+    transform: translate(-100%, -100%) rotate(45deg);
+  }
+  100% {
+    transform: translate(100%, 100%) rotate(45deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .find-shops-btn {
+    font-size: 1rem;
+    padding: 14px 28px;
+  }
+}

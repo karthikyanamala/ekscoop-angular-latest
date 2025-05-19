@@ -1,0 +1,120 @@
+/* Base style for both sides */
+.corner-hang {
+    position: fixed;
+    top: 20px;
+    z-index: 9999;
+    transform-origin: top center;
+  }
+  
+  .corner-hang.right {
+    right: 20px;
+    animation: swing 2.5s infinite ease-in-out;
+  }
+  
+  .corner-hang.left {
+    left: 20px;
+    animation: swing 2.5s infinite ease-in-out; /* same animation for natural swing */
+    transform: translateX(-100px);
+  }
+  
+  /* Hanging thread */
+  .thread {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 22px;
+    background-color: #444;
+    z-index: -1;
+  }
+  
+  /* Optional: you can make left-side thread slightly longer if needed */
+ 
+  .corner-hang.left .thread {
+    height: 48px;
+   
+  }
+
+  .corner-hang.left .image-wrapper {
+    transform: translateX(-15px) translateY(11px) rotate(-15deg);
+  }
+
+  
+  /* Swing animation */
+  @keyframes swing {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(6deg); }
+    50% { transform: rotate(-4deg); }
+    75% { transform: rotate(3deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  /* Image styling */
+  .packet-img {
+    width: 100px;
+    display: block;
+  }
+  .find-shops-btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #ff8a00, #e52e71);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 0 18px rgba(255, 138, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: floatButton 3s ease-in-out infinite;
+}
+
+.find-shops-btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 20%, transparent 60%);
+  transform: rotate(45deg);
+  animation: glowSweep 4s linear infinite;
+  pointer-events: none;
+}
+
+.find-shops-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 28px rgba(255, 138, 0, 0.6);
+}
+
+/* Floating animation */
+@keyframes floatButton {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Glow sweeping animation */
+@keyframes glowSweep {
+  0% {
+    transform: translate(-100%, -100%) rotate(45deg);
+  }
+  100% {
+    transform: translate(100%, 100%) rotate(45deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .find-shops-btn {
+    font-size: 1rem;
+    padding: 14px 28px;
+  }
+}

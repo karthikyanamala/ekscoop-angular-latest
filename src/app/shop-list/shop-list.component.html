@@ -1,0 +1,39 @@
+<div class="shop-list-container">
+  
+  <div class="animated-bg"></div>
+
+  <div class="filter-section">
+    <h2>🛍️ Find You x 0.8 Near You</h2>
+    <mat-form-field appearance="fill" class="custom-select">
+      <mat-label>
+        <i class="fas fa-search"></i> Search or select a product
+      </mat-label>
+      <mat-select [(value)]="selectedProduct" (selectionChange)="applyFilters()">
+        <mat-option *ngFor="let product of getUniqueProducts()" [value]="product">
+          {{ product }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="filteredShops.length === 0" class="no-shops">
+    No shops found nearby.
+  </div>
+
+  <div class="shops-grid">
+    <div class="shop-card animate-fadein" *ngFor="let shop of filteredShops">
+      <h2>{{ shop.name }}</h2>
+      <ul class="product-list">
+        <li *ngFor="let product of shop.products" class="product-item">
+          <span>{{ product }}</span>
+          <a [href]="getWhatsAppLink(shop, product)" target="_blank" class="order-button">
+            <i class="fab fa-whatsapp"></i> Order
+          </a>
+        </li>
+      </ul>
+      <a [href]="getMapLink(shop)" target="_blank" class="map-button">
+        <i class="fas fa-map-marker-alt"></i> View on Map
+      </a>
+    </div>
+  </div>
+</div>

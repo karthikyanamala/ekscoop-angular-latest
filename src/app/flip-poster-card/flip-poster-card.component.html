@@ -1,0 +1,18 @@
+<div class="flip-grid-container">
+  <div
+    class="flip-card"
+    *ngFor="let poster of posters; let i = index"
+    [ngClass]="{ 'hovered': hoverStates[i] }"
+    (touchstart)="simulateHover(i)"
+  >
+    <div class="flip-card-inner">
+      <div class="flip-card-front">
+        <img [src]="poster.image" [alt]="poster.title" />
+        <h4>{{ poster.title }}</h4>
+      </div>
+      <div class="flip-card-back">
+        <p>{{ poster.tip }}</p>
+      </div>
+    </div>
+  </div>
+</div>

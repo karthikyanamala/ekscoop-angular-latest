@@ -1,0 +1,161 @@
+.sun-to-sunset {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f9c46b, #e67e7e);
+  margin-bottom: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 1.2s ease both;
+}
+
+.sun-to-sunset h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff7043, #e91e63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.sun-to-sunset p {
+  font-size: 1.2rem;
+  color: #4e342e;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+/* Floating Nature Elements */
+.floating-elements {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf, .glow {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.1;
+  animation: floaty 20s infinite ease-in-out;
+}
+
+.leaf {
+  width: 40px; height: 40px;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/616/616408.png'); /* simple leaf icon */
+}
+
+.leaf-1 {
+  top: 10%; left: 5%;
+  animation-delay: 0s;
+}
+.leaf-2 {
+  top: 60%; left: 80%;
+  animation-delay: 4s;
+}
+
+.glow {
+  width: 25px; height: 25px;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/744/744465.png'); /* subtle glow orb */
+  filter: blur(2px);
+}
+
+.glow-1 {
+  top: 40%; left: 30%;
+  animation-delay: 2s;
+}
+.glow-2 {
+  top: 20%; left: 70%;
+  animation-delay: 6s;
+}
+
+/* Float Animation */
+@keyframes floaty {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+  50% { transform: translateY(-40px) rotate(15deg); opacity: 0.2; }
+  100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+}
+
+/* Entrance animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .sun-to-sunset {
+    padding: 3rem 1.5rem;
+  }
+
+  .sun-to-sunset h2 {
+    font-size: 2rem;
+  }
+
+  .sun-to-sunset p {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sun-to-sunset {
+    padding: 2rem 1rem;
+  }
+
+  .sun-to-sunset h2 {
+    font-size: 1.6rem;
+  }
+
+  .sun-to-sunset p {
+    font-size: 0.95rem;
+  }
+}
+.sunset-button {
+  display: inline-block;
+  padding: 14px 36px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #ff7b5e, #f94d6a);
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 10px 25px rgba(249, 77, 106, 0.4);
+  cursor: pointer;
+  transition: all 0.35s ease;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  margin-top: 2%;
+}
+
+.sunset-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
+  transition: all 0.5s ease;
+  transform: skewX(-20deg);
+  z-index: 0;
+}
+
+.sunset-button:hover::before {
+  left: 100%;
+}
+
+.sunset-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 35px rgba(249, 77, 106, 0.55);
+}

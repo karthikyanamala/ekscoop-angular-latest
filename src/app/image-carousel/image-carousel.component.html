@@ -1,0 +1,13 @@
+<div class="carousel-wrapper">
+  <div class="carousel-track">
+    <div class="carousel-item" *ngFor="let img of visibleImages">
+      <img [src]="img" loading="lazy" alt="YOU x 0.8 image" />
+    </div>
+  </div>
+
+  <div class="carousel-controls">
+    <button (click)="previous()">←</button>
+    <button (click)="togglePause()">{{ isPaused ? 'Play' : 'Pause' }}</button>
+    <button (click)="next()">→</button>
+  </div>
+</div>

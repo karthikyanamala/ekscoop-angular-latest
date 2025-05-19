@@ -1,0 +1,206 @@
+.testimonial-section {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: linear-gradient(to bottom, #f9f9f9, #fff);
+}
+
+.section-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.testimonial-layout {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  min-height: 480px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🌟 Center Testimonial Card */
+.testimonial-card {
+  width: 100%;
+  max-width: 420px;
+  height: 460px;
+  padding: 2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid #e6e6e6;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.center-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 3px solid #f9c46b;
+}
+
+.testimonial-card h3 {
+  font-size: 1.25rem;
+  margin: 0.5rem 0 0;
+  color: #222;
+}
+
+.profession {
+  color: #777;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.quote {
+  font-style: italic;
+  color: #444;
+  line-height: 1.6;
+  font-size: 1.02rem;
+  margin-bottom: 0;
+  max-height: 6rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 0 0.5rem;
+}
+
+.testimonial-card .star {
+  font-size: 1.4rem;
+  color: #f90;
+  margin-top: 0.2rem;
+}
+
+/* 🔁 Prev/Next Buttons */
+.nav-buttons {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.nav-buttons button {
+  border: none;
+  background: #f1f1f1;
+  color: #333;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  transition: all 0.3s ease;
+}
+
+.nav-buttons button:hover {
+  background-color: #f9c46b;
+  color: white;
+}
+
+/* ⏯ Pause Button */
+.pause-button {
+  margin-top: 0.8rem;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pause-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* 👥 Side Thumbnails */
+.thumbnail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content:center;
+  width: 140px;
+  min-height: 300px;
+  padding-top: 2rem;
+  opacity: 0.7;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background: rgba(255,255,255,0.4);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+}
+
+.thumbnail img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  border: 2px solid #f9c46b;
+  transition: transform 0.3s;
+}
+
+.thumbnail:hover img {
+  transform: scale(1.08);
+}
+
+.thumbnail .side-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0.2rem 0;
+  text-align: center;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.thumbnail .side-role {
+  font-size: 0.75rem;
+  color: #777;
+  margin-bottom: 0.3rem;
+}
+
+
+
+
+.side-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.thumbnail .star {
+  font-size: 0.75rem;
+  color: #f90;
+}
+
+/* 🔄 Responsive */
+@media (max-width: 768px) {
+  .testimonial-layout {
+    flex-direction: column;
+  }
+
+  .thumbnail {
+    display: none;
+  }
+
+  .side-name {
+    display: none;
+  }
+}

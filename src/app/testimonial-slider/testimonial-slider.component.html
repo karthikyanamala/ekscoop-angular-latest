@@ -1,0 +1,56 @@
+<div class="testimonial-section">
+  <h2 class="section-title">What Clients Say</h2>
+
+  <div class="testimonial-layout">
+    <!-- Left thumbnail -->
+    <div class="thumbnail">
+      <img
+        *ngIf="testimonials[(currentIndex - 1 + testimonials.length) % testimonials.length]?.photo"
+        [src]="testimonials[(currentIndex - 1 + testimonials.length) % testimonials.length].photo"
+        alt="Previous Client"
+      />
+       <div class="side-name">
+        {{ testimonials[(currentIndex - 1 + testimonials.length) % testimonials.length].name }}
+    </div>
+      <span class="star">
+        {{
+          testimonials[(currentIndex - 1 + testimonials.length) % testimonials.length].rating
+        }}★
+      </span>
+    </div>
+
+    <!-- Center testimonial -->
+    <div class="testimonial-card">
+      <img [src]="getCurrent().photo" alt="{{ getCurrent().name }}" class="center-photo" />
+        <span class="star">
+        {{ testimonials[(currentIndex) % testimonials.length].rating }}★
+      </span>
+      <h3>{{ getCurrent().name }}</h3>
+      <p class="profession">{{ getCurrent().profession }}</p>
+      <p class="quote">"{{ getCurrent().quote }}"</p>
+      <div class="nav-buttons">
+        <button (click)="prev()">←</button>
+        <button (click)="next()">→</button>
+      </div>
+      <button class="pause-button" (click)="togglePause()">
+        {{ isPaused ? '▶ Play' : '⏸ Pause' }}
+      </button>
+    </div>
+
+    <!-- Right thumbnail -->
+    <div class="thumbnail">
+      <img
+        *ngIf="testimonials[(currentIndex + 1) % testimonials.length]?.photo"
+        [src]="testimonials[(currentIndex + 1) % testimonials.length].photo"
+        alt="Next Client"
+      />
+      <div class="side-name">
+        {{ testimonials[(currentIndex + 1) % testimonials.length].name }}
+      </div>
+      
+      <span class="star">
+        {{ testimonials[(currentIndex + 1) % testimonials.length].rating }}★
+      </span>
+    </div>
+  </div>
+</div>
