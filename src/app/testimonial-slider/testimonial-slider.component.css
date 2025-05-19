@@ -191,10 +191,8 @@
 }
 
 /* 🔄 Responsive */
-@media (max-width: 768px) {
-  .testimonial-layout {
-    flex-direction: column;
-  }
+@media (max-width: 845px) {
+ 
 
   .thumbnail {
     display: none;
