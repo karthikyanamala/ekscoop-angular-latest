@@ -21,8 +21,10 @@ export class ShopListComponent implements OnInit {
   selectedProduct: string = '';
   userCoords: { lat: number; lng: number } | null = null;
   searchRadius = 20;
+  locationDenied = false;
 
-  constructor(private shopService: ShopService, private locationService: LocationService) {}
+
+  constructor(private shopService: ShopService, public locationService: LocationService) {}
 
   ngOnInit(): void {
     this.shopService.getShops().subscribe((data: Shop[]) => {
@@ -31,15 +33,20 @@ export class ShopListComponent implements OnInit {
     });
   }
 
-  async getUserLocation() {
-    try {
-      this.userCoords = await this.locationService.getCurrentLocation();
-      this.applyFilters();
-    } catch (err) {
-      console.warn('Location access denied. Showing all shops.');
-      this.filteredShops = this.allShops;
+async getUserLocation() {
+  try {
+    this.userCoords = await this.locationService.getCurrentLocation();
+    this.locationDenied = false; // reset
+    this.applyFilters();
+  } catch (err: any) {
+    console.warn('Location access denied. Showing no shops.');
+    this.filteredShops = []; // Don't show shops at all
+    if (err.code === 1) { // PERMISSION_DENIED
+      this.locationDenied = true;
     }
   }
+}
+
 
   applyFilters() {
     this.filteredShops = this.allShops.filter(shop => {
