@@ -1,66 +1,72 @@
 import { Component, OnInit } from '@angular/core';
 import { Shop } from '../model/shop.model';
-import { ShopService } from "../services/shop.service";
+import { ShopService } from '../services/shop.service';
 import { LocationService } from '../services/location.service';
-import { CommonModule } from '@angular/common';       // Provides *ngFor, *ngIf, etc.
-import { FormsModule } from '@angular/forms'; 
-import { NgSelectModule } from '@ng-select/ng-select';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { MatIconModule } from '@angular/material/icon'; 
+import { MatIconModule } from '@angular/material/icon';
+import { EkscoopLoaderComponent } from '../ekscoop-loader/ekscoop-loader.component';
+
 @Component({
   selector: 'app-shop-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,MatFormFieldModule,MatSelectModule,MatIconModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, EkscoopLoaderComponent],
   templateUrl: './shop-list.component.html',
   styleUrls: ['./shop-list.component.scss']
 })
 export class ShopListComponent implements OnInit {
-  allShops: Shop[] = [];
   filteredShops: Shop[] = [];
   selectedProduct: string = '';
   userCoords: { lat: number; lng: number } | null = null;
-  searchRadius = 20;
+  searchRadius = 3;
+  isLoadingLocation = false;
+  isLoadingShops = false;
   locationDenied = false;
-
 
   constructor(private shopService: ShopService, public locationService: LocationService) {}
 
   ngOnInit(): void {
-    this.shopService.getShops().subscribe((data: Shop[]) => {
-      this.allShops = data;
-      this.getUserLocation();
-    });
+    this.getUserLocation();
   }
 
-async getUserLocation() {
-  try {
-    this.userCoords = await this.locationService.getCurrentLocation();
-    this.locationDenied = false; // reset
-    this.applyFilters();
-  } catch (err: any) {
-    console.warn('Location access denied. Showing no shops.');
-    this.filteredShops = []; // Don't show shops at all
-    if (err.code === 1) { // PERMISSION_DENIED
-      this.locationDenied = true;
+  async getUserLocation() {
+    this.isLoadingLocation = true;
+    try {
+      this.userCoords = await this.locationService.getCurrentLocation();
+      this.locationDenied = false;
+      await this.loadNearbyShops();
+    } catch (err: any) {
+      this.filteredShops = [];
+      this.locationDenied = err.code === 1;
+      console.warn('Location access denied.');
+    } finally {
+      this.isLoadingLocation = false;
     }
   }
-}
 
+  async loadNearbyShops() {
+    if (!this.userCoords) return;
 
-  applyFilters() {
-    this.filteredShops = this.allShops.filter(shop => {
-      const isProductMatch = !this.selectedProduct || shop.products.includes(this.selectedProduct);
-      const isInRadius =
-        this.userCoords &&
-        this.locationService.getDistance(
-          this.userCoords.lat,
-          this.userCoords.lng,
-          shop.latitude,
-          shop.longitude
-        ) <= this.searchRadius;
-      return isProductMatch && (!this.userCoords || isInRadius);
-    });
+    this.isLoadingShops = true;
+    try {
+      const shops = await this.shopService.getShopsNearby(
+        this.userCoords.lat,
+        this.userCoords.lng,
+        this.searchRadius
+      );
+
+      // Filter by product if needed
+      this.filteredShops = shops.filter(shop =>
+        !this.selectedProduct || shop.products.includes(this.selectedProduct)
+      );
+    } catch (error) {
+      console.error('Error loading shops:', error);
+      this.filteredShops = [];
+    } finally {
+      this.isLoadingShops = false;
+    }
   }
 
   getWhatsAppLink(shop: Shop, product: string): string {
@@ -72,22 +78,14 @@ async getUserLocation() {
     return `https://www.google.com/maps?q=${shop.latitude},${shop.longitude}`;
   }
 
-  getAllProducts(): string[] {
-    return [...new Set(this.allShops.flatMap(shop => shop.products))];
-  }
   getUniqueProducts(): string[] {
-    const allProducts = this.allShops.flatMap(shop => shop.products);
     const seen = new Set<string>();
-  
-    // Normalize and deduplicate, while preserving original casing
-    const uniqueProducts = allProducts.filter(product => {
-      const key = product.trim().toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  
-    return uniqueProducts.filter(Boolean); // removes undefined if any
+    return this.filteredShops.flatMap(shop => shop.products)
+      .filter(p => {
+        const key = p.trim().toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
   }
-  
 }

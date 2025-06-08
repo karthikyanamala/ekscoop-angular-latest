@@ -12,7 +12,7 @@
 
   <!-- Header -->
   <div class="header-section">
-    <h1>🛍️ Local Protein Finder</h1>
+    <h1>🏍️ Local Protein Finder</h1>
     <p>Find premium protein powder at nearby retailers and order instantly via WhatsApp.</p>
   </div>
 
@@ -49,20 +49,17 @@
     </p>
   </div>
 
-  <!-- Search Box -->
-  <div class="search-box" *ngIf="userCoords">
-    <i class="fas fa-search search-icon"></i>
-    <input type="text" [(ngModel)]="selectedProduct" (input)="applyFilters()" placeholder="Search shops or products..." />
-  </div>
+
 
   <!-- No Shops Found -->
   <div *ngIf="userCoords && filteredShops.length === 0" class="no-shops">
     <i class="fas fa-box-open"></i>
     <p>No shops found {{ selectedProduct ? 'for "' + selectedProduct + '"' : 'nearby' }}</p>
   </div>
-
+  <app-ekscoop-loader *ngIf="isLoadingShops"></app-ekscoop-loader>
   <!-- Shops Grid -->
-  <div class="shops-grid-modern" *ngIf="userCoords && filteredShops.length > 0">
+  <div class="shops-grid-modern" *ngIf="userCoords && !isLoadingShops && filteredShops.length > 0">
+
     <div class="card" *ngFor="let shop of filteredShops">
       <div class="card-header">
         <h2>{{ shop.name }}</h2>
@@ -88,6 +85,11 @@
         <p class="alt-message">
           🛒 You can also ask this shop for groceries – avoid delivery charges by shopping local!
         </p>
+
+        <p class="note small">📍 Approximate distance<span class="badge info">
+  {{ locationService.getDistance(userCoords.lat, userCoords.lng, shop.latitude, shop.longitude) | number:'1.1-1' }} km
+</span>. Road travel may be longer.</p>
+
 
         <a [href]="getMapLink(shop)" target="_blank" class="btn map">
           <i class="fas fa-map-marker-alt"></i> View on Map

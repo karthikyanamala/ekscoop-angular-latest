@@ -1,0 +1,64 @@
+.protein-loader-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  position: relative;
+}
+
+.protein-loader-scoop {
+  width: 96px;
+  height: 96px;
+  background: linear-gradient(to bottom right, #4ade80, #3b82f6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.icon {
+  font-size: 2rem;
+  color: white;
+}
+
+.orbiting-dots {
+  position: absolute;
+  top: 13%;
+
+  width: 100px;
+  height: 100px;
+  animation: spin 3s linear infinite reverse;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  border-radius: 50%;
+  animation: bounce 1s infinite;
+}
+.dot.orange { background: orange; top: 0; left: 50%; transform: translate(-50%, -100%); }
+.dot.purple { background: purple; top: 50%; right: 0; transform: translate(50%, -50%); }
+.dot.pink   { background: pink; bottom: 0; left: 50%; transform: translate(-50%, 100%); }
+.dot.yellow { background: yellow; top: 50%; left: 0; transform: translate(-100%, -50%); }
+
+.loading-message {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(-3px); }
+ 
+  50% { transform: translateY(0px); }
+}
+
+.protein-loader-wrapper {
+  margin-top: -30px;
+}
