@@ -1,23 +1,35 @@
 <section class="how-it-works-section">
   <div class="intro-column">
-    <h2>{{ data?.title }}</h2>
+    <h2>How We Help You and Your Local Stores</h2>
     <p>
-      {{ data?.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sollicitudin, turpis ac facilisis consequat, sapien nulla hendrerit tortor, eu tincidunt justo nisi vitae orci. Vivamus non tempor augue. Sed vehicula magna non massa tristique volutpat.' }}
+      Our platform also helps shop owners sell their own products (not just our protein) directly through WhatsApp orders. From snacks to fitness gear — it's your market, your way. This approach: Increases shop visibility Boosts local sales Cuts out unnecessary online platform fees Strengthens the local economy Supports the "Help Locals, Help India" mission 🇮🇳 You x 0.8 is not just a brand — it’s a movement to power local stores, local jobs, and local health.
     </p>
   </div>
 
   <div class="cards-column">
     <div class="card-stack">
-      <div
-        class="how-it-works-card"
-        *ngFor="let step of data.steps; let i = index"
-        [attr.data-index]="i"
-        [style.--i]="i"
-      >
-        <div class="card-number">{{ step.number }}</div>
-        <h3 class="card-title">{{ step.title }}</h3>
-        <p class="card-description">{{ step.description }}</p>
+      <div class="how-it-works-card">
+        <div class="card-number">01</div>
+        <h3 class="card-title">Find nearby shops</h3>
+        <p class="card-description">Locate shops within 2km selling 'you x 0.8'.</p>
       </div>
+       <div class="how-it-works-card">
+        <div class="card-number">02</div>
+        <h3 class="card-title">Get directions instantly</h3>
+        <p class="card-description">Receive immediate guidance on how to reach the nearest store.</p>
+      </div>
+       <div class="how-it-works-card">
+        <div class="card-number">03</div>
+        <h3 class="card-title">WhatsApp to order</h3>
+        <p class="card-description">Order via WhatsApp easily without needing a delivery app</p>
+      </div>
+       <div class="how-it-works-card">
+        <div class="card-number">04</div>
+        <h3 class="card-title">Pick up locally</h3>
+        <p class="card-description">How We Help You and Your Local Stores</p>
+      </div>
+      
     </div>
+    
   </div>
 </section>

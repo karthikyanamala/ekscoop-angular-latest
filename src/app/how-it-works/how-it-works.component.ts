@@ -14,25 +14,9 @@ gsap.registerPlugin(ScrollTrigger);
   templateUrl: './how-it-works.component.html',
   styleUrls: ['./how-it-works.component.css']
 })
-export class HowitworksComponent implements OnInit, AfterViewInit {
+export class HowitworksComponent {
   data: any;
-
-  constructor(private contentService: HomeContentService) {}
-
-  ngOnInit(): void {
-    this.contentService.getHowItWorks().subscribe((data) => {
-      this.data = data;
-
-      // Delay the animation to allow Angular to render the DOM
-      setTimeout(() => {
-        this.initScrollAnimations();
-      }, 100);
-    });
-  }
-
-  ngAfterViewInit(): void {
-    // Could also use MutationObserver here if needed
-  }
+ 
   initScrollAnimations(): void {
     const cards = document.querySelectorAll('.how-it-works-card');
   

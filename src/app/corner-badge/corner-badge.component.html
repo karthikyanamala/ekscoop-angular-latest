@@ -1,15 +1,48 @@
-<div class="corner-hang right">
-    <div class="thread"></div>
-    <a href="/product-list">
-      <img src="../../assets/image1-removebg-preview.png" alt="Protein Packet" class="packet-img" />
-    </a>
-    
-  </div>
-  <div class="corner-hang left">
-    <div class="thread"></div>
-    <div class="image-wrapper">
-        <img src="../../assets/images/ekscoop logo with spoon and checkmark.png" alt="Protein Packet" class="packet-img" />
+<header class="header-wrapper" [class.scrolled]="isScrolled">
+  <div class="header-container">
+    <div class="logo-section">
+      <div class="logo-circle"><span class="logo-text">eK</span></div>
+      <a href="/" class="brand-name">ekScoop</a>
     </div>
-    
+
+    <nav class="nav-menu desktop-only">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/meal-section" class="nav-link">Meal Plans</a>
+      <a href="/products" class="nav-link">Products</a>
+      <a href="/about" class="nav-link">About</a>
+      <a href="/contact" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions desktop-only">
+      <a href="/shop-finder"><button class="order-btn">Order Now</button></a>
+    </div>
+
+    <button class="hamburger mobile-only" (click)="toggleMenu()">
+      <div></div><div></div><div></div>
+    </button>
   </div>
-  
+
+ <!-- Mobile Slide Menu -->
+<div class="mobile-menu" [class.open]="menuOpen">
+  <!-- Logo Section at Top -->
+  <div class="mobile-logo-section">
+    <div class="logo-circle"><span class="logo-text">eK</span></div>
+    <a href="/" class="brand-name" (click)="closeMenu()">ekScoop</a>
+    <button class="close-btn" (click)="closeMenu()">✕</button>
+  </div>
+
+  <nav class="mobile-menu-links">
+    <a href="/" (click)="closeMenu()">🏠 Home</a>
+    <a href="/meal-section" (click)="closeMenu()">🍽️ Meal Plans</a>
+    <a href="/products" (click)="closeMenu()">📦 Products</a>
+    <a href="/about" (click)="closeMenu()">👤 About</a>
+    <a href="/contact" (click)="closeMenu()">📞 Contact</a>
+  </nav>
+
+ <div class="mobile-order-footer">
+  <a href="/shop-finder">
+    <button class="order-btn full-width">🛒 Order Now</button>
+  </a>
+  <div class="quick-order-text">Quick Order<br><small>Fast delivery • Fresh meals</small></div>
+</div>
+</div>

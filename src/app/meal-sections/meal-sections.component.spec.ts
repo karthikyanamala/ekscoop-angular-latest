@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FlipPosterCardComponent } from './flip-poster-card.component';
+import { MealSectionsComponent } from './meal-sections.component';
 
-describe('FlipPosterCardComponent', () => {
-  let component: FlipPosterCardComponent;
-  let fixture: ComponentFixture<FlipPosterCardComponent>;
+describe('MealSectionsComponent', () => {
+  let component: MealSectionsComponent;
+  let fixture: ComponentFixture<MealSectionsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FlipPosterCardComponent]
+      imports: [MealSectionsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FlipPosterCardComponent);
+    fixture = TestBed.createComponent(MealSectionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

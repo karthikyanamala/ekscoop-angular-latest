@@ -1,15 +1,42 @@
-<section class="for-shop-owners">
-  <div class="animated-fitness-icons">
-    <i class="fas fa-dumbbell"></i>
-    <i class="fas fa-running"></i>
-    <i class="fas fa-apple-alt"></i>
-    <i class="fas fa-heartbeat"></i>
+<section class="hero-section">
+  <!-- Floating Background Circles -->
+  <div class="floating-background">
+    <div class="circle orange-circle float-delay-0"></div>
+    <div class="circle pink-circle float-delay-2"></div>
+    <div class="circle small-orange-circle float-delay-4"></div>
   </div>
 
-  <h2>{{ data?.title }}</h2>
-  <p>{{ data?.description }}</p>
-  <a href="/shop-finder" class="find-shops-btn">
-    <span>Find Shops Near You</span>
-  </a>
-  
+  <div class="container content-container">
+    <div class="grid-container">
+      <!-- Text Content -->
+      <div class="hero-text fade-in-up">
+        <div class="hero-tagline">
+          <i class="heart-icon">❤️</i>
+          <span>Fuel Your Day</span>
+        </div>
+        <h1>
+          <span class="text-gradient">Fuel Your Day with Just One Scoop</span>
+          <br />
+          <span class="subheading">— Find it Near You</span>
+        </h1>
+        <p>
+          Your daily protein requirement. Zero delivery hassle. Available at a store near you. To make getting your daily scoop even easier, ekScoop has partnered with You x 0.8 to bring these powerful protein sachets directly to your neighborhood stores.
+        </p>
+       <a href="/shop-finder"> <button class="shop-btn">Find Shops Near You</button></a>
+      </div>
+
+      <!-- Product Card -->
+      <div class="hero-card scale-in">
+        <div class="outer-card float">
+          <div class="inner-card">
+            <div class="card-content">
+              <div class="small">YOU x 0.8</div>
+              <div class="big">20g</div>
+              <div class="small">PROTEIN COFFEE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

@@ -2,77 +2,28 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-poster-final',
-  standalone: true,
-  imports: [CommonModule],
+  selector: 'app-product-showcase',
+  imports:[CommonModule],
   templateUrl: './product-showcase.component.html',
   styleUrls: ['./product-showcase.component.css']
 })
-export class PosterFinalComponent {
-  sections = [
+export class ProductShowcaseComponent {
+  products = [
     {
-      meal: 'Breakfast',
-      food: 'Poha',
-      sachet: '/assets/poster-sections/Retail.png',
-      foodImg: '/assets/poster-sections/Poha1.png',
-      bgClass: 'sunrise',
-      icons: ['sun', 'leaves'],
-       leftTips: [
-        'Mix YOU x 0.8 into curd just before eating.',
-        'Best with rice or as bedtime protein.'
-      ],
-      rightTips: [
-        'Easy digestion, supports overnight recovery.',
-        'Gentle on stomach, strong on nutrition.'
-      ]
+      title: "Add to Poha",
+      description: "Mix seamlessly with your morning poha"
     },
     {
-      meal: 'Lunch',
-      food: 'Dal',
-      sachet: '/assets/poster-sections/Gym1.png',
-      foodImg: '/assets/poster-sections/Dal1.png',
-      bgClass: 'noon',
-      icons: ['leaves', 'wheat'],
-       leftTips: [
-        'Mix YOU x 0.8 into curd just before eating.',
-        'Best with rice or as bedtime protein.'
-      ],
-      rightTips: [
-        'Easy digestion, supports overnight recovery.',
-        'Gentle on stomach, strong on nutrition.'
-      ]
+      title: "Add to Roti",
+      description: "Mix it in your roti!"
     },
     {
-      meal: 'Snack',
-      food: 'Roti',
-      sachet: '/assets/poster-sections/WomenP.png',
-      foodImg: '/assets/poster-sections/Pasta1.png',
-      bgClass: 'sunset',
-      icons: ['cloud', 'leaves'],
-       leftTips: [
-        'Mix YOU x 0.8 into curd just before eating.',
-        'Best with rice or as bedtime protein.'
-      ],
-      rightTips: [
-        'Easy digestion, supports overnight recovery.',
-        'Gentle on stomach, strong on nutrition.'
-      ]
+      title: "Blend with any food",
+      description: "Versatile protein for any meal"
     },
     {
-      meal: 'Dinner',
-      food: 'Curd',
-      sachet: '/assets/poster-sections/Pharmacy.png',
-      foodImg: '/assets/poster-sections/Roti1.png',
-      bgClass: 'night',
-      icons: ['moon', 'stars'],
-       leftTips: [
-        'Mix YOU x 0.8 into curd just before eating.',
-        'Best with rice or as bedtime protein.'
-      ],
-      rightTips: [
-        'Easy digestion, supports overnight recovery.',
-        'Gentle on stomach, strong on nutrition.'
-      ]
+      title: "Add to eve snacks",
+      description: "Perfect for evening nutrition"
     }
   ];
 }

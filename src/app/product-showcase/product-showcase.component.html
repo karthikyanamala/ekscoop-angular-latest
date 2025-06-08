@@ -1,48 +1,21 @@
-<!-- <div class="poster-wrapper">
-  <div *ngFor="let section of sections" class="poster-panel {{ section.bgClass }}">
-
-   
-    <div *ngFor="let icon of section.icons" class="icon" [ngClass]="icon"></div>
-
-    <div class="poster-content">
-      <img class="food-img" [src]="section.foodImg" [alt]="section.food" />
-      <img class="sachet-img" [src]="section.sachet" alt="YOU x 0.8 Sachet" />
-
-      <div class="text-block">
-        <h2>{{ section.meal }}</h2>
-        <p>Use YOU x 0.8 with your {{ section.food }}</p>
-      </div>
-    </div>
-  </div>
-</div> -->
-<div class="poster-wrapper">
-  <div *ngFor="let section of sections" class="poster-panel {{ section.bgClass }}">
-
-    <!-- Animated icons -->
-    <div *ngFor="let icon of section.icons" class="icon" [ngClass]="icon"></div>
-
-    <div class="poster-content">
-
-      <!-- Left side tips -->
-      <div class="side-text left">
-        <p *ngFor="let tip of section.leftTips">{{ tip }}</p>
-      </div>
-
-      <!-- Center images and text -->
-      <div class="center-content">
-        <img class="food-img" [src]="section.foodImg" [alt]="section.food" />
-        <img class="sachet-img" [src]="section.sachet" alt="YOU x 0.8 Sachet" />
-        <div class="text-block">
-          <h2>{{ section.meal }}</h2>
-          <p>Use YOU x 0.8 with your {{ section.food }}</p>
+<section class="product-showcase-section">
+  <div class="product-container">
+    <div class="product-grid">
+      <div
+        class="product-card"
+        *ngFor="let product of products; let i = index"
+        [style.animationDelay]="i * 0.2 + 's'"
+      >
+        <div class="product-card-inner">
+          <div class="card-top">
+            <div class="product-icon"></div>
+            <h3>{{ product.title }}</h3>
+          </div>
+        </div>
+        <div class="card-hover-overlay">
+          <p>{{ product.description }}</p>
         </div>
       </div>
-
-      <!-- Right side tips -->
-      <div class="side-text right">
-        <p *ngFor="let tip of section.rightTips">{{ tip }}</p>
-      </div>
-
     </div>
   </div>
-</div>
+</section>

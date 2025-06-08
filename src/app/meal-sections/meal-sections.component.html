@@ -1,0 +1,349 @@
+<app-corner-badge></app-corner-badge>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="hero-title">Perfect Nutrition</h1>
+        <h2 class="hero-subtitle">Every Hour of the Day</h2>
+        <p class="hero-description">
+            Discover how YOU x 0.8 plant protein transforms every meal into a nutritional powerhouse
+        </p>
+        
+        <div class="protein-illustration">
+            <div class="protein-badge">
+                <span class="protein-symbol">ψ9</span>
+                <div class="protein-label">
+                    YOU x 0.8<br/>PLANT<br/>PROTEIN
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meal Sections -->
+    <section class="meals-section">
+        <div class="container">
+            <!-- Breakfast -->
+            <div class="meal-card breakfast">
+                <div class="meal-content">
+                    <div class="meal-info">
+                        <div class="meal-header">
+                            <div class="meal-icon">☀️</div>
+                            <div>
+                                <h3 class="meal-title">Breakfast</h3>
+                                <p class="meal-time">Morning</p>
+                            </div>
+                        </div>
+                        
+                        <h4 class="meal-description">Use YOU x 0.8 with your Poha</h4>
+                        <p class="meal-details">Mix YOU x 0.8 into every bowl. Kick start your day with perfect protein!</p>
+
+                        <div class="meal-benefits">
+                            <div class="benefit-item">• Best with rice or as bedtime protein</div>
+                            <div class="benefit-item">• Gentle on stomach, strong on nutrition</div>
+                        </div>
+
+                        <button class="meal-btn" (click)="showRecipe('breakfast')">Try with Breakfast</button>
+                    </div>
+
+                    <div class="meal-image">
+                        <div class="food-container">
+                            <img src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center" alt="Poha breakfast" class="food-img">
+                            <div class="protein-overlay">
+                                YOU x 0.8<br/>PLANT<br/>PROTEIN
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe Section -->
+ <div
+  id="breakfast-recipe"
+  class="recipe-section"
+  [class.show]="visibleMeals['breakfast']"
+>
+
+  <div class="recipe-header">
+    <h3>🍽️ Protein-Rich Poha Recipe</h3>
+    <button class="close-recipe" (click)="hideRecipe('breakfast')">✕</button>
+  </div>
+  <div class="recipe-content">
+                        <div class="recipe-ingredients">
+                            <h4>Ingredients:</h4>
+                            <ul>
+                                <li>2 cups flattened rice (poha)</li>
+                                <li>1 scoop YOU x 0.8 protein powder</li>
+                                <li>1 medium onion, chopped</li>
+                                <li>2 green chilies, chopped</li>
+                                <li>1/2 cup peas</li>
+                                <li>2 tbsp oil</li>
+                                <li>1 tsp mustard seeds</li>
+                                <li>1 tsp turmeric powder</li>
+                                <li>Salt to taste</li>
+                                <li>Fresh coriander leaves</li>
+                                <li>Lemon juice</li>
+                            </ul>
+                        </div>
+                        <div class="recipe-instructions">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                <li>Rinse poha gently and drain water completely</li>
+                                <li>Heat oil in a pan, add mustard seeds</li>
+                                <li>Add onions, green chilies, and peas. Sauté until soft</li>
+                                <li>Add turmeric powder and salt</li>
+                                <li>Add the drained poha and mix gently</li>
+                                <li>Mix YOU x 0.8 protein powder with 2 tbsp water and add to poha</li>
+                                <li>Cook for 3-4 minutes, stirring occasionally</li>
+                                <li>Garnish with coriander leaves and lemon juice</li>
+                                <li>Serve hot with your morning protein boost!</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lunch -->
+            <div class="meal-card lunch">
+                <div class="meal-content">
+                    <div class="meal-info">
+                        <div class="meal-header">
+                            <div class="meal-icon">🍽️</div>
+                            <div>
+                                <h3 class="meal-title">Lunch</h3>
+                                <p class="meal-time">Afternoon</p>
+                            </div>
+                        </div>
+                        
+                        <h4 class="meal-description">Power Your Afternoon</h4>
+                        <p class="meal-details">Add YOU x 0.8 to your dal, curry, or any main course for sustained energy.</p>
+
+                        <div class="meal-benefits">
+                            <div class="benefit-item">• Maintains energy levels</div>
+                            <div class="benefit-item">• Perfect protein complement</div>
+                        </div>
+
+                        <button class="meal-btn" (click)="showRecipe('lunch')">Try with Lunch</button>
+                    </div>
+
+                    <div class="meal-image">
+                        <div class="food-container">
+                            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop&crop=center" alt="Dal lunch" class="food-img">
+                            <div class="protein-overlay">
+                                YOU x 0.8<br/>PLANT<br/>PROTEIN
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe Section -->
+                 <div
+  id="lunch-recipe"
+  class="recipe-section"
+  [class.show]="visibleMeals['lunch']"
+>
+                    <div class="recipe-header">
+                        <h3>🍛 Protein-Enhanced Dal Recipe</h3>
+                        <button class="close-recipe" (click)="hideRecipe('lunch')">✕</button>
+                    </div>
+                    <div class="recipe-content">
+                        <div class="recipe-ingredients">
+                            <h4>Ingredients:</h4>
+                            <ul>
+                                <li>1 cup yellow moong dal</li>
+                                <li>1 scoop YOU x 0.8 protein powder</li>
+                                <li>2 tomatoes, chopped</li>
+                                <li>1 onion, chopped</li>
+                                <li>2 garlic cloves</li>
+                                <li>1 inch ginger, grated</li>
+                                <li>2 tbsp ghee</li>
+                                <li>1 tsp cumin seeds</li>
+                                <li>1 tsp turmeric powder</li>
+                                <li>1 tsp red chili powder</li>
+                                <li>Salt to taste</li>
+                                <li>Fresh coriander leaves</li>
+                            </ul>
+                        </div>
+                        <div class="recipe-instructions">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                <li>Wash and cook dal with turmeric until soft</li>
+                                <li>Heat ghee in a pan, add cumin seeds</li>
+                                <li>Add ginger-garlic paste, sauté for 1 minute</li>
+                                <li>Add onions, cook until golden brown</li>
+                                <li>Add tomatoes, chili powder, and salt</li>
+                                <li>Cook until tomatoes are soft and mushy</li>
+                                <li>Add cooked dal and simmer for 10 minutes</li>
+                                <li>Mix YOU x 0.8 protein powder with little water and stir into dal</li>
+                                <li>Garnish with coriander and serve hot with rice</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Snacks -->
+            <div class="meal-card snacks">
+                <div class="meal-content">
+                    <div class="meal-info">
+                        <div class="meal-header">
+                            <div class="meal-icon">🍪</div>
+                            <div>
+                                <h3 class="meal-title">Snacks</h3>
+                                <p class="meal-time">Evening</p>
+                            </div>
+                        </div>
+                        
+                        <h4 class="meal-description">Evening Nutrition Boost</h4>
+                        <p class="meal-details">Transform your evening snacks into protein-rich treats with YOU x 0.8.</p>
+
+                        <div class="meal-benefits">
+                            <div class="benefit-item">• Satisfies hunger healthily</div>
+                            <div class="benefit-item">• Prevents late-night cravings</div>
+                        </div>
+
+                        <button class="meal-btn" (click)="showRecipe('snacks')">Try with Snacks</button>
+                    </div>
+
+                    <div class="meal-image">
+                        <div class="food-container">
+                            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop&crop=center" alt="Evening snacks" class="food-img">
+                            <div class="protein-overlay">
+                                YOU x 0.8<br/>PLANT<br/>PROTEIN
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe Section -->
+                <div
+  id="snacks-recipe"
+  class="recipe-section"
+  [class.show]="visibleMeals['snacks']"
+>
+                    <div class="recipe-header">
+                        <h3>🥪 Protein Power Snacks Recipe</h3>
+                        <button class="close-recipe" (click)="hideRecipe('snacks')">✕</button>
+                    </div>
+                    <div class="recipe-content">
+                        <div class="recipe-ingredients">
+                            <h4>Ingredients:</h4>
+                            <ul>
+                                <li>2 slices whole wheat bread</li>
+                                <li>1 scoop YOU x 0.8 protein powder</li>
+                                <li>1/2 cup mixed vegetables (chopped)</li>
+                                <li>2 tbsp paneer, grated</li>
+                                <li>1 tbsp butter</li>
+                                <li>1 tsp chaat masala</li>
+                                <li>1/2 tsp black pepper</li>
+                                <li>Salt to taste</li>
+                                <li>Fresh mint leaves</li>
+                                <li>Green chutney</li>
+                            </ul>
+                        </div>
+                        <div class="recipe-instructions">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                <li>Mix protein powder with 3 tbsp water to make a paste</li>
+                                <li>Heat butter in a pan, add mixed vegetables</li>
+                                <li>Sauté vegetables until tender</li>
+                                <li>Add grated paneer and protein paste</li>
+                                <li>Season with chaat masala, pepper, and salt</li>
+                                <li>Cook for 2-3 minutes until well combined</li>
+                                <li>Spread green chutney on bread slices</li>
+                                <li>Add the protein-veggie mixture as filling</li>
+                                <li>Toast lightly and garnish with mint leaves</li>
+                                <li>Enjoy your protein-packed evening snack!</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dinner -->
+            <div class="meal-card dinner">
+                <div class="meal-content">
+                    <div class="meal-info">
+                        <div class="meal-header">
+                            <div class="meal-icon">🌙</div>
+                            <div>
+                                <h3 class="meal-title">Dinner</h3>
+                                <p class="meal-time">Night</p>
+                            </div>
+                        </div>
+                        
+                        <h4 class="meal-description">Night Recovery Blend</h4>
+                        <p class="meal-details">End your day right with YOU x 0.8 mixed into your dinner for overnight recovery.</p>
+
+                        <div class="meal-benefits">
+                            <div class="benefit-item">• Supports muscle recovery</div>
+                            <div class="benefit-item">• Better sleep quality</div>
+                        </div>
+
+                        <button class="meal-btn" (click)="showRecipe('dinner')">Try with Dinner</button>
+                    </div>
+
+                    <div class="meal-image">
+                        <div class="food-container">
+                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center" alt="Roti dinner" class="food-img">
+                            <div class="protein-overlay">
+                                YOU x 0.8<br/>PLANT<br/>PROTEIN
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe Section -->
+                 <div
+  id="dinner-recipe"
+  class="recipe-section"
+  [class.show]="visibleMeals['dinner']"
+>
+                    <div class="recipe-header">
+                        <h3>🍽️ Protein-Rich Roti & Curry Recipe</h3>
+                        <button class="close-recipe" (click)="hideRecipe('dinner')">✕</button>
+                    </div>
+                    <div class="recipe-content">
+                        <div class="recipe-ingredients">
+                            <h4>Ingredients:</h4>
+                            <ul>
+                                <li>2 cups whole wheat flour</li>
+                                <li>1 scoop YOU x 0.8 protein powder</li>
+                                <li>1 cup mixed vegetables</li>
+                                <li>2 onions, sliced</li>
+                                <li>2 tomatoes, chopped</li>
+                                <li>1 tbsp ginger-garlic paste</li>
+                                <li>3 tbsp oil</li>
+                                <li>1 tsp cumin seeds</li>
+                                <li>1 tsp garam masala</li>
+                                <li>1 tsp coriander powder</li>
+                                <li>Salt to taste</li>
+                                <li>Fresh coriander leaves</li>
+                            </ul>
+                        </div>
+                        <div class="recipe-instructions">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                <li>Mix wheat flour with protein powder and knead into soft dough</li>
+                                <li>Let the dough rest for 20 minutes</li>
+                                <li>Heat oil in a pan, add cumin seeds</li>
+                                <li>Add ginger-garlic paste and onions, sauté until golden</li>
+                                <li>Add tomatoes and cook until soft</li>
+                                <li>Add mixed vegetables and all spices</li>
+                                <li>Cook vegetables until tender</li>
+                                <li>Roll out rotis from the protein-enriched dough</li>
+                                <li>Cook rotis on hot tawa until puffed</li>
+                                <li>Serve hot rotis with the protein-packed vegetable curry</li>
+                                <li>Garnish with fresh coriander for the perfect dinner!</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="footer-cta">
+        <h3 class="cta-title">Ready to Transform Your Meals?</h3>
+        <p class="cta-description">Start your journey to perfect nutrition with YOU x 0.8 plant protein</p>
+        <button class="cta-btn">Order Your YOU x 0.8 Now</button>
+    </section>
+
+

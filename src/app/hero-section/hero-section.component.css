@@ -1,220 +1,197 @@
-.for-shop-owners {
-  padding: 4rem 2rem;
-  background: linear-gradient(135deg, #fff5e1, #ffd89b, #ffb87a);
-  margin-bottom: 0rem;
-  border-radius: 20px;
-  text-align: center;
+.hero-section {
   position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFF4E6 0%, #FFE4CC 50%, #FFCCCB 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 1.2s ease both;
-  
- 
 }
 
-/* Ashoka Chakra */
-.for-shop-owners::before {
-  content: "";
+.floating-background {
   position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 150px;
-  height: 150px;
-
-  background-size: contain;
-  opacity: 0.05;
-  animation: slowSpin 50s linear infinite;
-  pointer-events: none;
+  inset: 0;
   z-index: 0;
 }
 
-/* Animated Fitness Icons */
-.animated-fitness-icons {
+.circle {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
 }
 
-.animated-fitness-icons i {
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0.08;
-  color: #ff7043;
-  animation: floatGymIcons 12s ease-in-out infinite alternate;
+.orange-circle {
+  top: 5rem;
+  left: 2.5rem;
+  width: 8rem;
+  height: 8rem;
+  background: hsla(25, 95%, 53%, 0.1);
 }
 
-.animated-fitness-icons i:nth-child(1) {
-  top: 20%;
-  left: 15%;
-  animation-delay: 0s;
+.pink-circle {
+  bottom: 5rem;
+  right: 2.5rem;
+  width: 6rem;
+  height: 6rem;
+  background: hsla(340, 75%, 55%, 0.1);
 }
-.animated-fitness-icons i:nth-child(2) {
-  top: 35%;
-  left: 80%;
-  animation-delay: 3s;
-}
-.animated-fitness-icons i:nth-child(3) {
-  top: 60%;
+
+.small-orange-circle {
+  top: 50%;
   left: 25%;
-  animation-delay: 6s;
-}
-.animated-fitness-icons i:nth-child(4) {
-  top: 75%;
-  left: 70%;
-  animation-delay: 9s;
+  width: 4rem;
+  height: 4rem;
+  background: hsla(25, 95%, 53%, 0.05);
 }
 
-/* Headline */
-.for-shop-owners h2 {
-  font-size: 2.6rem;
-  font-weight: 700;
+.float-delay-0 { animation-delay: 0s; }
+.float-delay-2 { animation-delay: 2s; }
+.float-delay-4 { animation-delay: 4s; }
+
+.container {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  padding: 5rem 1rem;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+@media (min-width: 1024px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.hero-text {
+  text-align: center;
+}
+@media (min-width: 1024px) {
+  .hero-text {
+    text-align: left;
+  }
+}
+
+.hero-tagline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(25, 95%, 53%);
+  font-weight: 500;
+  gap: 0.5rem;
   margin-bottom: 1rem;
-  color: #b44600;
-  background: linear-gradient(90deg, #e65100, #ffb74d);
+}
+@media (min-width: 1024px) {
+  .hero-tagline {
+    justify-content: flex-start;
+  }
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+}
+.subheading {
+  display: block;
+  margin-top: 0.5rem;
+  color: #111827;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, hsl(25, 95%, 53%), hsl(340, 75%, 55%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-text p {
+  font-size: 1.125rem;
+  color: #4b5563;
+  margin: 1rem 0;
+  max-width: 40rem;
+  line-height: 1.6;
+}
+
+.shop-btn {
+  background: linear-gradient(135deg, hsl(25, 95%, 53%), hsl(340, 75%, 55%));
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.shop-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.hero-card {
+  display: flex;
+  justify-content: center;
+}
+
+.outer-card {
+  width: 20rem;
+  height: 24rem;
+  background: linear-gradient(to bottom right, hsla(25, 95%, 53%, 0.2), hsla(340, 75%, 55%, 0.2));
+  border-radius: 1.5rem;
   position: relative;
-  z-index: 2;
+  animation: float 6s ease-in-out infinite;
 }
 
-/* Description */
-.for-shop-owners p {
-  font-size: 1.25rem;
-  color: #4e342e;
-  max-width: 760px;
-  margin: 0 auto;
-  line-height: 1.75;
-  font-weight: 400;
-  position: relative;
-  z-index: 2;
-}
-
-/* Entrance Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Icon Floating */
-@keyframes floatGymIcons {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.06;
-  }
-  100% {
-    transform: translateY(-30px) scale(1.2) rotate(10deg);
-    opacity: 0.12;
-  }
-}
-
-/* Chakra Slow Spin */
-@keyframes slowSpin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .for-shop-owners {
-    padding: 3rem 1.5rem;
-  }
-
-  .for-shop-owners h2 {
-    font-size: 2rem;
-  }
-
-  .for-shop-owners p {
-    font-size: 1.05rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .for-shop-owners {
-    padding: 2rem 1rem;
-  }
-
-  .for-shop-owners h2 {
-    font-size: 1.6rem;
-  }
-
-  .for-shop-owners p {
-    font-size: 0.95rem;
-  }
-}
-.find-shops-btn {
-  display: inline-block;
-  margin-top: 30px;
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #ff8a00, #e52e71);
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
-  text-decoration: none;
-  box-shadow: 0 0 18px rgba(255, 138, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: floatButton 3s ease-in-out infinite;
-}
-
-.find-shops-btn::before {
-  content: "";
+.inner-card {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 20%, transparent 60%);
-  transform: rotate(45deg);
-  animation: glowSweep 4s linear infinite;
-  pointer-events: none;
+  inset: 1rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.find-shops-btn:hover {
-  transform: scale(1.06);
-  box-shadow: 0 0 28px rgba(255, 138, 0, 0.6);
+.card-content {
+  text-align: center;
+  padding: 2rem;
+}
+.card-content .small {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+.card-content .big {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
 }
 
-/* Floating animation */
-@keyframes floatButton {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
 }
 
-/* Glow sweeping animation */
-@keyframes glowSweep {
-  0% {
-    transform: translate(-100%, -100%) rotate(45deg);
-  }
-  100% {
-    transform: translate(100%, 100%) rotate(45deg);
-  }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .find-shops-btn {
-    font-size: 1rem;
-    padding: 14px 28px;
-  }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.scale-in {
+  animation: scaleIn 0.6s ease-out forwards;
 }

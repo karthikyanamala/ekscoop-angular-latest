@@ -1,94 +1,67 @@
-// testimonial-slider.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+
+
+
 @Component({
-  selector: 'app-testimonial-slider',
-  standalone: true,
-  imports: [CommonModule],
+  selector: 'app-testimonials',
+  imports:[CommonModule],
   templateUrl: './testimonial-slider.component.html',
   styleUrls: ['./testimonial-slider.component.css']
 })
-export class TestimonialSliderComponent {
-  currentIndex = 0;
-  intervalId: any;
-  isPaused = false;
-
-  testimonials = [
-    {
-      name: 'Lisa Redfern',
-      photo: '/assets/testimonials.png',
-      quote: 'This product is amazing. I mix it in my meals every day!',
-      profession: 'Dietician',
-      rating: 5
-    },
-    {
-      name: 'Arjun Patel',
-      photo: '/assets/images/arjun.jpg',
-      quote: 'Great for diabetic patients. Neutral taste, big benefit.',
-      profession: 'Nutritionist',
-      rating: 5
-    },
-    {
-      name: 'Riya Singh',
-      photo: '/assets/images/riya.jpg',
-      quote: 'My daughter eats dal again — thanks to ekScoop!',
-      profession: 'Mom & Engineer',
-      rating: 4
-    },
-      {
-      name: 'Ramya',
-      photo: '/assets/images/riya.jpg',
-      quote: 'My daughter eats dal again — thanks to ekScoop!',
-      profession: 'Mom & Engineer',
-      rating: 4
-    },
-      {
-      name: 'Nisha Singh',
-      photo: '/assets/images/riya.jpg',
-      quote: 'My daughter eats dal again — thanks to ekScoop!',
-      profession: 'Mom & Engineer',
-      rating: 4
-    }
+export class TestimonialsComponent implements OnInit {
+   testimonials = [
+    { name: 'Ramya', rating: 4, text: 'Amazing quality and taste!' },
+    { name: 'Nisha Singh', title: 'Mom & Engineer', rating: 4, text: 'My daughter eats dal again — thanks to ekScoop!' },
+    { name: 'Lisa Redfern', rating: 5, text: 'Perfect for my daily nutrition needs.' },
+    { name: 'Amit Rao', title: 'Fitness Coach', rating: 5, text: 'Best local protein option available!' },
+    { name: 'Sneha Patel', title: 'Home Cook', rating: 5, text: 'Feels light and easy on my stomach.' }
   ];
 
-  ngOnInit(): void {
-    this.startAutoRotate();
+  currentIndex = 0;
+  isPlaying = true;
+  intervalId: any;
+
+  ngOnInit() {
+    this.startAutoplay();
   }
 
-  ngOnDestroy(): void {
-    this.stopAutoRotate();
-  }
-
-  startAutoRotate(): void {
+  startAutoplay() {
     this.intervalId = setInterval(() => {
-      if (!this.isPaused) {
+      if (this.isPlaying) {
         this.next();
       }
-    }, 5000); // rotate every 5 seconds
+    }, 3000);
   }
 
-  stopAutoRotate(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+  stopAutoplay() {
+    clearInterval(this.intervalId);
   }
 
-  togglePause(): void {
-    this.isPaused = !this.isPaused;
+  togglePlay() {
+    this.isPlaying = !this.isPlaying;
   }
 
-  next(): void {
+  next() {
     this.currentIndex = (this.currentIndex + 1) % this.testimonials.length;
   }
 
-  prev(): void {
+  prev() {
     this.currentIndex =
       (this.currentIndex - 1 + this.testimonials.length) % this.testimonials.length;
   }
 
-  getCurrent() {
-    return this.testimonials[this.currentIndex];
+  goTo(index: number) {
+    this.currentIndex = index;
   }
-  
+
+  getVisibleTestimonials() {
+    if (window.innerWidth <= 768) return [this.testimonials[this.currentIndex]];
+
+    const prev = this.testimonials[(this.currentIndex - 1 + this.testimonials.length) % this.testimonials.length];
+    const current = this.testimonials[this.currentIndex];
+    const next = this.testimonials[(this.currentIndex + 1) % this.testimonials.length];
+    return [prev, current, next];
+  }
 }
