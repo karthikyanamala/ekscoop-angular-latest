@@ -13,7 +13,8 @@ export const routes: Routes = [
   {path:'protien-guid',loadComponent:()=>import('./footer-protien-guid/footer-protien-guid.component').then(m=>m.FooterProtienGuidComponent)},
   {path:'terms-conditions',loadComponent:()=>import('./footer-terms-and-conditions/footer-terms-and-conditions.component').then(m=>m.FooterTermsAndConditionsComponent)},
   {path:'twitter',loadComponent:()=>import('./footer-twitter/footer-twitter.component').then(m=>m.FooterTwitterComponent)},
-  {path:'product-list',loadComponent:()=>import('./product-showcase/product-showcase.component').then(m=>m.PosterFinalComponent)},
+  {path:'product-list',loadComponent:()=>import('./product-showcase/product-showcase.component').then(m=>m.ProductShowcaseComponent)},
+  {path:'meal-section',loadComponent:()=>import('./meal-sections/meal-sections.component').then(m=>m.MealSectionsComponent)},
   {path:'**',redirectTo:'home'}
 ];
 

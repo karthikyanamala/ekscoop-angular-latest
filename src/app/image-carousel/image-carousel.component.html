@@ -1,13 +1,18 @@
-<div class="carousel-wrapper">
-  <div class="carousel-track">
-    <div class="carousel-item" *ngFor="let img of visibleImages">
-      <img [src]="img" loading="lazy" alt="YOU x 0.8 image" />
+<div class="carousel-container">
+  <div class="carousel-track" [ngStyle]="{ transform: 'translateX(-' + currentSlide * 100 + '%)' }">
+    <div class="slide" *ngFor="let slide of slides">
+      <div>
+        <h3>{{ slide.title }}</h3>
+        <p>{{ slide.subtitle }}</p>
+      </div>
     </div>
   </div>
 
-  <div class="carousel-controls">
-    <button (click)="previous()">←</button>
-    <button (click)="togglePause()">{{ isPaused ? 'Play' : 'Pause' }}</button>
-    <button (click)="next()">→</button>
-  </div>
+ <div class="carousel-controls">
+  <button class="carousel-button" (click)="prevSlide()">&#10094;</button>
+  <button class="carousel-button" (click)="togglePlay()">
+    {{ isPlaying ? '❚❚' : '▶' }}
+  </button>
+  <button class="carousel-button" (click)="nextSlide()">&#10095;</button>
+</div>
 </div>

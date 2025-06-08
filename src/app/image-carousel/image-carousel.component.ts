@@ -1,72 +1,60 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 @Component({
-  selector: 'app-grid-carousel',
-  standalone: true,
+  selector: 'app-image-carousel',
   imports:[CommonModule],
   templateUrl: './image-carousel.component.html',
   styleUrls: ['./image-carousel.component.css']
 })
-export class GridCarouselComponent {
-  // Image paths to be displayed in grid
-  allImages = [
-    '/assets/images/1.png',
-    '/assets/images/our-story-root-family.png',
-    '/assets/images/2.png',
-    '/assets/images/3.png',
-    '/assets/images/4.png',
-    '/assets/images/5.png',
-    '/assets/images/6.png',
-    '/assets/images/7.png',
-    '/assets/images/8.png',
-    '/assets/images/9.png',
-    '/assets/images/10.png',
-    '/assets/images/11.png',
-    '/assets/images/13.png',
-    '/assets/images/14.png',
-    '/assets/images/15.png',
-    '/assets/images/16.png'
-  ];
- currentIndex: number = 0;
+export class ImageCarouselComponent implements OnInit, OnDestroy {
+  currentSlide = 0;
+  isPlaying = true;
   intervalId: any;
-  isPaused: boolean = false;
+
+  slides = [
+    {
+      title: 'Happy glucose, happy day.',
+      subtitle: 'Simple Nutrition. Mighty Impact.'
+    },
+    {
+      title: 'Enjoy poha with protein.',
+      subtitle: 'Feel Stronger Daily'
+    },
+    {
+      title: 'Simple Nutrition. Mighty Impact.',
+      subtitle: 'Feel Stronger Daily'
+    },
+    {
+      title: 'Perfect for every meal',
+      subtitle: 'Nutrition made simple'
+    }
+  ];
 
   ngOnInit(): void {
-    this.startAutoRotate();
+    this.startAutoplay();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.intervalId);
   }
 
-  startAutoRotate(): void {
+  startAutoplay(): void {
     this.intervalId = setInterval(() => {
-      if (!this.isPaused) {
-        this.next();
+      if (this.isPlaying) {
+        this.nextSlide();
       }
-    }, 2000); // Change image every 2 seconds
+    }, 4000);
   }
 
-  next(): void {
-    this.currentIndex = (this.currentIndex + 1) % this.allImages.length;
+  togglePlay(): void {
+    this.isPlaying = !this.isPlaying;
   }
 
-  previous(): void {
-    this.currentIndex = (this.currentIndex - 1 + this.allImages.length) % this.allImages.length;
+  nextSlide(): void {
+    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
   }
 
-  togglePause(): void {
-    this.isPaused = !this.isPaused;
-  }
-
-  // Always return 4 images for display, wrapping around if needed
-  get visibleImages(): string[] {
-    const result: string[] = [];
-    for (let i = 0; i < 4; i++) {
-      const index = (this.currentIndex + i) % this.allImages.length;
-      result.push(this.allImages[index]);
-    }
-    return result;
+  prevSlide(): void {
+    this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
   }
 }

@@ -1,198 +1,102 @@
-.poster-wrapper {
-  height: 100vh;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
+.product-showcase-section {
+  padding: 5rem 1rem;
+  background: white;
 }
 
-.poster-panel {
-  height: 100vh;
-  width: 100%;
-  scroll-snap-align: start;
+.product-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.product-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.product-card {
   position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  animation: fadeInUp 0.6s ease-out forwards;
+  transition: transform 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-8px);
+}
+
+.product-card-inner {
+  aspect-ratio: 1;
+  background: linear-gradient(to bottom right, #FFF4E6, #FFEDD5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.card-top {
+  background: linear-gradient(to bottom right, #FED7AA, #FDBA74);
+  border-radius: 0.75rem;
+  height: 100%;
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 2rem;
   text-align: center;
-}
-
-/* Updated layout for three-column content */
-.poster-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1000px;
-  width: 100%;
-  gap: 1.5rem;
-}
-
-/* Side tip containers */
-.side-text {
-  flex: 1;
-  max-width: 240px;
-  color: #fff3e8;
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-}
-
-.side-text.left {
-  text-align: right;
-}
-
-.side-text.right {
-  text-align: left;
-}
-
-/* Center block */
-.center-content {
-  
   flex-direction: column;
-  align-items: center;
-  flex: 1;
 }
 
-.food-img {
-  width: 140px;
-  margin-bottom: -30px;
-  z-index: 2;
+.product-icon {
+  width: 4rem;
+  height: 4rem;
+  background: #fb923c;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
 }
 
-.sachet-img {
-  width: 130px;
-  z-index: 3;
-  margin-bottom: 1.2rem;
+.card-top h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
 }
 
-.text-block h2 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  margin-top: 50px;
-  font-family: 'Playfair Display', serif;
-  color: white;
-}
-
-.text-block p {
-  font-size: 1.1rem;
-  color: #fff3e8;
-}
-
-/* Background gradient styles */
-.sunrise {
-  background: linear-gradient(to bottom, #ffe6cc, #ffbf80);
-}
-
-.noon {
-  background: linear-gradient(to bottom, #fff1dc, #ffd6a5);
-}
-
-.sunset {
-  background: linear-gradient(to bottom, #fbc2eb, #a6c1ee);
-}
-
-.night {
-  background: linear-gradient(to bottom, #2c3e50, #4ca1af);
-}
-
-/* Floating icons */
-.icon {
+.card-hover-overlay {
   position: absolute;
-  background-repeat: no-repeat;
-  background-size: contain;
-  animation: floatY 5s ease-in-out infinite;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 1rem;
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem;
 }
 
-.icon.sun {
-  top: 10%;
-  left: 10%;
-  width: 80px;
-  height: 80px;
-  background-image: url('/assets/poster-sections/sun.svg');
+.product-card:hover .card-hover-overlay {
+  opacity: 1;
 }
 
-.icon.moon {
-  top: 10%;
-  right: 10%;
-  width: 70px;
-  height: 70px;
-  background-image: url('/assets/poster-sections/moon.svg');
+.card-hover-overlay p {
+  color: white;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
-.icon.leaves {
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 100px;
-  background-image: url('/assets/poster-sections/leaves.svg');
-}
-
-.icon.wheat {
-  top: 20%;
-  left: 70%;
-  width: 60px;
-  height: 60px;
-  background-image: url('/assets/poster-sections/wheat.svg');
-}
-
-.icon.cloud {
-  top: 25%;
-  left: 20%;
-  width: 90px;
-  height: 60px;
-  background-image: url('/assets/poster-sections/cloud.svg');
-}
-
-.icon.stars {
-  top: 5%;
-  left: 60%;
-  width: 80px;
-  height: 80px;
-  background-image: url('/assets/poster-sections/stars.svg');
-}
-
-/* Animations */
-@keyframes floatY {
-  0%, 100% {
+/* Entry Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .poster-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .food-img {
-    width: 140px;
-  }
-
-  .sachet-img {
-    width: 130px;
-  }
-
-  .text-block h2 {
-    font-size: 1.5rem;
-  }
-
-  .text-block p {
-    font-size: 1rem;
-  }
-
-  .icon {
-    width: 60px !important;
-    height: 60px !important;
-  }
-
-  .side-text {
-    max-width: 100%;
-    margin-bottom: 1rem;
-    text-align: center !important;
   }
 }

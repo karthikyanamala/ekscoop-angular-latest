@@ -1,39 +1,100 @@
-<div class="shop-list-container">
-  
-  <div class="animated-bg"></div>
 
-  <div class="filter-section">
-    <h2>🛍️ Find You x 0.8 Near You</h2>
-    <mat-form-field appearance="fill" class="custom-select">
-      <mat-label>
-        <i class="fas fa-search"></i> Search or select a product
-      </mat-label>
-      <mat-select [(value)]="selectedProduct" (selectionChange)="applyFilters()">
-        <mat-option *ngFor="let product of getUniqueProducts()" [value]="product">
-          {{ product }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+<!-- shop-list.component.html -->
+<div class="shop-list-container-modern">
+
+  <!-- Animated Floating Circles -->
+  <div class="floating-bg">
+    <div class="circle green" style="top: 10%; left: 10%;"></div>
+    <div class="circle blue" style="top: 40%; right: 20%;"></div>
+    <div class="circle purple" style="bottom: 30%; left: 25%;"></div>
+    <div class="circle orange" style="bottom: 15%; right: 10%;"></div>
   </div>
 
-  <div *ngIf="filteredShops.length === 0" class="no-shops">
-    No shops found nearby.
+  <!-- Header -->
+  <div class="header-section">
+    <h1>🏍️ Local Protein Finder</h1>
+    <p>Find premium protein powder at nearby retailers and order instantly via WhatsApp.</p>
   </div>
 
-  <div class="shops-grid">
-    <div class="shop-card animate-fadein" *ngFor="let shop of filteredShops">
-      <h2>{{ shop.name }}</h2>
-      <ul class="product-list">
-        <li *ngFor="let product of shop.products" class="product-item">
-          <span>{{ product }}</span>
-          <a [href]="getWhatsAppLink(shop, product)" target="_blank" class="order-button">
-            <i class="fab fa-whatsapp"></i> Order
-          </a>
-        </li>
+  <!-- Location Status Block -->
+  <div class="location-status-block" *ngIf="!userCoords">
+    <div class="location-card">
+      <div class="icon">📍</div>
+      <h3 *ngIf="locationDenied">Location Access Blocked</h3>
+      <h3 *ngIf="!locationDenied">Enable Location to Find Shops</h3>
+      <p *ngIf="locationDenied">
+        Your browser has blocked location access. Please follow the steps below:
+      </p>
+      <p *ngIf="!locationDenied">
+        We need your location to show nearby retailers. Click the button below to enable.
+      </p>
+      <ul *ngIf="locationDenied" class="location-instructions">
+        <li>Click the 🔒 icon in your browser address bar</li>
+        <li>Go to <strong>"Site Settings"</strong> → <strong>"Location"</strong></li>
+        <li>Set it to <strong>Allow</strong> and reload this page</li>
       </ul>
-      <a [href]="getMapLink(shop)" target="_blank" class="map-button">
-        <i class="fas fa-map-marker-alt"></i> View on Map
-      </a>
+      <p class="incognito-warning" *ngIf="locationDenied">
+        🚫 Please open this page in <strong>normal mode</strong>. Incognito or private browsing may block location access.
+      </p>
+     
+    </div>
+  </div>
+
+  <!-- Product Info Box -->
+  <div *ngIf="userCoords" class="product-banner">
+    <h2>🌿 Ekscoop Protein Available</h2>
+    <p>
+      Find nearby shops where you can pick up or WhatsApp-order your
+      <strong>Ekscoop</strong> protein powder instantly.
+    </p>
+  </div>
+
+
+
+  <!-- No Shops Found -->
+  <div *ngIf="userCoords && filteredShops.length === 0" class="no-shops">
+    <i class="fas fa-box-open"></i>
+    <p>No shops found {{ selectedProduct ? 'for "' + selectedProduct + '"' : 'nearby' }}</p>
+  </div>
+  <app-ekscoop-loader *ngIf="isLoadingShops"></app-ekscoop-loader>
+  <!-- Shops Grid -->
+  <div class="shops-grid-modern" *ngIf="userCoords && !isLoadingShops && filteredShops.length > 0">
+
+    <div class="card" *ngFor="let shop of filteredShops">
+      <div class="card-header">
+        <h2>{{ shop.name }}</h2>
+        <span class="badge info">
+          {{ locationService.getDistance(userCoords.lat, userCoords.lng, shop.latitude, shop.longitude) | number:'1.1-1' }} km
+        </span>
+      </div>
+
+      <div class="card-content">
+        <p class="address">{{ shop.address || 'No address available' }}</p>
+
+        <div class="product-tags">
+          <span class="badge tag">Ekscoop</span>
+        </div>
+
+        <div class="whatsapp-order">
+          <p>Order Ekscoop directly via WhatsApp</p>
+          <a [href]="getWhatsAppLink(shop, 'Ekscoop')" target="_blank" class="btn order">
+            <i class="fab fa-whatsapp"></i> Order on WhatsApp
+          </a>
+        </div>
+
+        <p class="alt-message">
+          🛒 You can also ask this shop for groceries – avoid delivery charges by shopping local!
+        </p>
+
+        <p class="note small">📍 Approximate distance<span class="badge info">
+  {{ locationService.getDistance(userCoords.lat, userCoords.lng, shop.latitude, shop.longitude) | number:'1.1-1' }} km
+</span>. Road travel may be longer.</p>
+
+
+        <a [href]="getMapLink(shop)" target="_blank" class="btn map">
+          <i class="fas fa-map-marker-alt"></i> View on Map
+        </a>
+      </div>
     </div>
   </div>
 </div>

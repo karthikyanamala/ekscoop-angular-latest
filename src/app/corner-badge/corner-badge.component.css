@@ -1,120 +1,201 @@
-/* Base style for both sides */
-.corner-hang {
-    position: fixed;
-    top: 20px;
-    z-index: 9999;
-    transform-origin: top center;
-  }
-  
-  .corner-hang.right {
-    right: 20px;
-    animation: swing 2.5s infinite ease-in-out;
-  }
-  
-  .corner-hang.left {
-    left: 20px;
-    animation: swing 2.5s infinite ease-in-out; /* same animation for natural swing */
-    transform: translateX(-100px);
-  }
-  
-  /* Hanging thread */
-  .thread {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 22px;
-    background-color: #444;
-    z-index: -1;
-  }
-  
-  /* Optional: you can make left-side thread slightly longer if needed */
- 
-  .corner-hang.left .thread {
-    height: 48px;
-   
-  }
-
-  .corner-hang.left .image-wrapper {
-    transform: translateX(-15px) translateY(11px) rotate(-15deg);
-  }
-
-  
-  /* Swing animation */
-  @keyframes swing {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(6deg); }
-    50% { transform: rotate(-4deg); }
-    75% { transform: rotate(3deg); }
-    100% { transform: rotate(0deg); }
-  }
-  
-  /* Image styling */
-  .packet-img {
-    width: 100px;
-    display: block;
-  }
-  .find-shops-btn {
-  display: inline-block;
-  margin-top: 30px;
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #ff8a00, #e52e71);
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
+/* Header Layout */
+.header-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+.header-wrapper.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logo-circle {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(to right, #22c55e, #16a34a);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-text {
+  color: white;
+  font-weight: bold;
+}
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
   text-decoration: none;
-  box-shadow: 0 0 18px rgba(255, 138, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: floatButton 3s ease-in-out infinite;
+}
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+}
+.nav-link {
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+}
+.nav-link:hover {
+  color: #1f2937;
+}
+.order-btn {
+  background: linear-gradient(45deg, #f97316, #dc2626);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.order-btn:hover {
+  transform: translateY(-2px);
 }
 
-.find-shops-btn::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 20%, transparent 60%);
-  transform: rotate(45deg);
-  animation: glowSweep 4s linear infinite;
-  pointer-events: none;
+/* Hamburger */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+}
+.hamburger div {
+  width: 24px;
+  height: 3px;
+  background-color: #1f2937;
+  transition: all 0.3s ease;
 }
 
-.find-shops-btn:hover {
-  transform: scale(1.06);
-  box-shadow: 0 0 28px rgba(255, 138, 0, 0.6);
+/* Mobile Menu */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  transform: translateX(100%);
+  width: 80%;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  padding: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
 }
-
-/* Floating animation */
-@keyframes floatButton {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
+.mobile-menu.open {
+  transform: translateX(0%);
 }
-
-/* Glow sweeping animation */
-@keyframes glowSweep {
-  0% {
-    transform: translate(-100%, -100%) rotate(45deg);
-  }
-  100% {
-    transform: translate(100%, 100%) rotate(45deg);
-  }
+.close-btn {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.mobile-menu-links a {
+  display: block;
+  padding: 1rem 0;
+  color: #1f2937;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+.mobile-menu-links a:hover {
+  color: #10b981;
+}
+.mobile-order-btn {
+  margin-top: 2rem;
+}
+.quick-order-text {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #6b7280;
+  margin-top: 0.5rem;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
-  .find-shops-btn {
-    font-size: 1rem;
-    padding: 14px 28px;
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
   }
+  .hamburger {
+    display: flex;
+  }
+}
+
+.mobile-logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mobile-logo-section .logo-circle {
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+}
+
+.mobile-logo-section .brand-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  text-decoration: none;
+  flex-grow: 1;
+}
+
+.mobile-order-btn {
+  margin-top: 1.5rem; /* less spacing than before */
+  margin-bottom: 1rem;
+}
+.mobile-order-footer {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.order-btn.full-width {
+  width: 100%;
+  
+  font-size: 1.125rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+}
+
+.quick-order-text {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.2;
 }

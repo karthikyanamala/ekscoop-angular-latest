@@ -1,0 +1,95 @@
+.admin-shop-list {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.admin-shop-list h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.admin-shop-list form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-shop-list input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.admin-shop-list input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.admin-shop-list button {
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.admin-shop-list button:hover {
+  background-color: #218838;
+}
+
+hr {
+  margin: 30px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+.delete-shop-box {
+  background: #fff4f4;
+  border: 1px solid #ffcfcf;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.delete-shop-box h3 {
+  margin-top: 0;
+  color: #b80000;
+}
+
+.delete-shop-box input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.delete-shop-box button {
+  background-color: #dc3545;
+  color: white;
+  margin-top: 10px;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.delete-shop-box button:hover {
+  background-color: #c82333;
+}
+
+.delete-shop-box p {
+  margin-top: 10px;
+  font-weight: 500;
+}
