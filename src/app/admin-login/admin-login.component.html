@@ -1,0 +1,40 @@
+<div class="admin-login-wrapper">
+  <div class="admin-login-card">
+    <h2>🔒 Admin Login</h2>
+
+    <div *ngIf="!loggedIn" class="form-group">
+      <label for="phone">Phone Number</label>
+      <div class="phone-input">
+        <span class="prefix">+91</span>
+        <input
+          id="phone"
+          type="tel"
+          maxlength="10"
+          [(ngModel)]="phoneNumber"
+          placeholder="Enter 10-digit number"
+        />
+      </div>
+      <button (click)="sendOTP()" class="btn" [disabled]="loading">Send OTP</button>
+    </div>
+
+    <div *ngIf="verificationId && !loggedIn" class="form-group">
+      <label for="otp">Enter OTP</label>
+      <input
+        id="otp"
+        type="text"
+        maxlength="6"
+        [(ngModel)]="otp"
+        placeholder="6-digit OTP"
+      />
+      <button (click)="verifyOTP()" class="btn btn-verify" [disabled]="loading">Verify OTP</button>
+    </div>
+
+    <div id="recaptcha-container" class="recaptcha-placeholder"></div>
+
+    <div class="status-message" [ngClass]="{ error: errorMessage, success: loggedIn }">
+      <div *ngIf="loading" class="spinner"></div>
+      <div *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div *ngIf="loggedIn">✅ Login successful! Redirecting...</div>
+    </div>
+  </div>
+</div>
