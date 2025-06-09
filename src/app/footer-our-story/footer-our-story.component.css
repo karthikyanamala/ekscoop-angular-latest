@@ -3,7 +3,7 @@
 
 
 .our-story-hero {
-  background-image: url('../../assets/images/Our-story.png');
+ 
     background-size: cover;               /* ✅ Fully cover screen */
   background-position: center;          /* ✅ Keep centered */
   background-repeat: no-repeat;
@@ -80,7 +80,7 @@ font-family: 'Playfair Display', serif;
 
 @media (max-width: 768px) {
   .our-story-hero {
-    background-image: url('../../assets/images/our-story-mobile.png');
+
     
     background-size: cover;     /* ✅ keeps full image visible */
     /* background-position: center top; */

@@ -1,0 +1,10 @@
+runtime: python39
+
+handlers:
+  - url: /(.*\.(html|css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|otf|json|map))
+    static_files: \1
+    upload: .*
+
+  - url: /.*
+    static_files: index.html
+    upload: index.html
