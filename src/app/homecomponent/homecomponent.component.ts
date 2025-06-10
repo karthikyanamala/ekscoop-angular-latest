@@ -8,7 +8,8 @@ import {CornerBadgeComponent} from "../corner-badge/corner-badge.component"
 import {FooterComponent} from "../footer/footer.component"
 import { TestimonialsComponent } from '../testimonial-slider/testimonial-slider.component';
 import { ImageCarouselComponent } from '../image-carousel/image-carousel.component';
-import { ProductShowcaseComponent } from '../product-showcase/product-showcase.component';
+import { ProductModeComponent } from '../product-mode/product-mode.component';
+import { TrustSectionComponent } from '../trust-section/trust-section.component';
  @Component({
   selector: 'app-homecomponent',
   standalone:true,
@@ -17,7 +18,7 @@ import { ProductShowcaseComponent } from '../product-showcase/product-showcase.c
     HowitworksComponent,
     ForshopownersComponent,
     WhyproteinmattersComponent,
-    CornerBadgeComponent,FooterComponent,TestimonialsComponent,ImageCarouselComponent,ProductShowcaseComponent],
+    CornerBadgeComponent,FooterComponent,TestimonialsComponent,ProductModeComponent,TrustSectionComponent],
   templateUrl: './homecomponent.component.html',
   styleUrl: './homecomponent.component.css'
 })

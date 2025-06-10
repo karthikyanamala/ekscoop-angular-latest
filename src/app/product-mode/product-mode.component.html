@@ -1,0 +1,21 @@
+<div class="wrapper">
+  <div class="mode-buttons">
+    <button *ngFor="let mode of modes"
+            [class.active]="activeMode === mode"
+            (click)="setMode(mode)">
+      {{ mode }} mode
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="description-block">
+      <p class="description-text">
+        {{ getDescription(activeMode) }}
+      </p>
+    </div>
+
+    <div class="image-block" [@fadeZoom]>
+      <img [src]="getImage(activeMode)" [alt]="activeMode + ' sachet'" />
+    </div>
+  </div>
+</div>

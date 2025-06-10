@@ -1,0 +1,36 @@
+<section class="trust-section">
+  <div class="container">
+    <div class="intro">
+      <h2>Lab Tested & Certified</h2>
+      <p>
+        Every batch of our protein powder undergoes rigorous third-party laboratory testing to ensure the highest quality, safety, and purity standards.
+      </p>
+      <button class="cta" (click)="handleReportClick('Complete Lab Reports')">
+        View Complete Lab Reports
+      </button>
+    </div>
+
+    <div class="report-grid">
+      <div class="report-card" *ngFor="let report of reports">
+        <div class="icon-container" [ngClass]="report.color">
+          <i [class]="report.icon + ' lucide-icon'"></i>
+        </div>
+        <h3>{{ report.title }}</h3>
+        <p>{{ report.description }}</p>
+        <button class="report-button" (click)="handleReportClick(report.reportType)">
+          View {{ report.reportType }}
+        </button>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <h3>Why Third-Party Testing Matters</h3>
+      <p>
+        Independent laboratory testing provides unbiased verification of our product quality. 
+        Our commitment to transparency means every test result is available for your review, 
+        ensuring you can trust what you're putting into your body. We test every batch because 
+        your health and fitness goals deserve nothing less than the highest quality protein.
+      </p>
+    </div>
+  </div>
+</section>
