@@ -1,0 +1,119 @@
+.trust-section {
+  background-color: #f5f1e8;
+  padding: 4rem 1.5rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.intro h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.intro p {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  color: #444;
+}
+
+.cta {
+  background-color: #198754;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.cta:hover {
+  background-color: #157347;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 768px) {
+  .report-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.report-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.report-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.icon-container {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.lucide-icon {
+  font-size: 2.2rem;
+}
+
+.report-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.report-card p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.report-button {
+  border: 2px solid #222;
+  background: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.report-button:hover {
+  background-color: #222;
+  color: white;
+}
+
+.explanation {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-top: 4rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.explanation h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.explanation p {
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.7;
+}

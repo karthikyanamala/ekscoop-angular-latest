@@ -21,5 +21,6 @@ export const routes: Routes = [
   { path: 'product-list', loadComponent: () => import('./product-showcase/product-showcase.component').then(m => m.ProductShowcaseComponent) },
   { path: 'meal-section', loadComponent: () => import('./meal-sections/meal-sections.component').then(m => m.MealSectionsComponent) },
   { path: 'admin-login', loadComponent: () => import('./admin-login/admin-login.component').then(m => m.AdminLoginComponent) },
+  
   { path: '**', redirectTo: 'home' }
 ];
