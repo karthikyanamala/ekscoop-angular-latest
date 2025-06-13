@@ -1,0 +1,127 @@
+.testimonial-section {
+  background: #eaf2fc;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: #475569;
+  margin-bottom: 2.5rem;
+}
+
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-inner {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+}
+
+.testimonial-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  margin: 0 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-6px);
+}
+
+.quote-icon {
+  font-size: 1.8rem;
+  color: #3b82f6;
+  margin-bottom: 0.5rem;
+}
+
+.stars {
+  color: #facc15;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.quote {
+  font-size: 1rem;
+  font-style: italic;
+  color: #1e293b;
+  min-height: 80px;
+}
+
+.author {
+  font-size: 0.9rem;
+  color: #334155;
+  margin-top: 1rem;
+}
+
+.result-pill {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  display: inline-block;
+  margin-top: 0.75rem;
+}
+
+.nav-btn {
+  background: white;
+  border: none;
+  font-size: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.nav-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Card width per screen size */
+@media (min-width: 1025px) {
+  .testimonial-card {
+    width: calc((100% - 3rem) / 3);
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .testimonial-card {
+    width: calc((100% - 2rem) / 2);
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    width: calc(100% - 2rem);
+    margin: 0 1rem;
+  }
+}

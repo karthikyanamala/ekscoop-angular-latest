@@ -1,0 +1,108 @@
+.partner-benefits-section {
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+  text-align: center;
+}
+
+.section-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.section-subheading {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2.5rem;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+@media (max-width: 1024px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.benefit-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  border: 1px solid #f3f4f6;
+}
+
+.benefit-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+}
+
+.icon-box {
+  background: linear-gradient(135deg, #6366f1, #9333ea);
+  border-radius: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.icon-box img {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.4rem;
+}
+
+.card-subtitle {
+  font-size: 0.94rem;
+  color: #374151;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.card-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  color: #065f46;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.card-checklist li::before {
+  
+  color: #10b981;
+  font-weight: bold;
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1.2;
+}

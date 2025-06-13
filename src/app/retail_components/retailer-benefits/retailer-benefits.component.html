@@ -1,0 +1,25 @@
+<section class="benefits-section">
+  <h2 class="benefits-heading">Why Local Retailers Choose EkScoop</h2>
+  <p class="benefits-subtext">
+    We help local stores compete with online giants by connecting them directly to nearby customers.
+  </p>
+
+  <div class="benefits-grid">
+    <div class="benefit-card" *ngFor="let item of benefits">
+      <div class="icon-circle">{{ item.icon }}</div>
+      <h3>{{ item.title }}</h3>
+      <p class="subtitle">{{ item.subtitle }}</p>
+      <p class="note">{{ item.note }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Problem Highlight Box -->
+<div class="problem-box">
+  <h3>The Problem: Customers Can't Find Local Stores</h3>
+  <p>
+    Your customers want to buy locally, but they can't easily discover which nearby stores carry the products they need.
+    EkScoop solves this by making your store visible when customers search for our premium protein products in your area.
+  </p>
+</div>
+

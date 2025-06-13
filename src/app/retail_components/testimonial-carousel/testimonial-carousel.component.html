@@ -1,0 +1,33 @@
+<section class="testimonial-section">
+  <h2 class="section-title">Real Store Owner Success Stories</h2>
+  <p class="section-subtitle">
+    Discover how local retailers are transforming their business with EkScoop – achieving remarkable growth without paying any commissions
+  </p>
+
+  <div class="carousel-wrapper">
+    <button class="nav-btn left" (click)="prev()" [disabled]="currentIndex === 0">❮</button>
+
+    <div class="carousel-viewport">
+      <div class="carousel-inner" [ngStyle]="{ transform: getTransform() }">
+        <div class="testimonial-card" *ngFor="let t of testimonials">
+          <div class="quote-icon">❝</div>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"{{ t.quote }}"</p>
+          <hr />
+          <div class="author">
+            <strong>{{ t.name }}</strong><br />
+            {{ t.store }}<br />
+            {{ t.city }}
+          </div>
+          <div class="result-pill">🟢 {{ t.result }}</div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="nav-btn right"
+      (click)="next()"
+      [disabled]="currentIndex >= testimonials.length - visibleCards"
+    >❯</button>
+  </div>
+</section>

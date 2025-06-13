@@ -1,0 +1,19 @@
+<section class="partner-benefits-section">
+  <h2 class="section-heading">Why Partner Stores Love EkScoop</h2>
+  <p class="section-subheading">
+    We help you compete with online delivery platforms without giving up control or paying commissions
+  </p>
+
+  <div class="benefits-grid">
+    <div class="benefit-card" *ngFor="let item of benefits">
+      <div class="icon-box">
+        <img [src]="item.icon" alt="icon" />
+      </div>
+      <h3 class="card-title">{{ item.title }}</h3>
+      <p class="card-subtitle">{{ item.subtitle }}</p>
+      <ul class="card-checklist">
+        <li *ngFor="let bullet of item.bullets">✅ {{ bullet }}</li>
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,48 @@
+.join-banner-wrapper {
+  background: linear-gradient(to bottom, #e6f0ff, #eaf2fd);
+  padding: 0rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.join-banner-card {
+  background: linear-gradient(to right, #2563eb, #9333ea);
+  color: white;
+  text-align: center;
+  padding: 3rem 2rem;
+  border-radius: 1.5rem;
+  max-width: 80%;
+  width: 100%;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.join-banner-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.join-banner-card p {
+  font-size: 1.125rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.join-button {
+  background: white;
+  color: #2563eb;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.join-button:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px);
+}
