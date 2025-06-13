@@ -1,0 +1,142 @@
+.simple-process {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.simple-process .header {
+  margin-bottom: 40px;
+}
+
+.simple-process .badge {
+  display: inline-block;
+  background: #e0d7ff;
+  color: #6b46c1;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.simple-process .title {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1a202c;
+  margin: 10px 0;
+}
+
+.simple-process .subtitle {
+  color: #4a5568;
+  font-size: 18px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  transition: 0.3s ease all;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon img {
+  width: 28px;
+  height: 28px;
+}
+
+.purple {
+  background: linear-gradient(135deg, #7f56d9, #4f46e5);
+}
+
+.green {
+  background: linear-gradient(135deg, #38b2ac, #48bb78);
+}
+
+.pink {
+  background: linear-gradient(135deg, #ed64a6, #d53f8c);
+}
+
+.card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #2d3748;
+}
+
+.card p {
+  font-size: 15px;
+  color: #4a5568;
+  margin-bottom: 12px;
+}
+
+.card ul {
+  list-style: none;
+  padding: 15px;
+  font-size: 14px;
+  color: #2d3748;
+  text-align: center;
+}
+
+.card ul li {
+  margin-bottom: 6px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .simple-process .title {
+    font-size: 28px;
+  }
+
+  .simple-process .subtitle {
+    font-size: 16px;
+  }
+}
+
+/* Existing styles... (keep them unchanged) */
+
+.card ul li {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.card ul li .check {
+  color: #22c55e; /* bright green */
+  font-weight: bold;
+  margin-right: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+}

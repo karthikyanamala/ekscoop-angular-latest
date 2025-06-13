@@ -1,0 +1,157 @@
+/* Background */
+.contact-wrapper {
+  padding: 60px 20px 80px;
+  background: linear-gradient(to bottom, #f9fbff, #ffffff);
+  text-align: center;
+}
+
+/* Top Callout */
+.callout {
+  margin-bottom: 48px;
+}
+
+.contact-value {
+  text-decoration: none;
+  text-align: center;
+ display: block;
+}
+
+.callout h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.callout p {
+  color: #4b5563;
+  font-size: 16px;
+}
+
+/* Section Header */
+.section-header h2.gradient-title {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(to right, #7f56d9, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.section-header p {
+  font-size: 16px;
+  color: #4a5568;
+  margin-bottom: 40px;
+}
+
+/* Cards Grid */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+
+/* Card */
+.contact-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon Box */
+.icon-box {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-box img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Gradient Backgrounds */
+.phone-icon {
+  background: linear-gradient(to bottom right, #3b82f6, #9333ea);
+}
+
+.email-icon {
+  background: linear-gradient(to bottom right, #ec4899, #f43f5e);
+}
+
+/* Text */
+.contact-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.contact-card p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.contact-value {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.contact-value.phone {
+  color: #4f46e5;
+}
+
+.contact-value.email {
+  color: #be185d;
+}
+
+/* Status Badges */
+.badge {
+  display: inline-block;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.badge.success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge.primary {
+  background-color: #e0f2fe;
+  color: #1e40af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section-header h2.gradient-title {
+    font-size: 28px;
+  }
+
+  .callout h2 {
+    font-size: 22px;
+  }
+
+  .card-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+}
