@@ -1,8 +1,8 @@
 .sun-to-sunset {
   padding: 4rem 2rem;
   background: linear-gradient(135deg, #f9c46b, #e67e7e);
-  margin-bottom: 2rem;
-  border-radius: 20px;
+ 
+  border-radius: 0px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -20,7 +20,7 @@
 }
 
 .sun-to-sunset p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #4e342e;
   max-width: 720px;
   margin: 0 auto;

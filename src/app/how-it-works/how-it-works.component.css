@@ -1,14 +1,6 @@
-@keyframes noonGradientShift {
-    0% {
-      background: linear-gradient(to bottom, #FFFDE7, #FFFAF0);
-    }
-    50% {
-      background: linear-gradient(to bottom, #FFFCE0, #FFF9E3);
-    }
-    100% {
-      background: linear-gradient(to bottom, #FFFDE7, #FFFAF0);
-    }
-  }
+
+
+
   
   @keyframes fadeSlideUp {
     0% {
@@ -26,11 +18,10 @@
     flex-direction: row;
     gap: 40px;
     padding: 60px;
-    background: linear-gradient(
-    to bottom,
-    #FFFDE7 0%,
-    #FFFAF0 100%
-  );
+    background: linear-gradient(135deg,#ffffff, #d8ece4 );
+
+
+
     
   }
   .how-it-works-section .content {
