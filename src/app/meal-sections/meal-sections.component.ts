@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CornerBadgeComponent } from '../corner-badge/corner-badge.component';
+import { FooterComponent } from '../footer/footer.component';
 @Component({
   selector: 'app-meal-sections',
-  imports:[CommonModule,CornerBadgeComponent],
+  imports:[CommonModule,CornerBadgeComponent,FooterComponent],
   templateUrl: './meal-sections.component.html',
   styleUrls: ['./meal-sections.component.css'],
 })
