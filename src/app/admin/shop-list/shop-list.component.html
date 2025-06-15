@@ -8,7 +8,10 @@
     <input type="number" [(ngModel)]="newShop.latitude" name="latitude" placeholder="Latitude" [value]="''"required />
     <input type="number" [(ngModel)]="newShop.longitude" name="longitude" placeholder="Longitude" [value]="''"required />
     <input type="text" [(ngModel)]="newShop.products" name="products" placeholder="Products (comma-separated)" required />
+    <input type="text" [(ngModel)]="newShop.address" name="address" placeholder="Address" required />
     <input type="text" [(ngModel)]="newShop.whatsappNumber" name="whatsappNumber" placeholder="WhatsApp Number" required />
+    <input type="text" [(ngModel)]="newShop.openingTime" name="openingTime" placeholder="Opening Time (e.g. 9:00 AM)" required />
+  <input type="text" [(ngModel)]="newShop.closingTime" name="closingTime" placeholder="Closing Time (e.g. 9:00 PM)" required />
     <button type="submit">Add Shop</button>
   </form>
 

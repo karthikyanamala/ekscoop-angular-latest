@@ -10,10 +10,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { EkscoopLoaderComponent } from '../ekscoop-loader/ekscoop-loader.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CornerBadgeComponent } from '../corner-badge/corner-badge.component';
+
 @Component({
   selector: 'app-shop-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,FooterComponent,CornerBadgeComponent, MatFormFieldModule, MatSelectModule, MatIconModule, EkscoopLoaderComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FooterComponent,
+    CornerBadgeComponent,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    EkscoopLoaderComponent
+  ],
   templateUrl: './shop-list.component.html',
   styleUrls: ['./shop-list.component.scss']
 })
@@ -34,14 +44,22 @@ export class ShopListComponent implements OnInit {
 
   async getUserLocation() {
     this.isLoadingLocation = true;
+
     try {
       this.userCoords = await this.locationService.getCurrentLocation();
       this.locationDenied = false;
       await this.loadNearbyShops();
     } catch (err: any) {
+      console.warn('Location access error:', err);
+
+      // 🔥 Ensure proper check for permission denial
+      if (err && typeof err.code === 'number') {
+        this.locationDenied = err.code === 1;
+      } else {
+        this.locationDenied = true; // fallback if unknown error
+      }
+
       this.filteredShops = [];
-      this.locationDenied = err.code === 1;
-      console.warn('Location access denied.');
     } finally {
       this.isLoadingLocation = false;
     }
@@ -58,7 +76,6 @@ export class ShopListComponent implements OnInit {
         this.searchRadius
       );
 
-      // Filter by product if needed
       this.filteredShops = shops.filter(shop =>
         !this.selectedProduct || shop.products.includes(this.selectedProduct)
       );
