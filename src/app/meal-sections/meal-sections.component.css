@@ -140,11 +140,10 @@ body {
 
 .protein-label {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(45deg, #dc2626, #ec4899);
+    top: -30px;
+    right: 15px;
+    
+   
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -152,10 +151,12 @@ body {
     font-size: 0.5rem;
     font-weight: 700;
     color: white;
-    transform: rotate(-24deg);
+    transform: rotate(-25deg);
     text-align: center;
     line-height: 1;
 }
+
+
 
 /* Meals Section */
 .meals-section {
@@ -478,13 +479,22 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .nav-menu {
         display: none;
     }
     
     .hero-title {
         font-size: 2.5rem;
+    }
+    .protein-label img{
+        width: 150px;
+        height: 250px;  
+    }
+    .protein-label{
+        top: 100px;
+        left: -80px;
+        transform: rotate(-40deg);
     }
     
     .hero-subtitle {
@@ -550,4 +560,60 @@ body {
     .recipe-instructions li:before {
         left: -1.5rem;
     }
+
+
+}
+
+.recipe-how-to-use {
+  background: linear-gradient(135deg, #fff8f1, #fffefc);
+  border: 2px solid #f4e3d3;
+  border-radius: 16px;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #3b2e2e;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+  
+  margin: 2rem auto;
+}
+
+.recipe-how-to-use h4 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #b55816;
+}
+
+.recipe-how-to-use h5 {
+  font-size: 1.2rem;
+  color: #865c2c;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.recipe-how-to-use p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+}
+
+.recipe-how-to-use ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 1rem 0;
+}
+
+.recipe-how-to-use ul li {
+  position: relative;
+  padding-left: 1.8rem;
+  margin-bottom: 0.9rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.recipe-how-to-use ul li::before {
+  content: "🍽️";
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  font-size: 1.2rem;
 }
