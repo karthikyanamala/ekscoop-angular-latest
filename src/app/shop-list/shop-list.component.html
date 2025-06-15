@@ -13,12 +13,12 @@
 
   <!-- Header -->
   <div class="header-section">
-    <h1>🏍️ Local Protein Finder</h1>
-    <p>Find premium protein powder at nearby retailers and order instantly via WhatsApp.</p>
+    <h1>🛍️ Find YOU x 0.8 Near You</h1>
+    <p>Support local, stay strong — buy YOU x 0.8 from shops around you.</p>
   </div>
 
   <!-- Location Status Block -->
-  <div class="location-status-block" *ngIf="!userCoords">
+  <div class="location-status-block" *ngIf="!userCoords && !isLoadingLocation">
     <div class="location-card">
       <div class="icon">📍</div>
       <h3 *ngIf="locationDenied">Location Access Blocked</h3>
@@ -26,8 +26,8 @@
       <p *ngIf="locationDenied">
         Your browser has blocked location access. Please follow the steps below:
       </p>
-      <p *ngIf="!locationDenied">
-        We need your location to show nearby retailers. Click the button below to enable.
+      <p *ngIf="locationDenied">
+        We need your location to show nearby retailers.
       </p>
       <ul *ngIf="locationDenied" class="location-instructions">
         <li>Click the 🔒 icon in your browser address bar</li>
@@ -43,10 +43,9 @@
 
   <!-- Product Info Box -->
   <div *ngIf="userCoords" class="product-banner">
-    <h2>🌿 Ekscoop Protein Available</h2>
+    <h2>🌿 Pure Plant Protein, Locally Available</h2>
     <p>
-      Find nearby shops where you can pick up or WhatsApp-order your
-      <strong>Ekscoop</strong> protein powder instantly.
+      Support kiranas and get your protein powder instantly — online or offline.
     </p>
   </div>
 
@@ -72,12 +71,16 @@
       <div class="card-content">
         <p class="address">{{ shop.address || 'No address available' }}</p>
 
-        <div class="product-tags">
-          <span class="badge tag">Ekscoop</span>
-        </div>
+        <div class="timing-block">
+  <div class="timing-icon">⏰</div>
+  <div class="timing-info">
+    <p><strong>Opens:</strong> {{ shop.openingTime || '9:00 AM' }}</p>
+    <p><strong>Closes:</strong> {{ shop.closingTime || '9:00 PM' }}</p>
+  </div>
+</div>
 
         <div class="whatsapp-order">
-          <p>Order Ekscoop directly via WhatsApp</p>
+          <p>Order YOU x 0.8 directly via WhatsApp</p>
           <a [href]="getWhatsAppLink(shop, 'Ekscoop')" target="_blank" class="btn order">
             <i class="fab fa-whatsapp"></i> Order on WhatsApp
           </a>

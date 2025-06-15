@@ -13,7 +13,7 @@ import { geohashForLocation } from 'geofire-common';
   imports: [CommonModule,FormsModule],
   styleUrls: ['./shop-list.component.scss']
 })
-export class AdminShopListComponent implements OnInit {
+export class AdminShopListComponent {
   shops: any[] = [];
   newShop = {
     name: '',
@@ -21,17 +21,15 @@ export class AdminShopListComponent implements OnInit {
     longitude: 0,
     products: '',
     whatsappNumber: '',
-    address:''
+    address:'',
+    openingTime: '',
+  closingTime: '' 
   };
     
 
   constructor(private shopService: ShopService,private homeContentService: HomeContentService) {}
 
-  ngOnInit(): void {
-  this.shopService.getShopsOnce().then((data) => {
-  this.shops = data;
-    });
-  }
+
 
 addShop() {
   const lat = this.newShop.latitude;
@@ -44,7 +42,9 @@ addShop() {
     longitude: lng,
     whatsappNumber: this.newShop.whatsappNumber,
     products: this.newShop.products.split(',').map(p => p.trim()),
-    geohash: geohashForLocation([lat, lng])
+    geohash: geohashForLocation([lat, lng]),
+     openingTime: this.newShop.openingTime,
+  closingTime: this.newShop.closingTime
   };
 
   this.shopService.addShop(shopToAdd).then(() => {
@@ -55,7 +55,9 @@ addShop() {
       longitude: 0,
       products: '',
       whatsappNumber: '',
-      address: ''
+      address: '',
+       openingTime: '',
+  closingTime: '' 
     };
   }).catch(err => {
     console.error('Failed to add shop:', err);
