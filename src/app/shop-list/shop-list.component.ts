@@ -8,11 +8,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { EkscoopLoaderComponent } from '../ekscoop-loader/ekscoop-loader.component';
-
+import { FooterComponent } from '../footer/footer.component';
+import { CornerBadgeComponent } from '../corner-badge/corner-badge.component';
 @Component({
   selector: 'app-shop-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, EkscoopLoaderComponent],
+  imports: [CommonModule, FormsModule,FooterComponent,CornerBadgeComponent, MatFormFieldModule, MatSelectModule, MatIconModule, EkscoopLoaderComponent],
   templateUrl: './shop-list.component.html',
   styleUrls: ['./shop-list.component.scss']
 })

@@ -8,10 +8,11 @@ import { JoinBannerComponent } from '../join-banner/join-banner.component';
 import { SimpleProcessComponent } from '../simple-process/simple-process.component';
 import { PlatformCompareComponent } from '../platform-compare/platform-compare.component';
 import { ContactUsComponent } from '../contact-us/contact-us.component';
+import { FooterComponent } from '../../footer/footer.component';
 @Component({
   selector: 'app-partner-with-us',
   standalone: true,
-  imports: [HeroSectionComponent,ContactUsComponent,RetailerBenefitsComponent,CornerBadgeComponent,PlatformCompareComponent,SimpleProcessComponent,PartnerBenefitsComponent,JoinBannerComponent,TestimonialCarouselComponent],
+  imports: [HeroSectionComponent,ContactUsComponent,FooterComponent,RetailerBenefitsComponent,CornerBadgeComponent,PlatformCompareComponent,SimpleProcessComponent,PartnerBenefitsComponent,JoinBannerComponent,TestimonialCarouselComponent],
   templateUrl: './partner-with-us.component.html',
   styleUrl: './partner-with-us.component.css'
 })

@@ -418,10 +418,12 @@ body {
 
 /* Footer CTA */
 .footer-cta {
+    border-radius: 3rem;
     background: linear-gradient(135deg, #1f2937, #000);
     color: white;
     text-align: center;
     padding: 5rem 2rem;
+    margin-bottom: 2rem;
 }
 
 .cta-title {
