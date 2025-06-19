@@ -59,7 +59,7 @@ export class ShopService {
   async getShopsNearby(lat: number, lng: number, radiusInKm: number): Promise<Shop[]> {
     const key = this.getCacheKey(lat, lng, radiusInKm);
 
-    // Check local storage cache first
+    //Check local storage cache first
     const cachedData = this.loadFromLocalStorage(key);
     if (cachedData) {
       console.log('✅ Using cached result from localStorage:', key);
