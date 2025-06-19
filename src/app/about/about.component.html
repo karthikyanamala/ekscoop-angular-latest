@@ -1,0 +1,82 @@
+<app-corner-badge></app-corner-badge>
+<section class="about">
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="badge">
+  <span class="dot-blink"></span>
+  About ekScoop
+</div>
+
+    <h1>Helping Local Retailers Thrive,<br><span>One Scoop at a Time</span></h1>
+    <p>
+      ekScoop is on a mission to empower local Indian retailers and health-conscious families by bridging the gap between quality nutrition and everyday foods.
+      We believe strength starts at the grassroots — from your neighborhood shop to the meals you prepare at home.
+    </p>
+  </div>
+
+  <!-- Mission Cards -->
+  <div class="section">
+    <h2>We're Not Just a Brand</h2>
+    <p class="subtitle">We're a movement to transform India's health landscape</p>
+    <div class="card-grid">
+      <div class="card" *ngFor="let item of values">
+        <div class="icon">{{ item.icon }}</div>
+        <h3>{{ item.title }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- YOU x 0.8 Section -->
+  <div class="section you-section">
+    <div class="label">Our Flagship Innovation</div>
+    <h2>YOU x 0.8</h2>
+    <p>
+      We started with a single goal — to help Indian families meet their daily protein needs without changing their food habits.
+      That’s how YOU x 0.8 was born — an unflavoured, vegan protein formula that blends seamlessly into foods like roti, dal, poha, and curd.
+    </p>
+    <div class="you-features">
+    <ul class="you-list">
+  <li><span class="dot green"></span> No added flavor</li>
+  <li><span class="dot green"></span> Diabetic-friendly</li>
+  <li><span class="dot green"></span> Indian meal-friendly</li>
+  <li><span class="dot green"></span> Vegan</li>
+</ul>
+
+       <img src="../../assets/family-mode.png" alt="">
+   
+    </div>
+  </div>
+
+  <!-- Why ekScoop -->
+  <div class="section">
+    <h2>Why ekScoop?</h2>
+    <p class="subtitle">While big brands focus on clicks, we focus on community</p>
+    <div class="card-grid">
+      <div class="card" *ngFor="let item of why">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust Section -->
+  <div class="section trust">
+    <div class="label">Our Promise</div>
+    <h2>Built on Trust & Transparency</h2>
+    <p>
+      We combine scientific formulation, Indian sensibilities, and community-first distribution to deliver products you can trust —
+      with lab reports, verified ingredients, and no marketing fluff.
+    </p>
+    <p>
+      From QR-code-based transparency to regionally voiced storytelling, we make health real, relatable, and rooted in India.
+    </p>
+  </div>
+
+  <!-- Join Movement -->
+  <div class="join">
+    <h2>👥 Join the ekScoop Movement</h2>
+    <p>Whether you're a retailer, home cook, health enthusiast, or just curious, ekScoop is here for you.</p>
+    <p><strong>Let's make India stronger — one meal, one scoop, one store at a time.</strong></p>
+    <button>Get Started Today</button>
+  </div>
+</section>

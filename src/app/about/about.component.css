@@ -1,0 +1,243 @@
+.about {
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.hero {
+  background: linear-gradient(to bottom, #fff, #f9fbfd);
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.hero h1 span {
+  color: #f97316;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 20px auto 0;
+  color: #555;
+}
+
+.badge, .label {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #666;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  margin-top: 36px;
+}
+
+.section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.section .subtitle {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.07);
+  border-color: #fb923c;
+}
+
+.card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.you-section {
+  background-color: #f5faf7;
+}
+
+.you-features {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  
+}
+
+.you-features ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.you-features li {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+
+img{
+    width: 240px;
+    height: 300px;
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fb923c, #22c55e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.trust {
+  background: #f3f4f6;
+}
+
+.join {
+  background: linear-gradient(to bottom, #1f2937, #111827);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.join h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.join p {
+  font-size: 1.1rem;
+  margin-top: 16px;
+}
+
+.join button {
+  background: white;
+  color: #1f2937;
+  padding: 12px 24px;
+  margin-top: 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.join button:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .you-features {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+  }
+
+  .section h2 {
+    font-size: 2.4rem;
+  }
+}
+
+.label {
+  background: #d1fae5;
+  color: #047857;
+  font-weight: 600;
+}
+.you-section p {
+  max-width: 700px;
+  margin: 0 auto 30px;
+  line-height: 1.6;
+  color: #4b5563;
+  font-size: 1.04rem;
+}
+
+.you-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 40px;
+  font-size: 0.95rem;
+  color: #111827;
+}
+.dot.green {
+  height: 8px;
+  width: 8px;
+  background: #22c55e;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.you-badge {
+  background: linear-gradient(to bottom right, #fef3c7, #d1fae5);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  transition: transform 0.3s;
+}
+.you-badge:hover {
+  transform: translateY(-4px);
+}
+.circle {
+  background: linear-gradient(to bottom right, #f97316, #22c55e);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+
+.dot-blink {
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-color: #f97316; /* Tailwind orange-500 */
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: blink 1s infinite ease-in-out;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.4); }
+}

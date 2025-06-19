@@ -1,0 +1,264 @@
+.contact {
+  font-family: 'Segoe UI', sans-serif;
+  color: #1f2937;
+}
+
+.badge {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  margin-top: 36px;
+}
+
+.dot-blink {
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-color: #f97316;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: blink 1.2s infinite ease-in-out;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.4); }
+}
+
+.hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+  background: linear-gradient(to bottom, #ffffff, #f9fafb);
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.hero h1 span {
+  color: #f97316;
+}
+
+.hero p {
+  max-width: 700px;
+  margin: 20px auto 0;
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+.section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.section .subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.touch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.touch-card {
+  flex: 1 1 320px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #fb923c;
+  border-radius: 12px;
+  padding: 30px 24px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.touch-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 30px rgba(0,0,0,0.06);
+}
+
+.icon {
+  font-size: 2rem;
+  background: #f3f4f6;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.touch-card p {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 10px 0 16px;
+}
+
+.touch-card .action {
+  background: #111827;
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 10px 16px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-link {
+  background: white;
+  color: #111827;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  transition: box-shadow 0.3s ease;
+}
+
+
+@media (max-width: 600px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.05);
+}
+
+.emoji {
+  font-size: 1.5rem;
+  background: #d1fae5;
+  color: #047857;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.info-card h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.info-card p {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.soft-bg {
+  background: #f3f4f6;
+}
+
+.alt-bg {
+  background: #f9fafb;
+}
+
+.cta {
+  background: linear-gradient(to bottom, #1f2937, #111827);
+  color: white;
+  text-align: center;
+  padding: 70px 20px;
+}
+
+.cta h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.cta p {
+  margin: 16px auto;
+  font-size: 1rem;
+  color: #d1d5db;
+  max-width: 600px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.cta-buttons a {
+  text-decoration: none;
+}
+
+.cta-btn {
+  background: white;
+  color: #111827;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.cta-btn:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  .section h2, .cta h2 {
+    font-size: 1.5rem;
+  }
+}
