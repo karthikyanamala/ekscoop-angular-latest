@@ -538,8 +538,12 @@ body {
 }
 
 @media (max-width: 480px) {
+    .hero-title{
+        margin-top: 36px;
+    }
     .container {
-        padding: 0 1rem;
+        padding-left: 8px;
+        padding-right: 8px;
     }
     
     .meal-card {
@@ -552,6 +556,8 @@ body {
     
     .footer-cta {
         padding: 3rem 1rem;
+        margin-top: 8px;
+        margin-bottom: 8px;
     }
     
     .recipe-section {
@@ -562,6 +568,9 @@ body {
     .recipe-instructions li:before {
         left: -1.5rem;
     }
+    .meals-section {
+    padding: 0 0rem 0rem;
+}
 
 
 }
