@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
-import { Firestore, collection, getDocs, addDoc, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, collection, getDocs, addDoc, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 declare var Razorpay: any;
 
@@ -32,6 +32,15 @@ export class CheckoutComponent implements OnInit {
   quantity = 1;
   unitPrice = 0;
   totalAmount = 0;
+  originalTotalAmount = 0; 
+  promoApplied = false;
+
+  promoCode: string = '';
+  promoDiscountPercent: number = 0;
+  promoDiscountAmount: number = 0;
+  promoInfluencerName: string = '';
+  promoError: string = '';
+  promoSuccess: string = '';
 
   addressForm: any = {
     fullName: '',
@@ -46,7 +55,6 @@ export class CheckoutComponent implements OnInit {
   };
 
   ngOnInit() {
-    // ✅ Read product info from localStorage
     const storedProduct = localStorage.getItem('checkoutProduct');
     if (storedProduct) {
       try {
@@ -56,7 +64,7 @@ export class CheckoutComponent implements OnInit {
           this.productId = parsed.productId;
           this.quantity = parsed.quantity;
           this.totalAmount = parsed.unitPrice * this.quantity;
-          // unitPrice will be updated on server response
+          this.originalTotalAmount = this.totalAmount;
         } else {
           console.warn('Incomplete product data:', parsed);
           this.router.navigate(['/home']);
@@ -130,6 +138,72 @@ export class CheckoutComponent implements OnInit {
     return this.addresses.find(addr => addr.id === this.selectedAddressId) || null;
   }
 
+  async applyPromo() {
+    this.promoError = '';
+    this.promoSuccess = '';
+
+    if (this.promoApplied) {
+      this.promoError = 'A promo is already applied. Remove it first to apply another.';
+      return;
+    }
+
+    if (!this.promoCode || this.promoCode.trim().length < 3) {
+      this.promoError = 'Enter a valid promo code.';
+      return;
+    }
+
+    try {
+      const promoRef = doc(this.firestore, `promocodes/${this.promoCode.toUpperCase()}`);
+      const promoSnap = await getDoc(promoRef);
+
+      if (!promoSnap.exists()) {
+        this.promoError = 'Invalid promo code. Please try again.';
+        return;
+      }
+
+      const promoData = promoSnap.data();
+      if (!promoData) {
+        this.promoError = 'Promo data missing.';
+        return;
+      }
+
+      if (promoData['active'] !== true) {
+        this.promoError = 'This promo code is inactive.';
+        return;
+      }
+
+      if (typeof promoData['discountPercentage'] === 'number') {
+        this.promoDiscountPercent = promoData['discountPercentage'];
+        this.promoDiscountAmount = Math.floor(this.totalAmount * (this.promoDiscountPercent / 100));
+        this.totalAmount = this.totalAmount - this.promoDiscountAmount;
+        this.promoInfluencerName = promoData['influencerName'] ?? 'Unknown';
+
+        this.promoSuccess = `Promo applied! You saved ₹${this.promoDiscountAmount}. Influencer: ${this.promoInfluencerName}`;
+        this.promoApplied = true;
+      } else {
+        this.promoError = 'Promo found but invalid discount percentage.';
+      }
+    } catch (error) {
+      console.error('Error applying promo:', error);
+      this.promoError = 'Something went wrong applying promo. Try again.';
+    }
+  }
+
+  removePromo() {
+    if (!this.promoApplied) {
+      this.promoError = 'No promo applied to remove.';
+      return;
+    }
+
+    this.totalAmount = this.originalTotalAmount;
+    this.promoCode = '';
+    this.promoDiscountPercent = 0;
+    this.promoDiscountAmount = 0;
+    this.promoApplied = false;
+    this.promoSuccess = '';
+    this.promoError = '';
+  }
+
   async placeOrder() {
     if (!this.selectedAddress) {
       alert('Please select a delivery address first!');
@@ -141,24 +215,37 @@ export class CheckoutComponent implements OnInit {
     try {
       const response = await fetch('https://us-central1-ekscoop-website.cloudfunctions.net/createRazorpayOrder', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.promoApplied && this.promoCode
+            ? { 'x-promo-code': this.promoCode.trim().toUpperCase() }
+            : {}),
+        },
         body: JSON.stringify({
           productId: this.productId,
           quantity: this.quantity,
         }),
       });
 
-      const order = await response.json();
+      const result = await response.json();
 
-      if (order && order.id) {
-        // ✅ Update price from server response before payment popup
+      if (result?.order?.id) {
+        const { order, promo } = result;
+
         this.unitPrice = (order.amount / 100) / this.quantity;
         this.totalAmount = order.amount / 100;
 
+        if (promo) {
+          this.promoDiscountPercent = promo.discountPercent;
+          this.promoDiscountAmount = promo.discountAmount;
+          this.promoInfluencerName = promo.influencerName;
+          this.promoSuccess = `Promo applied! You saved ₹${promo.discountAmount}. Influencer: ${promo.influencerName}`;
+        }
+
         this.openRazorpay(order);
       } else {
-        console.error('Invalid response from server:', order);
-        alert('Failed to create payment order. Please try again.');
+        console.error('Invalid response from server:', result);
+        alert(result?.error || 'Failed to create payment order. Please try again.');
         this.loadingPayment = false;
       }
     } catch (error) {
@@ -194,6 +281,10 @@ export class CheckoutComponent implements OnInit {
           paymentStatus: 'paid',
           paidAt: new Date(),
           amount: order.amount / 100,
+          finalAmount: this.totalAmount,
+          promoCodeUsed: this.promoCode || null,
+          promoDiscountPercent: this.promoDiscountPercent,
+          promoDiscountAmount: this.promoDiscountAmount,
           currency: order.currency,
           selectedAddress: this.selectedAddress,
           customer: {
@@ -217,6 +308,42 @@ export class CheckoutComponent implements OnInit {
 
           const adminOrderRef = doc(this.firestore, `orders/${order.id}`);
           await setDoc(adminOrderRef, orderData);
+
+          // ✅ Log promo usage if promo applied:
+          if (this.promoApplied && this.promoCode) {
+            try {
+              const usageData = {
+                promoCode: this.promoCode.toUpperCase(),
+                discountPercent: this.promoDiscountPercent,
+                discountAmount: this.promoDiscountAmount,
+                influencerName: this.promoInfluencerName || 'Unknown',
+                userId: this.uid,
+                userName: this.fullName,
+                userEmail: this.email,
+                orderId: order.id,
+                finalAmount: this.totalAmount,
+                paidAt: new Date().toISOString(),
+                orderDetails: {
+                  products: [
+                    {
+                      name: this.product.name,
+                      image: this.product.image,
+                      quantity: this.quantity,
+                      unitPrice: this.unitPrice,
+                    },
+                  ],
+                  selectedAddress: this.selectedAddress,
+                },
+              };
+
+              const promoUsageRef = doc(this.firestore, `promocode_usages/${order.id}`);
+              await setDoc(promoUsageRef, usageData);
+
+              console.log('Promo usage logged successfully.');
+            } catch (error) {
+              console.error('Failed to log promo usage:', error);
+            }
+          }
 
           alert('Payment successful & order saved!');
           this.loadingPayment = false;
