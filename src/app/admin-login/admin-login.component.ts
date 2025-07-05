@@ -9,7 +9,7 @@ import {
   PhoneAuthProvider,
   signInWithCredential,
   Auth,
-  ConfirmationResult
+
 } from 'firebase/auth';
 
 @Component({

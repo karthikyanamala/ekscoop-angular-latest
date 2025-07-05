@@ -1,0 +1,30 @@
+<section class="features-section">
+  <div class="container">
+    <div class="header">
+      <h2 class="title">Perfect for Every Meal</h2>
+      <p class="subtitle">
+        Our plant protein powder blends into your meals — from breakfast to dinner — so your family gets complete nutrition easily.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div 
+        *ngFor="let feature of features"
+        class="feature-card"
+        
+      >
+        <div class="icon-box" [ngClass]="feature.gradient">
+          <span class="icon">{{ feature.icon }}</span>
+        </div>
+
+        <div class="feature-content">
+          <div class="feature-header">
+            <h3 class="feature-title">{{ feature.title }}</h3>
+            <span class="feature-time">{{ feature.time }}</span>
+          </div>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

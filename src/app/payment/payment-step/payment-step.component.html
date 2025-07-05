@@ -1,0 +1,90 @@
+<div class="payment-container">
+  <!-- Contact & Address Summary -->
+  <div class="summary-card">
+    <div class="summary-item">
+      <span class="dot green"></span>
+      <span class="summary-text">Using +91 {{ phone }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="house-icon">🏠</span>
+      <span class="summary-text">{{ address }}</span>
+    </div>
+  </div>
+
+  <!-- Promo Code -->
+  <div class="promo-card">
+    <div class="promo-header">
+      <span class="tag-icon">🏷️</span>
+      <h3>Have a promo code?</h3>
+    </div>
+    <div class="promo-input">
+      <input
+        type="text"
+        [(ngModel)]="promoCode"
+        placeholder="Enter promo code"
+      />
+      <button
+        (click)="applyPromoCode()"
+        [disabled]="!promoCode || promoApplied"
+      >
+        Apply
+      </button>
+    </div>
+    <div *ngIf="promoApplied" class="promo-success">
+      ✅ Promo applied! You saved ₹{{ discount | number: '1.0-0' }}
+    </div>
+  </div>
+
+  <!-- Payment Methods -->
+  <div class="methods-card">
+    <h3 class="methods-title">Choose Payment Method</h3>
+    <div class="methods-list">
+      <div
+        class="method"
+        *ngFor="let method of paymentMethods"
+        [ngClass]="{ selected: selectedMethod === method.id }"
+        (click)="selectMethod(method.id)"
+      >
+        <div class="method-header">
+          <span class="method-name">{{ method.name }}</span>
+          <span class="method-check" *ngIf="selectedMethod === method.id">✓</span>
+        </div>
+        <div class="method-desc">{{ method.desc }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Summary -->
+  <div class="order-summary">
+    <div class="summary-line">
+      <span>Subtotal</span>
+      <span>₹{{ subtotal | number: '1.0-0' }}</span>
+    </div>
+    <div class="summary-line">
+      <span>Discount</span>
+      <span class="discount">-₹{{ discount | number: '1.0-0' }}</span>
+    </div>
+    <div class="summary-line">
+      <span>Delivery</span>
+      <span class="free">FREE</span>
+    </div>
+    <hr />
+    <div class="summary-total">
+      <span>Total</span>
+      <span>₹{{ totalAmount | number: '1.0-0' }}</span>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="actions">
+    <button (click)="goBack()" class="back-btn">⬅ Back</button>
+    <button (click)="continue()" class="pay-btn">
+      Pay ₹{{ totalAmount | number: '1.0-0' }}
+    </button>
+  </div>
+
+  <!-- Security Note -->
+  <div class="security-note">
+    🔒 Your payment is secured with 256-bit SSL encryption
+  </div>
+</div>

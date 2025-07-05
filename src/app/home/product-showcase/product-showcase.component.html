@@ -1,0 +1,109 @@
+<section class="showcase">
+  <div class="container">
+    <!-- Title Block -->
+    <div class="title-block">
+      <h2>Choose Your Perfect Protein</h2>
+      <p>Both variants offer the same premium nutrition in different packaging</p>
+    </div>
+
+    <div class="showcase-grid">
+      <!-- Product Image -->
+      <div class="image-container">
+        <div class="image-box">
+          <img 
+            *ngIf="selectedVariantData" 
+            [src]="selectedVariantData.image" 
+            [alt]="selectedVariantData.name" />
+          <div *ngIf="!selectedVariant" class="placeholder">
+            <p>YOU x 0.8 is India’s first unflavoured, diabetic-friendly plant protein powder made to mix into traditional Indian meals. Pick a packaging style that suits you.</p>
+          </div>
+        </div>
+
+        <!-- Floating Tag -->
+        <div class="floating-tag" *ngIf="selectedVariantData">
+          <div class="floating-content">
+            <div class="protein">16.7g</div>
+            <div class="label">Protein</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Block -->
+      <div class="details">
+        <!-- Variant Selector -->
+        <div class="variant-selector">
+          <h3>Select Variant*</h3>
+          <div class="variant-options">
+            <ng-container *ngFor="let key of (variants | keyvalue)">
+              <ng-container *ngIf="key && key.value && key.value.name; else skipVariant">
+                <div
+                  (click)="selectVariant(key.key)"
+                  class="variant-card"
+                  [ngClass]="{'active': selectedVariant === key.key}">
+                  <div class="variant-name">{{ key.value.name }}</div>
+                  <div class="variant-description">{{ key.value.description }}</div>
+                </div>
+              </ng-container>
+              <ng-template #skipVariant></ng-template>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Key Benefits -->
+        <div *ngIf="selectedVariantData" class="features">
+          <h4>Key Benefits</h4>
+          <ul>
+            <li *ngFor="let feature of selectedVariantData.features">
+              ✔ {{ feature }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nutrition Facts -->
+        <div class="nutrition-facts">
+          <h4>Nutrition Facts</h4>
+          <div class="nutrition-grid">
+            <div>
+              <div class="value orange">16.7g</div>
+              <div class="label">Protein</div>
+            </div>
+            <div>
+              <div class="value green">20g</div>
+              <div class="label">Net Weight</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ratings and Pricing -->
+        <div class="ratings-price" *ngIf="selectedVariantData">
+          <div class="ratings">
+            <span *ngFor="let star of [].constructor(5)">⭐</span>
+            <span class="reviews">4.8/5 (2,500+ reviews)</span>
+          </div>
+          <div class="price-stock">
+            <div class="price">₹{{ calculatedPrice  }}</div>
+            <div class="stock">In Stock • Free delivery</div>
+          </div>
+        </div>
+
+        <!-- Quantity Selection -->
+        <div *ngIf="selectedVariantData" class="quantity-selector">
+          <label for="quantity">Quantity (kg):</label>
+          <div class="quantity-controls">
+            <button (click)="decreaseQuantity()" class="qty-btn">-</button>
+            <span class="qty-display">{{ quantity }}</span>
+            <button (click)="increaseQuantity()" class="qty-btn">+</button>
+          </div>
+        </div>
+
+        <!-- Buy Now Button -->
+        <button
+          class="add-cart-btn"
+          [disabled]="!selectedVariantData"
+          (click)="handleBuyNow()">
+          {{ selectedVariantData ? 'Buy Now - ₹' + calculatedPrice : 'Select Variant First' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

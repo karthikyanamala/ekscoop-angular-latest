@@ -8,13 +8,22 @@ import { routes } from './app.routes';
 import { provideHttpClient } from "@angular/common/http";
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-initializeApp(environment.firebase);
+import { provideFunctions, getFunctions } from '@angular/fire/functions';
 
+initializeApp(environment.firebase)
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),  provideFirebaseApp(() => initializeApp(environment.firebase)),
-    // Provide Firestore service
-    provideFirestore(() => getFirestore()),
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideFirebaseApp(() => initializeApp(environment.firebase)), // ✅ Correct place to initialize
+    
     provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideFunctions(() => getFunctions()),  // ✅ Required for AngularFireFunctions
     provideAnimations(),
-    provideHttpClient(), provideClientHydration(withEventReplay())]
+    provideHttpClient(),
+    provideClientHydration(withEventReplay()),
+    
+  ],
 };
+

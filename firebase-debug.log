@@ -1,0 +1,38 @@
+[debug] [2025-07-03T19:53:10.375Z] ----------------------------------------------------------------------
+[debug] [2025-07-03T19:53:10.390Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\karthik\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2025-07-03T19:53:10.392Z] CLI Version:   14.7.0
+[debug] [2025-07-03T19:53:10.394Z] Platform:      win32
+[debug] [2025-07-03T19:53:10.394Z] Node Version:  v22.14.0
+[debug] [2025-07-03T19:53:10.397Z] Time:          Fri Jul 04 2025 01:23:10 GMT+0530 (India Standard Time)
+[debug] [2025-07-03T19:53:10.399Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-03T19:53:10.410Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-07-03T19:53:11.697Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-03T19:53:11.698Z] > authorizing via signed-in user (karthikeyareddyyanamala@gmail.com)
+[debug] [2025-07-03T19:53:11.698Z] [iam] checking project ekscoop-website for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-07-03T19:53:11.701Z] Checked if tokens are valid: false, expires at: 1751188343801
+[debug] [2025-07-03T19:53:11.702Z] Checked if tokens are valid: false, expires at: 1751188343801
+[debug] [2025-07-03T19:53:11.703Z] > refreshing access token with scopes: []
+[debug] [2025-07-03T19:53:11.707Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-07-03T19:53:11.707Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-03T19:53:11.959Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-07-03T19:53:11.960Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-03T19:53:11.980Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/ekscoop-website:testIamPermissions [none]
+[debug] [2025-07-03T19:53:11.981Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/ekscoop-website:testIamPermissions x-goog-quota-user=projects/ekscoop-website
+[debug] [2025-07-03T19:53:11.981Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/ekscoop-website:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-07-03T19:53:12.306Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-07-03T19:53:12.307Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-07-03T19:53:13.343Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/ekscoop-website:testIamPermissions 200
+[debug] [2025-07-03T19:53:13.344Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/ekscoop-website:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-07-03T19:53:13.345Z] Checked if tokens are valid: true, expires at: 1751575990960
+[debug] [2025-07-03T19:53:13.346Z] Checked if tokens are valid: true, expires at: 1751575990960
+[debug] [2025-07-03T19:53:13.346Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/ekscoop-website/serviceAccounts/ekscoop-website@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-07-03T19:53:13.346Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/ekscoop-website/serviceAccounts/ekscoop-website@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-07-03T19:53:14.917Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/ekscoop-website/serviceAccounts/ekscoop-website@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2025-07-03T19:53:14.917Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/ekscoop-website/serviceAccounts/ekscoop-website@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'ekscoop-website'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build

@@ -9,7 +9,7 @@ export const routes: Routes = [
     canActivate: [AdminAuthGuard] // 🔒 Guard added here
   },
   { path: 'shop-finder', loadComponent: () => import('./shop-list/shop-list.component').then(m => m.ShopListComponent) },
-  { path: 'home', loadComponent: () => import('./homecomponent/homecomponent.component').then(m => m.HomecomponentComponent) },
+  { path: 'homepage', loadComponent: () => import('./homecomponent/homecomponent.component').then(m => m.HomecomponentComponent) },
   { path: 'privacy', loadComponent: () => import('./footer-privacy/footer-privacy.component').then(m => m.FooterPrivacyComponent) },
   { path: 'terms-conditions', loadComponent: () => import('./footer-terms-and-conditions/footer-terms-and-conditions.component').then(m => m.FooterTermsAndConditionsComponent) },
   { path: 'product-list', loadComponent: () => import('./product-showcase/product-showcase.component').then(m => m.ProductShowcaseComponent) },
@@ -18,5 +18,14 @@ export const routes: Routes = [
   {path:'partner-with-us',loadComponent:()=>import('./retail_components/partner-with-us/partner-with-us.component').then(m=>m.PartnerWithUsComponent)},
   {path:'about-us',loadComponent:()=>import('./about/about.component').then(m=>m.AboutComponent)},
   {path:'contact-us',loadComponent:()=>import('./contact/contact.component').then(m=>m.ContactComponent)},
+{path:'home',loadComponent:()=>import('./home/homepage/homepage.component').then(m=>m.HomepageComponent)},
+{path:'profile',loadComponent:()=>import('./userprofiles/userprofile/userprofile.component').then(m=>m.ProfileComponent)},
+{path:'address',loadComponent:()=>import('./userprofiles/address/address.component').then(m=>m.AddressComponent)},
+{path:'checkout',loadComponent:()=>import('./payment/checkout/checkout.component').then(m=>m.CheckoutComponent)},
+{path:'orders',loadComponent:()=>import('./userprofiles/myorders/myorders.component').then(m=>m.MyOrdersComponent)},
+
+
+
+
   { path: '**', redirectTo: 'home' }
 ];

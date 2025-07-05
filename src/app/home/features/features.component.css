@@ -1,0 +1,106 @@
+.features-section {
+  padding: 5rem 1rem;
+  background: #f9fafb; /* Tailwind's gray-50 */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #111827; /* Tailwind's gray-900 */
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #6b7280; /* Tailwind's gray-600 */
+  max-width: 48rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.features-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.feature-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-card:hover {
+  transform: translateY(-0.5rem);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.icon-box {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: white;
+  transition: transform 0.3s;
+}
+
+.feature-card:hover .icon-box {
+  transform: scale(1.1);
+}
+
+.feature-content {
+  flex: 1;
+}
+
+.feature-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feature-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  max-width: 8ch; /* limits to ~7 characters per line */
+  word-wrap: break-word; /* allows breaking text */
+  white-space: normal; 
+}
+
+.feature-time {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6; /* Tailwind's gray-100 */
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.feature-description {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
+/* Gradient classes to match your features */
+.from-yellow-400.to-orange-500 { background: linear-gradient(to right, #facc15, #f97316); }
+.from-green-400.to-teal-500 { background: linear-gradient(to right, #4ade80, #14b8a6); }
+.from-purple-400.to-pink-500 { background: linear-gradient(to right, #c084fc, #ec4899); }
+.from-blue-400.to-purple-500 { background: linear-gradient(to right, #60a5fa, #a855f7); }

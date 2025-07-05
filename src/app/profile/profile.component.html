@@ -1,0 +1,22 @@
+<div class="nav-actions desktop-only">
+  <ng-container *ngIf="!userName; else loggedInBlock">
+    <button class="login-btn" (click)="login()">
+      <i class="fas fa-user"></i> Login
+    </button>
+  </ng-container>
+
+  <ng-template #loggedInBlock>
+    <div class="profile-dropdown">
+      <button class="profile-btn">
+        <i class="fas fa-user-circle"></i> {{ userName }}
+      </button>
+      <div class="profile-menu">
+        <a href="/profile">👤 My Profile</a>
+        <a routerLink="/orders">📦 My Orders</a>
+        <a href="/address">🏠 My Addresses</a>
+        <button (click)="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </div>
+  </ng-template>
+
+</div>

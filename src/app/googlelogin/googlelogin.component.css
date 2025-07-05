@@ -1,0 +1,35 @@
+.google-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(to right, #f59e0b, #f97316);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s, background 0.3s;
+}
+
+.google-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #ea580c, #f97316);
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
