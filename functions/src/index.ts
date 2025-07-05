@@ -27,6 +27,8 @@ export const createRazorpayOrder = onRequest(
         }
 
         const {productId, quantity} = req.body;
+        const promoCode = req.headers["x-promo-code"] ?
+          String(req.headers["x-promo-code"]).toUpperCase():null;
 
         if (!productId || typeof productId !== "string") {
           res.status(400).send({error: "Missing or invalid productId"});
@@ -40,7 +42,6 @@ export const createRazorpayOrder = onRequest(
 
         // ✅ Fetch product price from Firestore
         const productDoc = await db.collection("products").doc(productId).get();
-
         if (!productDoc.exists) {
           res.status(404).send({error: "Product not found"});
           return;
@@ -48,13 +49,37 @@ export const createRazorpayOrder = onRequest(
 
         const productData = productDoc.data();
         const unitPrice = productData?.price;
-
         if (typeof unitPrice !== "number") {
           res.status(500).send({error: "Invalid product price in database"});
           return;
         }
 
-        const amount = unitPrice * quantity;
+        let amount = unitPrice * quantity;
+        let discountPercent = 0;
+        let discountAmount = 0;
+        let influencerName = "";
+
+        // ✅ Validate promo if passed
+        if (promoCode) {
+          const promoSnap = await
+          db.collection("promocodes").doc(promoCode).get();
+          if (promoSnap.exists) {
+            const promoData = promoSnap.data();
+            if (promoData?.active === true &&
+              typeof promoData?.discountPercentage === "number") {
+              discountPercent = promoData.discountPercentage;
+              discountAmount = Math.floor(amount * (discountPercent / 100));
+              amount -= discountAmount;
+              influencerName = promoData?.influencerName || "";
+            } else {
+              res.status(400).send({error: "Promo code inactive or invalid"});
+              return;
+            }
+          } else {
+            res.status(400).send({error: "Promo code not found"});
+            return;
+          }
+        }
 
         const razorpay = new Razorpay({
           key_id: process.env.RAZORPAY_KEY_ID ?? "",
@@ -68,14 +93,26 @@ export const createRazorpayOrder = onRequest(
         };
 
         const order = await razorpay.orders.create(options);
-        res.status(200).send(order);
+
+        res.status(200).send({
+          order,
+          promo: promoCode?
+            {
+              promoCode,
+              discountPercent,
+              discountAmount,
+              influencerName,
+            }:
+            null,
+        });
       } catch (err) {
-        console.error("Razorpay Error:", err);
+        console.error("Razorpay Order Error:", err);
         res.status(500).send({error: "Unable to create Razorpay order"});
       }
     });
   }
 );
+
 
 const twilioSid = defineSecret("TWILIO_ACCOUNT_SID");
 const twilioToken = defineSecret("TWILIO_AUTH_TOKEN");

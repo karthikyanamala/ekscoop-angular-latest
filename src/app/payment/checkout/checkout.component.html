@@ -64,9 +64,31 @@
           </div>
         </div>
         <hr />
-        <div class="summary-item"><span>Subtotal</span><span>₹{{ totalAmount }}</span></div>
+
+        <div class="summary-item"><span>Subtotal</span><span>₹{{ totalAmount + promoDiscountAmount }}</span></div>
+
+        <div *ngIf="promoDiscountPercent > 0" class="summary-item discount">
+          <span>Promo Discount ({{ promoDiscountPercent }}% off)</span>
+          <span>- ₹{{ promoDiscountAmount | number: '1.0-0' }}</span>
+        </div>
+
         <div class="summary-item"><span>Shipping</span><span class="free">Free</span></div>
         <div class="summary-item total"><span>Total</span><span>₹{{ totalAmount }}</span></div>
+
+        <!-- Promo Code -->
+        <div class="promo-section">
+          <label for="promo-input">🎁 Have a Promo Code?</label>
+          <div class="promo-row">
+            <input id="promo-input" [(ngModel)]="promoCode" placeholder="Enter promo code" />
+            <button class="apply-btn" (click)="applyPromo()">Apply</button>
+          </div>
+          <p *ngIf="promoError" class="promo-error">{{ promoError }}</p>
+          <p *ngIf="promoSuccess" class="promo-success">{{ promoSuccess }}</p>
+          <div class="promo-actions" *ngIf="promoApplied">
+  <button class="remove-btn" (click)="removePromo()">Remove Promo</button>
+</div>
+
+        </div>
 
         <div *ngIf="selectedAddressId" class="delivery-address">
           <p class="delivering">Delivering to:</p>
@@ -144,7 +166,7 @@
     </div>
   </div>
 
-  <!-- Funny Payment Loading -->
+  <!-- Payment Loading -->
   <div class="payment-loading" *ngIf="loadingPayment">
     <div class="loading-box">
       <div class="spinner">💸</div>
