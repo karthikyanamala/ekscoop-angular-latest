@@ -59,7 +59,7 @@ export class ProductShowcaseComponent implements OnInit {
   async loadPrices() {
     try {
       const traditionalSnap = await getDoc(doc(this.firestore, 'products/traditional'));
-      const modernSnap = await getDoc(doc(this.firestore, 'products/modren'));
+      const modernSnap = await getDoc(doc(this.firestore, 'products/modern'));
 
       if (traditionalSnap.exists()) {
         const data = traditionalSnap.data() as { price?: number };
