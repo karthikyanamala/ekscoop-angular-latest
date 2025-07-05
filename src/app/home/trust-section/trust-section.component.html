@@ -1,0 +1,32 @@
+<section class="trust-section">
+  <div class="container">
+    <div class="text-center mb-16">
+      <h2 class="title">Why Choose ekScoop?</h2>
+      <p class="subtitle">
+        Empowering your body with clean, simple protein. One scoop, endless gains.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div
+        *ngFor="let feature of trustFeatures"
+        class="feature-card"
+      >
+        <div class="icon-box">
+          <i [class]="'lucide lucide-' + feature.icon"></i>
+        </div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </div>
+    </div>
+
+    <div class="cta-card">
+      <h3 class="cta-title">
+        Start your journey to perfect nutrition with YOU x 0.8 plant protein
+      </h3>
+      <button class="cta-button">
+        Order Your YOU x 0.8 Now
+      </button>
+    </div>
+  </div>
+</section>

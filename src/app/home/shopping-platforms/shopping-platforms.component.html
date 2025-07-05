@@ -1,0 +1,14 @@
+<section class="shopping-section">
+  <div class="container text-center">
+    <h2>Available on Your Favorite Platforms</h2>
+    <p>Order YOU x 0.8 Plant Protein from wherever you shop</p>
+    <div class="platforms-grid">
+      <div *ngFor="let p of platforms" class="platform-card" [style.background]="p.bg">
+        <div class="platform-logo">{{ p.logo }}</div>
+        <div class="platform-name">{{ p.name }}</div>
+        <div class="available-now">Available Now</div>
+      </div>
+    </div>
+    <p class="delivery-text">Fast delivery • Fresh products • Trusted sellers</p>
+  </div>
+</section>

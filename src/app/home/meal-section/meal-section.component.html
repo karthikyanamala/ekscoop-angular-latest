@@ -1,0 +1,75 @@
+<section class="meal-section">
+  <div class="container">
+
+    <!-- Meal Selector Buttons -->
+    <div class="meal-selector">
+      <button
+        *ngFor="let key of (meals | keyvalue)"
+        (click)="selectMeal(castKey(key.key))"
+        [class.active]="selectedMeal === castKey(key.key)">
+        <span class="meal-icon">{{ castMeal(key.value).icon }}</span>
+        {{ castMeal(key.value).title }}
+      </button>
+    </div>
+
+    <!-- Selected Meal Content -->
+    <div *ngIf="selectedMeal" class="meal-content" [style.background]="meals[selectedMeal].bgColor">
+      <div class="meal-text">
+        <div class="meal-header">
+          <div class="icon-box">{{ meals[selectedMeal].icon }}</div>
+          <div>
+            <h3>{{ meals[selectedMeal].title }}</h3>
+            <p>{{ meals[selectedMeal].subtitle }}</p>
+          </div>
+        </div>
+
+        <h4>{{ meals[selectedMeal].mainText }}</h4>
+        <p>{{ meals[selectedMeal].description }}</p>
+
+        <ul>
+          <li *ngFor="let f of meals[selectedMeal].features">
+            ✔ {{ f }}
+          </li>
+        </ul>
+
+        <button class="see-how-btn" (click)="openModal()">See How to Use</button>
+      </div>
+
+      <!-- Meal Images -->
+      <div class="meal-images">
+        <div class="img-box">
+          <img src="assets/traditional.png" alt="Traditional Variant" />
+          <div class="badge orange">Original</div>
+        </div>
+        <div class="img-box">
+          <img src="assets/modern.png" alt="Modern Variant" />
+          <div class="badge green">Premium</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage Modal -->
+    <div class="modal" *ngIf="showModal">
+      <div class="modal-content">
+        <h3>How to Use YOU x 0.8 Protein Powder</h3>
+        <button class="close-btn" (click)="closeModal()">X</button>
+        <p>
+          You already know how to cook your favorite foods — whether it's dosa, poha, or upma. We're not here to teach you how to make them. We're just here to show you how to make them stronger 💪 — without changing the taste.
+        </p>
+        <h4>Just stir it in. That's it.</h4>
+        <div class="instructions-grid">
+          <div class="instruction-card" *ngFor="let ins of usageInstructions">
+            <div class="instruction-icon">{{ ins.icon }}</div>
+            <div>
+              <h5>{{ ins.title }}</h5>
+              <p>{{ ins.description }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="trust-message">
+          We're Indians — we know how to balance our flavors. So trust yourself — you can mix YOU x 0.8 into your food without messing up the taste.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

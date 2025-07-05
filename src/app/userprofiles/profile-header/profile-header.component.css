@@ -1,0 +1,39 @@
+:host {
+  position: sticky;
+  
+  z-index: 1000;
+  display: block;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-left: 25%;
+  padding: 15px 30px;
+  display: flex;
+  gap: 40px;
+}
+
+.header-nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.header-nav a.active {
+  color: #ff9f00;
+}
+
+.header-nav a.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: #ff9f00;
+}

@@ -1,0 +1,294 @@
+.showcase {
+  padding: 60px 0;
+  background: #fff;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.title-block {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.title-block h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #222;
+}
+
+.title-block p {
+  font-size: 18px;
+  color: #666;
+}
+
+.showcase-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+}
+
+.image-container {
+  flex: 1 1 400px;
+  position: relative;
+}
+
+.image-box {
+  background: linear-gradient(to bottom right, #ffe0b2, #c8e6c9);
+  border-radius: 30px;
+  padding: 20px;
+  text-align: center;
+}
+
+.image-box img {
+  max-width: 100%;
+  border-radius: 20px;
+  transition: transform 0.5s;
+}
+
+.image-box img:hover {
+  transform: scale(1.05);
+}
+
+.placeholder {
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
+  font-size: 18px;
+}
+
+.floating-tag {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: #4caf50;
+  color: #fff;
+  border-radius: 20px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.floating-content .protein {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.floating-content .label {
+  font-size: 12px;
+}
+
+.details {
+  flex: 1 1 400px;
+}
+
+.variant-selector h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.variant-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.variant-card {
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.variant-card:hover {
+  border-color: #ff9800;
+}
+
+.variant-card.active {
+  border-color: #ff9800;
+  background: #fff3e0;
+}
+
+.variant-name {
+  font-weight: 600;
+  font-size: 18px;
+  color: #222;
+}
+
+.variant-description {
+  font-size: 14px;
+  color: #666;
+}
+
+.features {
+  margin-top: 30px;
+}
+
+.features h4 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.features li {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #444;
+}
+
+.nutrition-facts {
+  margin-top: 30px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.nutrition-facts h4 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.nutrition-grid {
+  display: flex;
+  gap: 30px;
+}
+
+.nutrition-grid .value {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.nutrition-grid .value.orange {
+  color: #ff9800;
+}
+
+.nutrition-grid .value.green {
+  color: #4caf50;
+}
+
+.nutrition-grid .label {
+  font-size: 14px;
+  color: #555;
+}
+
+.ratings-price {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.ratings {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+
+.reviews {
+  font-size: 14px;
+  color: #666;
+}
+
+.price-stock {
+  margin-top: 10px;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: bold;
+  color: #222;
+}
+
+.stock {
+  font-size: 14px;
+  color: #4caf50;
+}
+
+.add-cart-btn {
+  margin-top: 30px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background: #ff9800;
+  transition: background 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+
+.add-cart-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.add-cart-btn:hover:not(:disabled) {
+  background: #fb8c00;
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .showcase-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.quantity-selector {
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.quantity-selector label {
+  margin: 0;
+  font-size: 16px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.qty-btn {
+  background-color: #f97316; /* Ekscoop warm orange */
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.qty-btn:hover {
+  background-color: #ea580c; /* darker orange on hover */
+}
+
+.qty-display {
+  width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+}

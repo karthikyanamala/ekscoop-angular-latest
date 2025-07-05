@@ -1,0 +1,43 @@
+.shopping-section {
+  padding: 60px 0;
+  background: linear-gradient(to bottom right, #f9fbe7, #ffffff);
+}
+.text-center {
+  text-align: center;
+}
+.platforms-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 40px;
+}
+.platform-card {
+  width: 160px;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+.platform-card:hover {
+  transform: scale(1.1);
+}
+.platform-logo {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+.platform-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.available-now {
+  font-size: 14px;
+  color: #555;
+}
+.delivery-text {
+  margin-top: 40px;
+  font-size: 14px;
+  color: #777;
+}

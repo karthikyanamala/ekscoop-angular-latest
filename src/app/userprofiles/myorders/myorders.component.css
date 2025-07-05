@@ -1,0 +1,92 @@
+.orders-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.empty, .loading {
+  text-align: center;
+  color: #666;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.order-id {
+  font-weight: bold;
+}
+
+.status {
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.status.paid {
+  background-color: #28a745;
+}
+
+.status.failed {
+  background-color: #dc3545;
+}
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  width: calc(50% - 10px);
+}
+
+.product img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.qty, .price {
+  font-size: 14px;
+  color: #555;
+}
+
+.summary {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.orders-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 120px 20px 20px; /* Increased top padding to 120px for clearance */
+}

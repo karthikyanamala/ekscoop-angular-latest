@@ -1,0 +1,74 @@
+<app-corner-badge></app-corner-badge>
+
+<div class="profile-wrapper">
+  <div class="profile-page-container" *ngIf="!loading; else loadingTpl">
+    <app-profile-header></app-profile-header>
+    <h2>My Profile</h2>
+
+    <form (ngSubmit)="updateProfile()">
+      <div>
+        <label>Full Name</label>
+        <input [(ngModel)]="profile.fullName" name="fullName" disabled>
+      </div>
+      <div>
+        <label>Email</label>
+        <input [(ngModel)]="profile.email" name="email" disabled>
+      </div>
+
+      <div class="phone-otp-container">
+        <div class="phone-field">
+          <label>Phone Number</label>
+          <input
+            [(ngModel)]="profile.phoneNumber"
+            name="phoneNumber"
+            placeholder="Enter your phone number"
+            [disabled]="phoneVerified || sendingOtp || verifyingOtp || genderAlreadySaved"
+          />
+        </div>
+        <button type="button" class="send-otp-btn" (click)="openOtpModal()"
+          [disabled]="!isPhoneValid() || phoneVerified || sendingOtp || verifyingOtp || genderAlreadySaved">
+          {{ sendingOtp ? '🐢 Sending...' : 'Send OTP' }}
+        </button>
+      </div>
+
+      <div>
+        <label>Gender</label>
+        <select [(ngModel)]="profile.gender" name="gender"
+          [disabled]="savingProfile || verifyingOtp || genderAlreadySaved">
+          <option value="">-- Enter your gender --</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+<button type="submit"
+  [disabled]="savingProfile || (phoneVerified && genderAlreadySaved)">
+  {{ savingProfile ? '🙈 Saving...' : 'Save Changes' }}
+</button>
+
+
+      <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    </form>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="funny-loader">
+      <div class="loader-emoji">🦄</div>
+      <div>Magically loading your profile...</div>
+    </div>
+  </ng-template>
+
+  <div class="modal" *ngIf="showOtpModal">
+    <div class="modal-content">
+      <h3>Verify OTP</h3>
+      <input [(ngModel)]="enteredOtp" placeholder="Enter OTP" />
+      <div *ngIf="otpError" class="otp-error">{{ otpError }}</div>
+      <button (click)="verifyOtp()" [disabled]="verifyingOtp">
+        {{ verifyingOtp ? '🔒 Verifying...' : 'Submit' }}
+      </button>
+      <button class="close" (click)="closeOtpModal()" [disabled]="verifyingOtp">Cancel</button>
+    </div>
+  </div>
+</div>

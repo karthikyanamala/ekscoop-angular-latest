@@ -1,0 +1,154 @@
+<div class="checkout-page">
+  <div class="header">
+    <h1>Secure Checkout</h1>
+    <p>Complete your purchase in just a few steps</p>
+  </div>
+
+  <div class="main-grid">
+    <div class="checkout-left">
+      <!-- Account Info -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Account Information</h2>
+        </div>
+        <div class="card-content grid-2">
+          <div>
+            <label>Full Name</label>
+            <input type="text" [value]="fullName" disabled />
+          </div>
+          <div>
+            <label>Email</label>
+            <input type="email" [value]="email" disabled />
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Address -->
+      <div class="card">
+        <div class="card-header flex-between">
+          <div class="flex-center">
+            <span class="icon">📍</span>
+            <h2>Delivery Address</h2>
+          </div>
+          <button class="add-btn" (click)="openNewAddressModal()">➕ Add New Address</button>
+        </div>
+        <div class="card-content">
+          <div *ngIf="addresses.length > 0" class="addresses-list">
+            <label *ngFor="let addr of addresses" class="address-option" [class.selected]="addr.id === selectedAddressId">
+              <input type="radio" name="selectedAddress" [value]="addr.id" [(ngModel)]="selectedAddressId" />
+              <div class="address-content">
+                <strong>{{ addr.fullName }}</strong>
+                <p>{{ addr.phoneNumber }}, {{ addr.addressLine }}</p>
+                <p>{{ addr.locality }}, {{ addr.city.toUpperCase() }}, {{ addr.state.toUpperCase() }}, {{ addr.pincode }}</p>
+              </div>
+            </label>
+          </div>
+          <div *ngIf="addresses.length === 0">
+            <p class="no-address">No address found. Please add a delivery address.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="checkout-right card">
+      <div class="card-header">
+        <h2>Order Summary</h2>
+      </div>
+      <div class="card-content summary" *ngIf="product?.name; else noProductTpl">
+        <div class="product-info">
+          <img [src]="product.image" [alt]="product.name || 'Selected product image'" />
+          <div>
+            <p class="product-name">{{ product.name }}</p>
+            <p class="product-qty">Qty: {{ quantity }}</p>
+          </div>
+        </div>
+        <hr />
+        <div class="summary-item"><span>Subtotal</span><span>₹{{ totalAmount }}</span></div>
+        <div class="summary-item"><span>Shipping</span><span class="free">Free</span></div>
+        <div class="summary-item total"><span>Total</span><span>₹{{ totalAmount }}</span></div>
+
+        <div *ngIf="selectedAddressId" class="delivery-address">
+          <p class="delivering">Delivering to:</p>
+          <p *ngIf="selectedAddress">
+            {{ selectedAddress.fullName }}<br />
+            {{ selectedAddress.phoneNumber }}, {{ selectedAddress.addressLine }}<br />
+            {{ selectedAddress.locality }}, {{ selectedAddress.city.toUpperCase() }}, {{ selectedAddress.state.toUpperCase() }}<br />
+            {{ selectedAddress.pincode }}
+          </p>
+        </div>
+
+        <button (click)="placeOrder()" class="primary-btn full-width">Place Order - ₹{{ totalAmount }}</button>
+      </div>
+
+      <!-- Fallback if no product selected -->
+      <ng-template #noProductTpl>
+        <div class="empty-product">
+          <p>No product selected. Please return to the product page and choose a variant.</p>
+          <button class="primary-btn" (click)="router.navigate(['/products'])">Go Back to Products</button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Add New Address Modal -->
+  <div class="modal-overlay" *ngIf="showAddressModal">
+    <div class="modal-content">
+      <h3>Add New Address</h3>
+      <form (ngSubmit)="saveAddress()">
+        <div class="form-grid">
+          <div>
+            <label>Full Name*</label>
+            <input [(ngModel)]="addressForm.fullName" name="fullName" required />
+          </div>
+          <div>
+            <label>Email*</label>
+            <input [(ngModel)]="addressForm.email" name="email" type="email" required />
+          </div>
+
+          <div class="full-width">
+            <label>Mobile No.*</label>
+            <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" type="tel" required />
+          </div>
+
+          <div class="full-width">
+            <label>Address*</label>
+            <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
+          </div>
+
+          <div class="full-width">
+            <label>Locality</label>
+            <input [(ngModel)]="addressForm.locality" name="locality" />
+          </div>
+
+          <div>
+            <label>Pincode*</label>
+            <input [(ngModel)]="addressForm.pincode" name="pincode" required />
+          </div>
+          <div>
+            <label>City*</label>
+            <input [(ngModel)]="addressForm.city" name="city" required />
+          </div>
+
+          <div class="full-width">
+            <label>State*</label>
+            <input [(ngModel)]="addressForm.state" name="state" required />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Save Address</button>
+          <button type="button" class="cancel-btn" (click)="showAddressModal=false">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Funny Payment Loading -->
+  <div class="payment-loading" *ngIf="loadingPayment">
+    <div class="loading-box">
+      <div class="spinner">💸</div>
+      <p>Hang tight! We're tickling the payment wires for you...</p>
+    </div>
+  </div>
+</div>
