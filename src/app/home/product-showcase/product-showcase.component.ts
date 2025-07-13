@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef, OnInit } from '@angular/core';
+import { Component, ViewContainerRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component';
@@ -14,6 +14,7 @@ type VariantData = {
   description: string;
   features: string[];
   price: number;
+  gallery: string[];
 };
 
 @Component({
@@ -23,10 +24,22 @@ type VariantData = {
   templateUrl: './product-showcase.component.html',
   styleUrls: ['./product-showcase.component.css'],
 })
-export class ProductShowcaseComponent implements OnInit {
+export class ProductShowcaseComponent implements OnInit, OnDestroy {
   selectedVariant: VariantKey | '' = '';
   quantity = 1;
-  unitPrice = -1; // -1 to clearly show when price isn't loaded
+  unitPrice = -1;
+
+  selectedImage: string = '';
+
+  isPaused = false;
+  interval: any;
+  currentSlide = 0;
+
+  carouselImages: string[] = [
+    'assets/traditional.png',
+    'assets/modern.png',
+    'assets/gym-mode.png'
+  ];
 
   variants: Record<VariantKey, VariantData> = {
     traditional: {
@@ -35,6 +48,11 @@ export class ProductShowcaseComponent implements OnInit {
       description: 'Perfect for traditional Indian meals',
       features: ['Add to roti dough', 'Stir into dal', 'Mix with poha'],
       price: -1,
+      gallery: [
+        'assets/traditional.png',
+        'assets/family-mode.png',
+        'assets/feminine-mode.png'
+      ]
     },
     modern: {
       name: 'Active Lifestyle',
@@ -42,7 +60,13 @@ export class ProductShowcaseComponent implements OnInit {
       description: 'Designed for active individuals',
       features: ['Feel stronger daily', 'Feel active', '16.7g protein'],
       price: -1,
-    },
+      gallery: [
+        'assets/modern.png',
+        'assets/gym-mode.png',
+        'assets/health-mode.png',
+        
+      ]
+    }
   };
 
   constructor(
@@ -54,6 +78,11 @@ export class ProductShowcaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPrices();
+    this.startCarousel();
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.interval);
   }
 
   async loadPrices() {
@@ -63,45 +92,24 @@ export class ProductShowcaseComponent implements OnInit {
 
       if (traditionalSnap.exists()) {
         const data = traditionalSnap.data() as { price?: number };
-        if (typeof data.price === 'number' && data.price > 0) {
-          this.variants.traditional.price = data.price;
-        } else {
-          console.error('Invalid price for traditional variant:', data.price);
-          alert('Error loading price for Traditional variant. Please try again later.');
-        }
-      } else {
-        console.error('Traditional variant document not found in Firestore.');
-        alert('Traditional variant not found. Please try again later.');
+        this.variants.traditional.price = data.price ?? -1;
       }
 
       if (modernSnap.exists()) {
         const data = modernSnap.data() as { price?: number };
-        if (typeof data.price === 'number' && data.price > 0) {
-          this.variants.modern.price = data.price;
-        } else {
-          console.error('Invalid price for modern variant:', data.price);
-          alert('Error loading price for Modern variant. Please try again later.');
-        }
-      } else {
-        console.error('Modern variant document not found in Firestore.');
-        alert('Modern variant not found. Please try again later.');
+        this.variants.modern.price = data.price ?? -1;
       }
     } catch (error) {
-      console.error('Error loading prices from Firestore:', error);
-      alert('Could not load product prices. Please check your connection or try again later.');
+      console.error('Error loading prices:', error);
     }
   }
 
   selectVariant(variant: string) {
     if (variant === 'traditional' || variant === 'modern') {
       this.selectedVariant = variant as VariantKey;
-      const selectedPrice = this.variants[this.selectedVariant].price;
-      if (selectedPrice > 0) {
-        this.unitPrice = selectedPrice;
-      } else {
-        alert('Error: Price unavailable for selected variant.');
-        this.unitPrice = -1;
-      }
+      const selected = this.variants[this.selectedVariant];
+      this.unitPrice = selected.price > 0 ? selected.price : -1;
+      this.selectedImage = selected.gallery[0];
     }
   }
 
@@ -123,7 +131,7 @@ export class ProductShowcaseComponent implements OnInit {
       return;
     }
     if (this.unitPrice <= 0) {
-      alert('Cannot place order: Price unavailable.');
+      alert('Price unavailable.');
       return;
     }
 
@@ -139,35 +147,51 @@ export class ProductShowcaseComponent implements OnInit {
     localStorage.setItem(
       'checkoutProduct',
       JSON.stringify({
-        productId: this.selectedVariant, // ✅ important for checkout flow
+        productId: this.selectedVariant,
         product: {
           name: variantData.name,
           image: variantData.image,
         },
         quantity: this.quantity,
         unitPrice: this.unitPrice,
-       
       })
     );
-     console.log(this.unitPrice)
     this.router.navigate(['/checkout']);
   }
 
   showLoginPopup() {
     this.viewContainerRef.clear();
     const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent);
-
     const onAuthSuccess = () => {
       this.viewContainerRef.clear();
       window.removeEventListener('auth-success', onAuthSuccess);
-      alert('Login successful! Continue with your purchase.');
+      alert('Login successful!');
       this.handleBuyNow();
     };
-
     window.addEventListener('auth-success', onAuthSuccess);
   }
 
   get selectedVariantData() {
     return this.selectedVariant ? this.variants[this.selectedVariant] : null;
+  }
+
+  toggleCarousel() {
+    this.isPaused = !this.isPaused;
+  }
+
+  startCarousel() {
+    this.interval = setInterval(() => {
+      if (!this.isPaused && !this.selectedVariant) {
+        this.currentSlide = (this.currentSlide + 1) % this.carouselImages.length;
+      }
+    }, 3000);
+  }
+
+  goToSlide(index: number) {
+    this.currentSlide = index;
+  }
+
+  selectGalleryImage(image: string) {
+    this.selectedImage = image;
   }
 }

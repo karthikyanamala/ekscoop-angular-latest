@@ -104,3 +104,28 @@
 .from-green-400.to-teal-500 { background: linear-gradient(to right, #4ade80, #14b8a6); }
 .from-purple-400.to-pink-500 { background: linear-gradient(to right, #c084fc, #ec4899); }
 .from-blue-400.to-purple-500 { background: linear-gradient(to right, #60a5fa, #a855f7); }
+
+@media (max-width: 400px) {
+  .feature-card {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .icon-box {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .feature-content {
+    flex: 1;
+  }
+
+  .feature-title {
+    font-size: 1rem;
+  }
+
+  .feature-description {
+    font-size: 0.875rem;
+  }
+}

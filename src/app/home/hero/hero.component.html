@@ -25,27 +25,35 @@
         </div>
 
         <div class="cta-buttons">
-          <button class="btn order-btn">Order Now - ₹45/-</button>
-          <button class="btn learn-btn">Learn More</button>
+          <button class="btn order-btn" (click)="scrollToProduct()">Order Now</button>
+
         </div>
       </div>
 
       <!-- Right Side -->
-      <div class="hero-images">
-        <div class="main-image">
-          <img src="assets/traditional.png" alt="YOU x 0.8 Traditional Design" />
-        </div>
-        <div class="secondary-image">
-          <img src="assets/modern.png" alt="YOU x 0.8 Modern Design" />
-        </div>
-        <div class="price-tag">₹45/-</div>
-      </div>
+<!-- Right Side -->
+<div class="hero-images">
+  <!-- Desktop View -->
+  <ng-container *ngIf="!isMobile">
+    <div class="secondary-image">
+      <img src="assets/traditional.png" alt="Traditional Design" />
     </div>
-  </div>
+    <div class="main-image">
+      <img src="assets/modern.png" alt="Modern Design" />
+    </div>
+  </ng-container>
 
-  <div class="scroll-indicator">
-    <svg class="arrow-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path fill="#9ca3af" d="M12 16.5l-7-7h14l-7 7z"/>
-    </svg>
+  <!-- Mobile View (Toggle Every 2s) -->
+  <ng-container *ngIf="isMobile">
+    <div class="main-image fade-image">
+      <img
+        [src]="showModern ? 'assets/modern.png' : 'assets/traditional.png'"
+        [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
+      />
+    </div>
+  </ng-container>
+</div>
+
+    </div>
   </div>
 </section>

@@ -4,11 +4,11 @@
     <!-- Meal Selector Buttons -->
     <div class="meal-selector">
       <button
-        *ngFor="let key of (meals | keyvalue)"
-        (click)="selectMeal(castKey(key.key))"
-        [class.active]="selectedMeal === castKey(key.key)">
-        <span class="meal-icon">{{ castMeal(key.value).icon }}</span>
-        {{ castMeal(key.value).title }}
+        *ngFor="let mealKey of mealOrder"
+        (click)="selectMeal(mealKey)"
+        [class.active]="selectedMeal === mealKey">
+        <span class="meal-icon">{{ meals[mealKey].icon }}</span>
+        {{ meals[mealKey].title }}
       </button>
     </div>
 
@@ -39,11 +39,9 @@
       <div class="meal-images">
         <div class="img-box">
           <img src="assets/traditional.png" alt="Traditional Variant" />
-          <div class="badge orange">Original</div>
         </div>
         <div class="img-box">
           <img src="assets/modern.png" alt="Modern Variant" />
-          <div class="badge green">Premium</div>
         </div>
       </div>
     </div>
@@ -51,12 +49,17 @@
     <!-- Usage Modal -->
     <div class="modal" *ngIf="showModal">
       <div class="modal-content">
-        <h3>How to Use YOU x 0.8 Protein Powder</h3>
         <button class="close-btn" (click)="closeModal()">X</button>
-        <p>
-          You already know how to cook your favorite foods — whether it's dosa, poha, or upma. We're not here to teach you how to make them. We're just here to show you how to make them stronger 💪 — without changing the taste.
-        </p>
-        <h4>Just stir it in. That's it.</h4>
+        <h3>How to Use YOU x 0.8 Protein Powder</h3>
+        
+        <div class="intro-text">
+          <p>
+            You already know how to cook your favorite foods — whether it's dosa, poha, or upma. 
+            We're not here to teach you how to make them. We're just here to show you how to 
+            <strong>make them stronger 💪 — without changing the taste.</strong>
+          </p>
+        </div>
+
         <div class="instructions-grid">
           <div class="instruction-card" *ngFor="let ins of usageInstructions">
             <div class="instruction-icon">{{ ins.icon }}</div>
@@ -66,8 +69,10 @@
             </div>
           </div>
         </div>
+
         <div class="trust-message">
-          We're Indians — we know how to balance our flavors. So trust yourself — you can mix YOU x 0.8 into your food without messing up the taste.
+          We're Indians — we know how to balance our flavors. 
+          <strong>Trust yourself.</strong> You can mix <strong>YOU x 0.8</strong> into your food without messing up the taste.
         </div>
       </div>
     </div>

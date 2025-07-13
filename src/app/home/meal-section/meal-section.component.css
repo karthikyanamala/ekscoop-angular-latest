@@ -13,7 +13,7 @@
 .meal-icon { margin-right: 8px; }
 
 .meal-content {
-  display: flex; flex-wrap: wrap; gap: 30px; border-radius: 30px; padding: 40px; transition: all 0.5s;
+  display: flex; flex-wrap: wrap; gap: 30px; border-radius: 0px; padding: 40px; transition: all 0.5s;
 }
 .meal-text { flex: 1 1 400px; }
 .meal-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
@@ -34,10 +34,10 @@
 
 /* Modal */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-.modal-content { background: #fff; border-radius: 30px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; }
+.modal-content { background: #fff; border-radius: 30px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 10px; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .modal-header h3 { font-size: 28px; }
-.close-btn { background: #e53935; color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; }
+.close-btn { background: #e53935; color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; margin-top: 10px;}
 .intro-text { font-size: 18px; color: #555; margin-bottom: 30px; }
 .instructions-grid { display: flex; flex-wrap: wrap; gap: 20px; }
 .instruction-card { flex: 1 1 250px; background: #fff3e0; padding: 20px; border-radius: 20px; display: flex; gap: 15px; align-items: flex-start; }
@@ -45,3 +45,44 @@
 .instruction-card h5 { font-size: 18px; margin: 0 0 8px; }
 .instruction-card p { font-size: 14px; color: #555; }
 .trust-text { background: #ffe0b2; padding: 20px; border-radius:0px}
+/* Beautified Intro Text */
+.intro-text {
+  background: #fff8f0;
+  border-left: 6px solid #fb8c00;
+  padding: 20px;
+  border-radius: 16px;
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(251, 140, 0, 0.1);
+}
+.intro-text p {
+  margin: 0;
+  line-height: 1.6;
+}
+.intro-text strong {
+  color: #fb8c00;
+}
+
+/* Beautified Trust Message */
+.trust-message {
+  background: linear-gradient(to right, #fff3e0, #ffe0b2);
+  padding: 20px;
+  border-radius: 16px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  line-height: 1.6;
+  text-align: center;
+  margin-top: 30px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(255, 167, 38, 0.1);
+}
+.trust-message .trust-icon {
+  display: inline-block;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+.trust-message strong {
+  color: #fb8c00;
+}

@@ -44,7 +44,7 @@
 
   
   <!-- Midnight Footer -->
-  <footer class="sunset-footer">
+  <footer class="sunset-footer"  [ngClass]="{ 'custom-footer': isSpecialPage() }">
     <div class="night-elements">
       <div class="moon"></div>
       <div class="star star-1"></div>
