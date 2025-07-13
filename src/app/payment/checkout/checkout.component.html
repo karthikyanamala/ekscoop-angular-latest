@@ -1,3 +1,4 @@
+<app-corner-badge></app-corner-badge>
 <div class="checkout-page">
   <div class="header">
     <h1>Secure Checkout</h1>
@@ -7,21 +8,22 @@
   <div class="main-grid">
     <div class="checkout-left">
       <!-- Account Info -->
-      <div class="card">
-        <div class="card-header">
-          <h2>Account Information</h2>
-        </div>
-        <div class="card-content grid-2">
-          <div>
-            <label>Full Name</label>
-            <input type="text" [value]="fullName" disabled />
-          </div>
-          <div>
-            <label>Email</label>
-            <input type="email" [value]="email" disabled />
-          </div>
-        </div>
-      </div>
+    <div class="card">
+  <div class="card-header">
+    <h2>Account Information</h2>
+  </div>
+  <div class="card-content account-info-grid">
+    <div>
+      <label for="fullName">Full Name</label>
+      <input id="fullName" type="text" [value]="fullName" disabled />
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input id="email" type="email" [value]="email" disabled />
+    </div>
+  </div>
+</div>
+
 
       <!-- Delivery Address -->
       <div class="card">
@@ -115,55 +117,60 @@
 
   <!-- Add New Address Modal -->
   <div class="modal-overlay" *ngIf="showAddressModal">
-    <div class="modal-content">
-      <h3>Add New Address</h3>
-      <form (ngSubmit)="saveAddress()">
-        <div class="form-grid">
-          <div>
-            <label>Full Name*</label>
-            <input [(ngModel)]="addressForm.fullName" name="fullName" required />
-          </div>
-          <div>
-            <label>Email*</label>
-            <input [(ngModel)]="addressForm.email" name="email" type="email" required />
-          </div>
+<div class="modal-content">
+  <button class="close-btn" (click)="showAddressModal = false">×</button>
+  <h3>Add New Address</h3>
 
-          <div class="full-width">
-            <label>Mobile No.*</label>
-            <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" type="tel" required />
-          </div>
+  <form (ngSubmit)="saveAddress()">
+    <div class="form-grid">
+      <div>
+        <label>Full Name*</label>
+        <input [(ngModel)]="addressForm.fullName" name="fullName" required />
+      </div>
+      <div>
+        <label>Email*</label>
+        <input [(ngModel)]="addressForm.email" name="email" type="email" required />
+      </div>
 
-          <div class="full-width">
-            <label>Address*</label>
-            <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
-          </div>
+      <div class="full-width">
+        <label>Mobile No.*</label>
+        <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" required />
+      </div>
 
-          <div class="full-width">
-            <label>Locality</label>
-            <input [(ngModel)]="addressForm.locality" name="locality" />
-          </div>
+      <div class="full-width">
+        <label>Address*</label>
+        <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
+      </div>
 
-          <div>
-            <label>Pincode*</label>
-            <input [(ngModel)]="addressForm.pincode" name="pincode" required />
-          </div>
-          <div>
-            <label>City*</label>
-            <input [(ngModel)]="addressForm.city" name="city" required />
-          </div>
+      <div class="full-width">
+        <label>Locality</label>
+        <input [(ngModel)]="addressForm.locality" name="locality" />
+      </div>
 
-          <div class="full-width">
-            <label>State*</label>
-            <input [(ngModel)]="addressForm.state" name="state" required />
-          </div>
-        </div>
+      <div>
+        <label>Pincode*</label>
+        <input [(ngModel)]="addressForm.pincode" name="pincode" required />
+      </div>
 
-        <div class="modal-actions">
-          <button type="submit" class="save-btn">Save Address</button>
-          <button type="button" class="cancel-btn" (click)="showAddressModal=false">Cancel</button>
-        </div>
-      </form>
+      <div>
+        <label>City*</label>
+        <input [(ngModel)]="addressForm.city" name="city" required />
+      </div>
+
+      <div class="full-width">
+        <label>State*</label>
+        <input [(ngModel)]="addressForm.state" name="state" required />
+      </div>
     </div>
+
+    <div class="modal-actions">
+      <button type="submit" class="save-btn">Save Address</button>
+      <button type="button" class="cancel-btn" (click)="showAddressModal = false">Cancel</button>
+    </div>
+  </form>
+</div>
+
+
   </div>
 
   <!-- Payment Loading -->
@@ -174,3 +181,4 @@
     </div>
   </div>
 </div>
+<app-footer></app-footer>
