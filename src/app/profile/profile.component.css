@@ -6,6 +6,7 @@
 .profile-btn {
   background: white;
   border: none;
+  margin-left: 85px;
   font-weight: 600;
   cursor: pointer;
   padding: 8px 12px;
@@ -70,6 +71,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .gsi-material-button {
+  margin-left: 90px;
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;

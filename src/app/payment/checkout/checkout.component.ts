@@ -4,12 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
 import { Firestore, collection, getDocs, addDoc, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
+import { FooterComponent } from '../../footer/footer.component';
 declare var Razorpay: any;
+
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,CornerBadgeComponent,FooterComponent],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css'],
 })
