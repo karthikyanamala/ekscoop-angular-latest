@@ -7,26 +7,30 @@
       </p>
     </div>
 
-    <div class="grid">
-      <div
-        *ngFor="let feature of trustFeatures"
-        class="feature-card"
-      >
-        <div class="icon-box">
-          <i [class]="'lucide lucide-' + feature.icon"></i>
-        </div>
-        <h3 class="feature-title">{{ feature.title }}</h3>
-        <p class="feature-description">{{ feature.description }}</p>
-      </div>
-    </div>
+   <div class="grid">
+  <div *ngFor="let feature of trustFeatures" class="feature-card">
+    <div class="icon-box" [innerHTML]="feature.icon"></div>
+
+    <h3 class="feature-title">{{ feature.title }}</h3>
+    <p class="feature-description">{{ feature.description }}</p>
+  </div>
+</div>
+
 
     <div class="cta-card">
       <h3 class="cta-title">
         Start your journey to perfect nutrition with YOU x 0.8 plant protein
       </h3>
-      <button class="cta-button">
-        Order Your YOU x 0.8 Now
-      </button>
+      <button class="cta-button"(click)="scrollToProduct()">Order Your YOU x 0.8 Now</button>
+        
+      
     </div>
   </div>
+  
 </section>
+<!-- Smooth Wave Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+    <path d="M0,0 C480,100 960,0 1440,100 L1440,0 L0,0 Z" fill="#0f172a"></path>
+  </svg>
+</div>

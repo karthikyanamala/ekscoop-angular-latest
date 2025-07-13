@@ -27,4 +27,11 @@ export class HeroComponent implements OnInit {
   checkIfMobile() {
     this.isMobile = window.innerWidth <= 768;
   }
+  scrollToProduct() {
+  const el = document.getElementById('product-showcase');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
 }

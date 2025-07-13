@@ -244,3 +244,12 @@
     }
   }
   
+  footer {
+  padding: 2rem;
+  background: #f3f3f3;
+}
+
+/* Special page-only style */
+.custom-footer {
+ border-radius: 0px;
+}

@@ -7,10 +7,10 @@ import { ProductShowcaseComponent } from '../product-showcase/product-showcase.c
 import { ShoppingPlatformsComponent } from '../shopping-platforms/shopping-platforms.component';
 import { TrustSectionComponent } from '../trust-section/trust-section.component';
 import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
-
+import { FooterComponent } from '../../footer/footer.component';
 @Component({
   selector: 'app-homepage',
-  imports: [ HeroComponent,CornerBadgeComponent,MealSectionComponent,TrustSectionComponent,FeaturesComponent,ProductShowcaseComponent,ShoppingPlatformsComponent,CommonModule,],
+  imports: [ HeroComponent,CornerBadgeComponent,MealSectionComponent,TrustSectionComponent,FooterComponent,FeaturesComponent,ProductShowcaseComponent,ShoppingPlatformsComponent,CommonModule,],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css'
 })

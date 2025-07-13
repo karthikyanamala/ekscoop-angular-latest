@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 interface Meal {
   title: string;
   subtitle: string;
@@ -18,13 +19,17 @@ interface UsageInstruction {
 
 @Component({
   selector: 'app-meal-section',
-  imports:[CommonModule],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './meal-section.component.html',
   styleUrls: ['./meal-section.component.css']
 })
 export class MealSectionComponent {
   selectedMeal: string = 'breakfast';
   showModal: boolean = false;
+
+  // Define the order here
+  mealOrder: string[] = ['breakfast', 'lunch', 'snacks', 'dinner'];
 
   meals: Record<string, Meal> = {
     breakfast: {
@@ -96,13 +101,5 @@ export class MealSectionComponent {
 
   closeModal(): void {
     this.showModal = false;
-  }
-
-  castKey(value: unknown): string {
-    return value as string;
-  }
-
-  castMeal(value: unknown): Meal {
-    return value as Meal;
   }
 }

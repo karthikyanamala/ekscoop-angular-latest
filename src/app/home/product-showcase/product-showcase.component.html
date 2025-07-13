@@ -1,4 +1,4 @@
-<section class="showcase">
+<section id="product-showcase" class="showcase">
   <div class="container">
     <!-- Title Block -->
     <div class="title-block">
@@ -10,16 +10,47 @@
       <!-- Product Image -->
       <div class="image-container">
         <div class="image-box">
-          <img 
-            *ngIf="selectedVariantData" 
-            [src]="selectedVariantData.image" 
-            [alt]="selectedVariantData.name" />
+          <!-- Show selected variant image -->
+         <img
+  *ngIf="selectedVariantData"
+  [src]="selectedImage || selectedVariantData.image"
+  [alt]="selectedVariantData.name" />
+
+          <!-- Show carousel when no variant is selected -->
           <div *ngIf="!selectedVariant" class="placeholder">
-            <p>YOU x 0.8 is India’s first unflavoured, diabetic-friendly plant protein powder made to mix into traditional Indian meals. Pick a packaging style that suits you.</p>
+        <div class="carousel-wrapper" *ngIf="!selectedVariant">
+  <div class="carousel-slide-container">
+    <div
+      class="carousel-slide"
+      *ngFor="let img of carouselImages; let i = index"
+      [class.active]="i === currentSlide">
+      <img [src]="img" alt="Product visual" />
+    </div>
+  </div>
+
+  <!-- Dots -->
+  <div class="carousel-dots">
+    <span *ngFor="let dot of carouselImages; let i = index"
+          [class.active]="i === currentSlide"
+          (click)="goToSlide(i)"></span>
+  </div>
+  <button class="carousel-toggle-btn" (click)="toggleCarousel()">
+  {{ isPaused ? '▶️' : '⏸️' }}
+</button>
+</div>
+
           </div>
+
+            <div class="thumbnail-row" *ngIf="selectedVariantData">
+    <img *ngFor="let img of selectedVariantData.gallery"
+         [src]="img"
+         [class.active]="img === selectedImage"
+         (click)="selectGalleryImage(img)"
+         alt="Thumbnail" />
+  </div>
         </div>
 
-        <!-- Floating Tag -->
+        <!-- Floating Protein Tag -->
         <div class="floating-tag" *ngIf="selectedVariantData">
           <div class="floating-content">
             <div class="protein">16.7g</div>
@@ -35,11 +66,11 @@
           <h3>Select Variant*</h3>
           <div class="variant-options">
             <ng-container *ngFor="let key of (variants | keyvalue)">
-              <ng-container *ngIf="key && key.value && key.value.name; else skipVariant">
+              <ng-container *ngIf="key?.value?.name; else skipVariant">
                 <div
                   (click)="selectVariant(key.key)"
                   class="variant-card"
-                  [ngClass]="{'active': selectedVariant === key.key}">
+                  [ngClass]="{ 'active': selectedVariant === key.key }">
                   <div class="variant-name">{{ key.value.name }}</div>
                   <div class="variant-description">{{ key.value.description }}</div>
                 </div>
@@ -61,7 +92,9 @@
 
         <!-- Nutrition Facts -->
         <div class="nutrition-facts">
-          <h4>Nutrition Facts</h4>
+          <h4>
+            Nutrition Facts <span class="per-sachet">/ per sachet</span>
+          </h4>
           <div class="nutrition-grid">
             <div>
               <div class="value orange">16.7g</div>
@@ -74,21 +107,24 @@
           </div>
         </div>
 
-        <!-- Ratings and Pricing -->
+        <!-- Ratings and Price -->
         <div class="ratings-price" *ngIf="selectedVariantData">
           <div class="ratings">
             <span *ngFor="let star of [].constructor(5)">⭐</span>
             <span class="reviews">4.8/5 (2,500+ reviews)</span>
           </div>
           <div class="price-stock">
-            <div class="price">₹{{ calculatedPrice  }}</div>
+            <div class="price">₹{{ calculatedPrice }}</div>
             <div class="stock">In Stock • Free delivery</div>
           </div>
         </div>
 
-        <!-- Quantity Selection -->
+        <!-- Quantity Selector -->
         <div *ngIf="selectedVariantData" class="quantity-selector">
-          <label for="quantity">Quantity (kg):</label>
+          <label for="quantity">
+            Quantity (kg)
+            <span class="per-sachet">/ {{ quantity * 50 }} sachets</span>:
+          </label>
           <div class="quantity-controls">
             <button (click)="decreaseQuantity()" class="qty-btn">-</button>
             <span class="qty-display">{{ quantity }}</span>
