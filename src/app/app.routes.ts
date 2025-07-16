@@ -23,8 +23,11 @@ export const routes: Routes = [
 {path:'address',loadComponent:()=>import('./userprofiles/address/address.component').then(m=>m.AddressComponent)},
 {path:'checkout',loadComponent:()=>import('./payment/checkout/checkout.component').then(m=>m.CheckoutComponent)},
 {path:'orders',loadComponent:()=>import('./userprofiles/myorders/myorders.component').then(m=>m.MyOrdersComponent)},
-
-
+{
+  path: 'blog',
+  loadComponent: () => import('./blog/blog/blog.component').then(m => m.BlogComponent)
+},
+{ path: 'blog/:slug', loadComponent: () => import('./blog/blog-detail/blog-detail.component').then(m => m.BlogDetailComponent) },
 
 
   { path: '**', redirectTo: 'home' }
