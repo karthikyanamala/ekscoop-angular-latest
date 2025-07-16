@@ -1,0 +1,13 @@
+
+<div class="breadcrumb">
+  <a href="/blog" class="back-link">← Back to Blog</a>
+</div>
+
+<div class="content" [innerHTML]="content"></div>
+
+<div class="share-section">
+  <p>Share this post:</p>
+  <a [href]="'https://wa.me/?text=' + shareUrl" target="_blank">WhatsApp</a> |
+  <a [href]="'https://www.facebook.com/sharer/sharer.php?u=' + shareUrl" target="_blank">Facebook</a> |
+  <a [href]="'https://twitter.com/intent/tweet?url=' + shareUrl" target="_blank">X (Twitter)</a>
+</div>

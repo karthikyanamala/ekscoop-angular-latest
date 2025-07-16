@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #fff3e0, #ffe0b2);
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+}
+
+.breadcrumb {
+  margin-bottom: 1rem;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #ff6f00;
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.content {
+  line-height: 1.7;
+}
+
+.share-section {
+  margin-top: 2rem;
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+}
+.breadcrumb {
+  margin-bottom: 1rem;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #ff6f00;
+  font-weight: 500;
+}
