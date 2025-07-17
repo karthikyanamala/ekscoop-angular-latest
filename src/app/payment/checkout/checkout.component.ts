@@ -271,7 +271,7 @@ export class CheckoutComponent implements OnInit {
       currency: order.currency,
       name: 'ekScoop',
       description: 'Protein Sachets Order',
-      image: 'https://yourbrand.com/logo.png',
+      image: 'https://ekscoop.com/assets/favicon/android-chrome-192x192.png',
       order_id: order.id,
       theme: { color: '#ff6600' },
       handler: async (response: any) => {
@@ -377,17 +377,26 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  async loadRazorpayScript(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (typeof Razorpay !== 'undefined') {
-        resolve();
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Razorpay script failed to load.'));
-      document.body.appendChild(script);
-    });
-  }
+async loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (document.getElementById('razorpay-script')) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'razorpay-script';
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      console.error('Failed to load Razorpay SDK.');
+      resolve(false);
+    };
+
+    document.body.appendChild(script);
+  });
+}
+
 }
