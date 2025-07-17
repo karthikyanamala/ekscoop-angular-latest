@@ -1,4 +1,7 @@
-import { Component,ElementRef,OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
+
 import { HeroSectionComponent } from '../hero-section/hero-section.component';
 import { RetailerBenefitsComponent } from '../retailer-benefits/retailer-benefits.component';
 import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
@@ -9,18 +12,33 @@ import { SimpleProcessComponent } from '../simple-process/simple-process.compone
 import { PlatformCompareComponent } from '../platform-compare/platform-compare.component';
 import { ContactUsComponent } from '../contact-us/contact-us.component';
 import { FooterComponent } from '../../footer/footer.component';
-import { Title, Meta } from '@angular/platform-browser';
+
 @Component({
   selector: 'app-partner-with-us',
   standalone: true,
-  imports: [HeroSectionComponent,ContactUsComponent,FooterComponent,RetailerBenefitsComponent,CornerBadgeComponent,PlatformCompareComponent,SimpleProcessComponent,PartnerBenefitsComponent,JoinBannerComponent,TestimonialCarouselComponent],
+  imports: [
+    HeroSectionComponent,
+    ContactUsComponent,
+    FooterComponent,
+    RetailerBenefitsComponent,
+    CornerBadgeComponent,
+    PlatformCompareComponent,
+    SimpleProcessComponent,
+    PartnerBenefitsComponent,
+    JoinBannerComponent,
+    TestimonialCarouselComponent
+  ],
   templateUrl: './partner-with-us.component.html',
   styleUrl: './partner-with-us.component.css'
 })
 export class PartnerWithUsComponent implements OnInit {
   @ViewChild('contactSection', { static: false }) contactSection!: ElementRef;
 
-  constructor(private titleService: Title, private metaService: Meta) {}
+  constructor(
+    private titleService: Title,
+    private metaService: Meta,
+    @Inject(DOCUMENT) private document: Document
+  ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle(
@@ -49,13 +67,19 @@ export class PartnerWithUsComponent implements OnInit {
       },
       {
         property: 'og:url',
-        content: 'https://ekscoop.com/partner-with-us'
+        content: 'https://www.ekscoop.com/partner-with-us'
       },
       {
         name: 'robots',
         content: 'index, follow'
       }
     ]);
+
+    // Inject canonical link
+    const canonical = this.document.createElement('link');
+    canonical.setAttribute('rel', 'canonical');
+    canonical.setAttribute('href', 'https://www.ekscoop.com/partner-with-us');
+    this.document.head.appendChild(canonical);
   }
 
   scrollToContact() {

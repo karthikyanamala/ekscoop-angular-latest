@@ -26,35 +26,68 @@ export class MealSectionsComponent implements OnInit {
       'Add Protein to Roti, Dal, Curd, Poha | Indian Meals with ekScoop'
     );
 
-    this.metaService.addTags([
-      {
-        name: 'description',
-        content:
-          'Learn how to mix YOU x 0.8 unflavoured plant protein into Indian meals like roti, dal, poha, and curd. Ideal for breakfast, lunch, snacks, and dinner. No taste change, just extra strength.'
-      },
-      {
-        name: 'keywords',
-        content:
-          'protein for roti, dal protein, poha protein mix, curd protein, plant protein for Indian food, vegan protein with meals, how to add protein to food, high protein Indian food, YOU x 0.8 sachet, ekScoop meal guide, gym supplements with Indian food, unflavoured protein for rice, lentil protein boost'
-      },
-      {
-        property: 'og:title',
-        content: 'How to Add ekScoop Protein to Your Indian Meals'
-      },
-      {
-        property: 'og:description',
-        content:
-          'Mix YOU x 0.8 into your regular meals without affecting taste. Protein for roti, dal, curd, poha, upma, and more. Easy. Diabetic-friendly. Zero sugar.'
-      },
-      {
-        property: 'og:url',
-        content: 'https://ekscoop.com/meal-section'
-      },
-      {
-        name: 'robots',
-        content: 'index, follow'
-      }
-    ]);
+    this.metaService.updateTag({
+      name: 'description',
+      content:
+        'Learn how to mix YOU x 0.8 unflavoured plant protein into Indian meals like roti, dal, poha, and curd. Ideal for breakfast, lunch, snacks, and dinner. No taste change, just extra strength.'
+    });
+
+    this.metaService.updateTag({
+      name: 'keywords',
+      content:
+        'protein for roti, dal protein, poha protein mix, curd protein, plant protein for Indian food, vegan protein with meals, how to add protein to food, high protein Indian food, YOU x 0.8 sachet, ekScoop meal guide, gym supplements with Indian food, unflavoured protein for rice, lentil protein boost'
+    });
+
+    this.metaService.updateTag({
+      property: 'og:title',
+      content: 'How to Add ekScoop Protein to Your Indian Meals'
+    });
+
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: 'Mix YOU x 0.8 into your regular meals without affecting taste. Protein for roti, dal, curd, poha, upma, and more. Easy. Diabetic-friendly. Zero sugar.'
+    });
+
+    this.metaService.updateTag({
+      property: 'og:url',
+      content: 'https://ekscoop.com/meal-section'
+    });
+
+    this.metaService.updateTag({
+      property: 'og:type',
+      content: 'article'
+    });
+
+    this.metaService.updateTag({
+      name: 'robots',
+      content: 'index, follow'
+    });
+
+    this.metaService.updateTag({
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    });
+
+    this.metaService.updateTag({
+      name: 'twitter:title',
+      content: 'How to Add ekScoop Protein to Indian Meals'
+    });
+
+    this.metaService.updateTag({
+      name: 'twitter:description',
+      content: 'Mix YOU x 0.8 into roti, dal, curd, poha. No taste change. Pure strength.'
+    });
+
+    this.metaService.updateTag({
+      name: 'twitter:image',
+      content: 'https://ekscoop.com/assets/blog/poha-protein.jpg'
+    });
+
+    // Canonical tag
+    const link: HTMLLinkElement = document.createElement('link');
+    link.setAttribute('rel', 'canonical');
+    link.setAttribute('href', 'https://ekscoop.com/meal-section');
+    document.head.appendChild(link);
   }
 
   toggleMeal(mealId: string) {

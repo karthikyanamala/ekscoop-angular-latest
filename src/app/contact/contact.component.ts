@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { CornerBadgeComponent } from '../corner-badge/corner-badge.component';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-contact',
@@ -10,11 +11,17 @@ import { CornerBadgeComponent } from '../corner-badge/corner-badge.component';
   styleUrls: ['./contact.component.css']
 })
 export class ContactComponent implements OnInit {
-  constructor(private titleService: Title, private metaService: Meta) {}
+  constructor(
+    private titleService: Title,
+    private metaService: Meta,
+    @Inject(DOCUMENT) private document: Document
+  ) {}
 
   ngOnInit(): void {
+    // Set SEO-friendly page title
     this.titleService.setTitle('Contact ekScoop | Protein for Indian Meals');
 
+    // Add SEO meta tags
     this.metaService.addTags([
       {
         name: 'description',
@@ -37,12 +44,18 @@ export class ContactComponent implements OnInit {
       },
       {
         property: 'og:url',
-        content: 'https://ekscoop.com/contact-us'
+        content: 'https://www.ekscoop.com/contact-us'
       },
       {
         name: 'robots',
         content: 'index, follow'
       }
     ]);
+
+    // Add canonical link for SEO
+    const canonicalLink = this.document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    canonicalLink.setAttribute('href', 'https://www.ekscoop.com/contact-us');
+    this.document.head.appendChild(canonicalLink);
   }
 }

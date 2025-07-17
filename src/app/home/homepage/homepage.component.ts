@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { FeaturesComponent } from '../features/features.component';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,7 @@ import { ShoppingPlatformsComponent } from '../shopping-platforms/shopping-platf
 import { TrustSectionComponent } from '../trust-section/trust-section.component';
 import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
 import { FooterComponent } from '../../footer/footer.component';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-homepage',
@@ -28,47 +29,47 @@ import { FooterComponent } from '../../footer/footer.component';
   styleUrls: ['./homepage.component.css']
 })
 export class HomepageComponent implements OnInit {
-  constructor(private titleService: Title, private metaService: Meta) {}
+  constructor(
+    private titleService: Title,
+    private metaService: Meta,
+    @Inject(DOCUMENT) private doc: Document
+  ) {}
 
   ngOnInit(): void {
-    // Set SEO title
-    this.titleService.setTitle(
-      'Plant Protein Powder for Indian Meals | Unflavoured | ekScoop'
-    );
+    const title = 'Plant Protein Powder for Indian Meals | Unflavoured | ekScoop';
+    const description = 'Buy YOU x 0.8 – an unflavoured plant protein made for Indian families. Mix easily with roti, dal, poha or curd. Zero taste. Full strength. Diabetic-friendly. Lactose-free. Gluten-free.';
+    const imageUrl = 'https://www.ekscoop.com/assets/images/og-protein-banner.jpg';
+    const pageUrl = 'https://www.ekscoop.com/';
 
-    // Set core meta description
-    this.metaService.addTags([
-      {
-        name: 'description',
-        content:
-          'Buy YOU x 0.8 – an unflavoured plant protein made for Indian families. Mix easily with roti, dal, poha or curd. Zero taste. Full strength. Diabetic-friendly. Lactose-free. Gluten-free.'
-      },
-      {
-        name: 'keywords',
-        content:
-          'plant protein India, unflavoured protein powder, protein for roti, dal protein supplement, vegan protein Indian food, protein for gym, protein for Indian homes, gym protein without flavour, lactose-free protein, protein for Indian men and women, healthy muscle food, muscle gain with Indian meals, YOU x 0.8, ekScoop protein, gym supplement for vegetarians, gym supplement for Indians'
-      },
-      {
-        property: 'og:title',
-        content: 'YOU x 0.8 – Unflavoured Plant Protein for Indian Meals'
-      },
-      {
-        property: 'og:description',
-        content:
-          'Add extra protein to your roti, dal, poha or curd with YOU x 0.8. Indian-designed, plant-based, tasteless, and easy to mix.'
-      },
-      {
-        property: 'og:image',
-        content: 'https://www.ekscoop.com/assets/images/og-protein-banner.jpg' // Replace with actual path
-      },
-      {
-        property: 'og:url',
-        content: 'https://www.ekscoop.com/'
-      },
-      {
-        name: 'robots',
-        content: 'index, follow'
-      }
-    ]);
+    // Set title
+    this.titleService.setTitle(title);
+
+    // Canonical tag (avoids duplicate content issues)
+    const link: HTMLLinkElement = this.doc.createElement('link');
+    link.setAttribute('rel', 'canonical');
+    link.setAttribute('href', pageUrl);
+    this.doc.head.appendChild(link);
+
+    // Clear and set meta tags properly
+    this.metaService.updateTag({ name: 'description', content: description });
+    this.metaService.updateTag({
+      name: 'keywords',
+      content:
+        'plant protein India, unflavoured protein powder, protein for roti, dal protein supplement, vegan protein Indian food, protein for gym, protein for Indian homes, gym protein without flavour, lactose-free protein, protein for Indian men and women, healthy muscle food, muscle gain with Indian meals, YOU x 0.8, ekScoop protein, gym supplement for vegetarians, gym supplement for Indians'
+    });
+    this.metaService.updateTag({ name: 'robots', content: 'index, follow' });
+
+    // Open Graph
+    this.metaService.updateTag({ property: 'og:title', content: 'YOU x 0.8 – Unflavoured Plant Protein for Indian Meals' });
+    this.metaService.updateTag({ property: 'og:description', content: 'Add extra protein to your roti, dal, poha or curd with YOU x 0.8. Indian-designed, plant-based, tasteless, and easy to mix.' });
+    this.metaService.updateTag({ property: 'og:image', content: imageUrl });
+    this.metaService.updateTag({ property: 'og:url', content: pageUrl });
+    this.metaService.updateTag({ property: 'og:type', content: 'website' });
+
+    // Twitter meta
+    this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.metaService.updateTag({ name: 'twitter:title', content: title });
+    this.metaService.updateTag({ name: 'twitter:description', content: description });
+    this.metaService.updateTag({ name: 'twitter:image', content: imageUrl });
   }
 }
