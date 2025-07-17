@@ -49,10 +49,10 @@
   <!-- Desktop View -->
   <ng-container *ngIf="!isMobile">
     <div class="secondary-image">
-      <img src="assets/traditional.png" alt="Traditional Design" />
+      <img src="../../../assets/traditional-webp.webp" alt="Traditional Design"  fetchpriority="high"/>
     </div>
     <div class="main-image">
-      <img src="assets/modern.png" alt="Modern Design" />
+      <img src="../../../assets/modern.webp" alt="Modern Design" fetchpriority="high"/>
     </div>
   </ng-container>
 
@@ -60,8 +60,9 @@
   <ng-container *ngIf="isMobile">
     <div class="main-image fade-image">
       <img
-        [src]="showModern ? 'assets/modern.png' : 'assets/traditional.png'"
+        [src]="showModern ? '../../../assets/modern.webp' : '../../../assets/traditional-webp.webp'"
         [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
+        [attr.fetchpriority]="showModern ? null : 'high'"
       />
     </div>
   </ng-container>
