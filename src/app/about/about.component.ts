@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { CornerBadgeComponent } from '../corner-badge/corner-badge.component';
 import { Title, Meta } from '@angular/platform-browser';
 
@@ -25,13 +25,17 @@ export class AboutComponent implements OnInit {
     { title: 'Technology & Trust', description: 'We bring technology, trust, and transparency to India’s most powerful network — your local shop.' }
   ];
 
-  constructor(private titleService: Title, private metaService: Meta) {}
+  constructor(
+    private titleService: Title,
+    private metaService: Meta,
+    @Inject(DOCUMENT) private document: Document
+  ) {}
 
   ngOnInit(): void {
-    this.titleService.setTitle(
-      'About ekScoop | Solving India’s Protein Gap with Local Power'
-    );
+    // Set page title
+    this.titleService.setTitle('About ekScoop | Solving India’s Protein Gap with Local Power');
 
+    // Set meta tags
     this.metaService.addTags([
       {
         name: 'description',
@@ -61,5 +65,11 @@ export class AboutComponent implements OnInit {
         content: 'index, follow'
       }
     ]);
+
+    // Set canonical tag for SEO
+    const canonicalLink = this.document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    canonicalLink.setAttribute('href', 'https://www.ekscoop.com/about-us');
+    this.document.head.appendChild(canonicalLink);
   }
 }
