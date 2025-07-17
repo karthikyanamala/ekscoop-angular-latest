@@ -36,34 +36,34 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
   currentSlide = 0;
 
   carouselImages: string[] = [
-    'assets/traditional.png',
-    'assets/modern.png',
-    'assets/gym-mode.png'
+    'assets/traditional-webp.webp',
+    'assets/modern.webp',
+    'assets/gym-mode.webp'
   ];
 
   variants: Record<VariantKey, VariantData> = {
     traditional: {
       name: 'Traditional Design',
-      image: 'assets/traditional.png',
+      image: 'assets/traditional-webp.webp',
       description: 'Perfect for traditional Indian meals',
       features: ['Add to roti dough', 'Stir into dal', 'Mix with poha'],
       price: -1,
       gallery: [
-        'assets/traditional.png',
-        'assets/family-mode.png',
-        'assets/feminine-mode.png'
+        'assets/traditional-webp.webp',
+        'assets/family-mode.webp',
+        'assets/feminine-mode.webp'
       ]
     },
     modern: {
       name: 'Active Lifestyle',
-      image: 'assets/modern.png',
+      image: 'assets/modern.webp',
       description: 'Designed for active individuals',
       features: ['Feel stronger daily', 'Feel active', '16.7g protein'],
       price: -1,
       gallery: [
-        'assets/modern.png',
-        'assets/gym-mode.png',
-        'assets/health-mode.png',
+        'assets/modern.webp',
+        'assets/gym-mode.webp',
+        'assets/health-mode.webp',
         
       ]
     }
