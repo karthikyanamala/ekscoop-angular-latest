@@ -1,0 +1,53 @@
+<div class="question-detail-container">
+  <div class="question-box">
+    <h1 class="question-title">{{ question?.title }}</h1>
+    <p class="question-description">{{ question?.description }}</p>
+
+    <div class="tag-list">
+      <span class="tag" *ngFor="let tag of question?.tags">{{ tag }}</span>
+    </div>
+
+    <div class="question-meta">
+      <span>👁️ {{ question?.views || 0 }} views</span>
+      <span>🕒 {{ question?.createdAt?.toDate() | date: 'medium' }}</span>
+      <span>👤 {{ question?.author || 'Anonymous' }}</span>
+    </div>
+  </div>
+
+  <div class="answers-section">
+    <h2>{{ answers.length }} Answers</h2>
+
+    <div *ngFor="let ans of answers" class="answer-box">
+      <div class="vote-column">
+        <button class="vote-btn">⬆</button>
+        <div class="vote-count">{{ ans.upvotes }}</div>
+        <button class="vote-btn">⬇</button>
+      </div>
+
+      <div class="answer-content">
+        <p class="answer-text">{{ ans.content }}</p>
+        <div class="answer-meta">
+          <span>👤 {{ ans.author || 'Anonymous' }}</span>
+          <span>🕒 {{ ans.createdAt?.toDate() | date: 'medium' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="your-answer-section">
+    <h3>Your Answer</h3>
+    <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()" class="answer-form">
+      <textarea
+        formControlName="content"
+        class="answer-textarea"
+        placeholder="Share your knowledge about protein content in Indian food..."
+      ></textarea>
+      <button type="submit" class="submit-answer-button">Post Answer</button>
+    </form>
+    <p class="note">Please be respectful and provide accurate information based on your experience or knowledge.</p>
+  </div>
+
+  <div *ngIf="showSuccessPopup" class="success-popup">
+    ✅ Answer posted successfully!
+  </div>
+</div>

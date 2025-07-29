@@ -1,0 +1,139 @@
+.question-detail-container {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.question-box {
+  background: #fff8f2;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.question-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.question-description {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tag-list {
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #ffe9d6;
+  color: #aa5300;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 10px;
+  margin-right: 6px;
+}
+
+.question-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.answers-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.answer-box {
+  display: flex;
+  align-items: flex-start;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1rem;
+}
+
+.vote-column {
+  margin-right: 1rem;
+  text-align: center;
+}
+
+.vote-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.vote-count {
+  font-size: 1rem;
+  margin: 0.25rem 0;
+}
+
+.answer-text {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.answer-meta {
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  color: #666;
+}
+
+.your-answer-section {
+  background: #fff9f2;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.answer-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.answer-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: vertical;
+}
+
+.submit-answer-button {
+  background-color: #ff8600;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.note {
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  color: #888;
+}
+
+.success-popup {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #e0ffe1;
+  color: #256029;
+  border-radius: 8px;
+  text-align: center;
+}
