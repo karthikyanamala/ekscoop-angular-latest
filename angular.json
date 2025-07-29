@@ -41,11 +41,13 @@
           "configurations": {
             "production": {
                "optimization": true,
+              
             "sourceMap": false,
            
             "namedChunks": false,
             "aot": true,
             "extractLicenses": true,
+            
               "budgets": [
                 {
                   "type": "initial",
