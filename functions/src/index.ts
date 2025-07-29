@@ -207,3 +207,35 @@ export const verifyOtp = onCall(
     return {success: true, message: "Phone number verified successfully"};
   }
 );
+export const sitemap = onRequest(async (req, res) => {
+  try {
+    res.set("Content-Type", "application/xml");
+
+    const questionsSnapshot = await db.collection("QUESTIONS_PATH").get();
+
+    const urls = questionsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      const slug = data.slug;
+      const updatedAt = data.createdAt?.toDate()?.toISOString() ??
+      new Date().toISOString();
+      return `
+  <url>
+    <loc>https://ekscoop.com/questions/${slug}</loc>
+    <lastmod>${updatedAt}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    });
+
+    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.join("\n")}
+</urlset>`;
+
+    res.status(200).send(sitemapXml);
+  } catch (err) {
+    console.error("Sitemap generation error:", err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+);

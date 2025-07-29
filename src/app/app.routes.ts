@@ -28,7 +28,11 @@ export const routes: Routes = [
   loadComponent: () => import('./blog/blog/blog.component').then(m => m.BlogComponent)
 },
 { path: 'blog/:slug', loadComponent: () => import('./blog/blog-detail/blog-detail.component').then(m => m.BlogDetailComponent) },
-
+{ path: 'comminity', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent) },
+{
+  path: 'questions/:slug',
+  loadComponent: () => import('./community/question-detail/question-detail.component').then(m => m.QuestionDetailComponent)
+},
 
   { path: '**', redirectTo: 'home' }
 ];

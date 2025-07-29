@@ -1,0 +1,21 @@
+<div class="popup-success" *ngIf="showPopup">
+  <div class="popup-content">
+    ✅ Question posted successfully!
+  </div>
+</div>
+
+
+<div class="ask-question-wrapper">
+  <h2>Ask a Question</h2>
+
+  <label>Question Title *</label>
+  <input [(ngModel)]="question.title" placeholder="e.g., How much protein is in a roti?" />
+
+  <label>Description *</label>
+  <textarea [(ngModel)]="question.description" placeholder="Include details like food type, goal, context..."></textarea>
+
+  <label>Tags (comma separated)</label>
+  <input [(ngModel)]="tagInput" placeholder="e.g., roti, wheat, protein" />
+
+  <button (click)="submitQuestion()">Post Question</button>
+</div>
