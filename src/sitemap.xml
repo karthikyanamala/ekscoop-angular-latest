@@ -3,79 +3,97 @@
 
   <url>
     <loc>https://ekscoop.com/</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/partner-with-us</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/about-us</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/contact-us</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/meal-section</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/blog/protein-for-poha</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/blog/dal-roti-incomplete</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/blog/protein-for-indian-moms</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/blog/curd-rice-protein-gap</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/blog/chutney-idly-dosa</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://ekscoop.com/blog/active-indians-protein-deficit</loc>
-    <lastmod>2025-07-29</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
+  </url>
+<url>
+    <loc>https://ekscoop.com/questions/best-protein-powder-in-market-for-plant-based</loc>
+    <lastmod>2025-07-29T21:05:26.815Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<url>
+    <loc>https://ekscoop.com/questions/how-do-we-mix-ekscoop-into-poha-or-dal-should-we-mix-it-while-cooking-or-after-cooking</loc>
+    <lastmod>2025-07-30T05:36:04.015Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<url>
+    <loc>https://ekscoop.com/questions/is-protein-ekscoop-is-good-is-you-x-08-can-be-trusted-as-other-in-market</loc>
+    <lastmod>2025-07-30T05:38:45.465Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 <url>
     <loc>https://ekscoop.com/questions/how-much-protein-is-present-in-ekscoop-for-100grams</loc>
@@ -86,6 +104,12 @@
 <url>
     <loc>https://ekscoop.com/questions/is-ekscoop-really-good-protein-powder</loc>
     <lastmod>2025-07-29T19:08:25.330Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<url>
+    <loc>https://ekscoop.com/questions/can-you-x-0.8-really-be-mixed-in-indian-food</loc>
+    <lastmod>2025-07-30T05:13:55.101Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

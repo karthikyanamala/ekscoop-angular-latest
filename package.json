@@ -8,7 +8,9 @@
     "build": "npm run fetch-sitemap && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:ekscoop": "node dist/ekscoop/server/server.mjs"
+    "build:ssr": "npm run fetch-sitemap && ng build && ng run ekscoop:server",
+  "serve:ssr": "node dist/ekscoop/server/main.js",
+  "dev:ssr": "ng run ekscoop:serve-ssr"
   },
   "private": true,
   "dependencies": {
