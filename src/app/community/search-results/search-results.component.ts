@@ -47,7 +47,7 @@ hits({
   const upvotes = hit.upvotes || 0;
   const answers = hit.answersCount || 0;
 
-  const slug = encodeURIComponent(title.replace(/\s+/g, '-').toLowerCase());
+const slug = encodeURIComponent(hit.slug || '');
   const tagHTML = tags
     .map((tag: string) => `<span class="tag-pill">${tag}</span>`)
     .join(' ');
