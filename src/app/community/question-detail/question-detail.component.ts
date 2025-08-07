@@ -1,20 +1,35 @@
-import { Component, OnInit, ViewEncapsulation, Inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  Inject,
+  PLATFORM_ID
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   Firestore,
   collection,
   query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
-  addDoc,
   orderBy,
-  serverTimestamp,
-  updateDoc
+  getDocs,
+  addDoc,
+  doc,
+  where,
+  updateDoc,
+  serverTimestamp
 } from '@angular/fire/firestore';
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  FormsModule
+} from '@angular/forms';
+import {
+  CommonModule,
+  DOCUMENT,
+  isPlatformBrowser,
+  isPlatformServer
+} from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
@@ -25,6 +40,8 @@ import { Meta, Title } from '@angular/platform-browser';
   styleUrls: ['./question-detail.component.css'],
   encapsulation: ViewEncapsulation.None
 })
+// ... imports same as before ...
+
 export class QuestionDetailComponent implements OnInit {
   questionId!: string;
   question: any;
@@ -38,46 +55,116 @@ export class QuestionDetailComponent implements OnInit {
     private fb: FormBuilder,
     private titleService: Title,
     private meta: Meta,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.answerForm = this.fb.group({
-      content: ['']
-    });
+    this.answerForm = this.fb.group({ content: [''] });
+
+    const slug = this.route.snapshot.paramMap.get('slug');
+    const data = this.route.snapshot.data['question'];
+
+    // ✅ SSR: inject meta
+    if (data?.meta && isPlatformServer(this.platformId)) {
+      const { title, description, url, image } = data.meta;
+
+      this.titleService.setTitle(title);
+      this.meta.updateTag({ name: 'description', content: description });
+      this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+      this.meta.updateTag({ property: 'og:title', content: title });
+      this.meta.updateTag({ property: 'og:description', content: description });
+      this.meta.updateTag({ property: 'og:url', content: url });
+      this.meta.updateTag({ property: 'og:image', content: image });
+      this.meta.updateTag({ property: 'og:type', content: 'article' });
+      this.meta.updateTag({ name: 'twitter:title', content: title });
+      this.meta.updateTag({ name: 'twitter:description', content: description });
+      this.meta.updateTag({ name: 'twitter:image', content: image });
+      this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+
+      const link: HTMLLinkElement = this.document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      link.setAttribute('href', url);
+      this.document.head.appendChild(link);
+    }
   }
 
   async ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug');
     if (!slug) return;
 
-    const qRef = collection(this.firestore, 'QUESTIONS_PATH');
-    const q = query(qRef, where('slug', '==', slug));
+    const data = this.route.snapshot.data['question'];
+    this.questionId = data.id;
+    this.question = data;
+
+    if (isPlatformBrowser(this.platformId)) {
+      // ✅ Only in browser: fetch full question and answers
+      await this.fetchQuestionFromFirestore(slug);
+      await this.fetchAnswers();
+      this.injectStructuredData();
+    }
+  }
+
+
+  async fetchQuestionFromFirestore(slug: string) {
+    console.log('[QuestionDetailComponent345678765456y7] Fetching answers...');
+    const questionsRef = collection(this.firestore, 'QUESTIONS_PATH');
+    const q = query(questionsRef, where('slug', '==', slug));
     const snap = await getDocs(q);
 
     if (!snap.empty) {
       const docSnap = snap.docs[0];
-      this.question = docSnap.data();
+      const fullData = docSnap.data();
+      this.question = { ...this.question, ...fullData };
       this.questionId = docSnap.id;
-
-      this.setMetaTags(slug);          // ✅ Add dynamic meta tags
-      this.injectStructuredData();     // ✅ Inject JSON-LD
-      await this.fetchAnswers();
-    } else {
-      console.error('Question not found for slug:', slug);
     }
   }
 
   async fetchAnswers() {
-    const answersRef = collection(this.firestore, `QUESTIONS_PATH/${this.questionId}/answers`);
+    if (!this.questionId) return;
+    console.log('[QuestionDetailComponent2345676543] Fetching answers...');
+    const answersRef = collection(
+      this.firestore,
+      `QUESTIONS_PATH/${this.questionId}/answers`
+    );
     const q = query(answersRef, orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
     this.answers = snap.docs.map(doc => doc.data());
   }
 
+  private injectStructuredData() {
+    const data: any = {
+      "@context": "https://schema.org",
+      "@type": "Question",
+      "name": this.question?.title,
+      "text": this.question?.description,
+      "dateCreated": this.question?.createdAt?.toDate?.(),
+      "author": { "@type": "Person", "name": "Anonymous" },
+      "answerCount": this.answers.length
+    };
+
+    if (this.answers.length > 0) {
+      data.acceptedAnswer = {
+        "@type": "Answer",
+        "text": this.answers[0]?.content,
+        "dateCreated": this.answers[0]?.createdAt?.toDate?.(),
+        "upvoteCount": this.answers[0]?.upvotes || 0,
+        "author": { "@type": "Person", "name": "Anonymous" }
+      };
+    }
+
+    const script = this.document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(data);
+    this.document.head.appendChild(script);
+  }
+
   async submitAnswer() {
     const content = this.answerForm.value.content.trim();
     if (!content) return;
-
-    const answersRef = collection(this.firestore, `QUESTIONS_PATH/${this.questionId}/answers`);
+    console.log('[QuestionDetailComponent34567890987654] Fetching answers...');
+    const answersRef = collection(
+      this.firestore,
+      `QUESTIONS_PATH/${this.questionId}/answers`
+    );
     await addDoc(answersRef, {
       content,
       createdAt: serverTimestamp(),
@@ -97,50 +184,5 @@ export class QuestionDetailComponent implements OnInit {
     setTimeout(() => {
       this.showSuccessPopup = false;
     }, 2000);
-  }
-
-  private setMetaTags(slug: string) {
-    this.titleService.setTitle(this.question?.title || 'Question Detail | ekScoop');
-    this.meta.updateTag({ name: 'description', content: this.question?.description || '' });
-
-    // Open Graph (OG) tags for social sharing
-    const url = `https://ekscoop.com/questions/${slug}`;
-    this.meta.updateTag({ property: 'og:title', content: this.question?.title });
-    this.meta.updateTag({ property: 'og:description', content: this.question?.description });
-    this.meta.updateTag({ property: 'og:url', content: url });
-    this.meta.updateTag({ property: 'og:type', content: 'article' });
-  }
-
-  private injectStructuredData() {
-    const data: any = {
-      "@context": "https://schema.org",
-      "@type": "Question",
-      "name": this.question?.title,
-      "text": this.question?.description,
-      "dateCreated": this.question?.createdAt?.toDate(),
-      "author": {
-        "@type": "Person",
-        "name": "Anonymous"
-      },
-      "answerCount": this.answers.length,
-    };
-
-    if (this.answers.length > 0) {
-      data.acceptedAnswer = {
-        "@type": "Answer",
-        "text": this.answers[0]?.content,
-        "dateCreated": this.answers[0]?.createdAt?.toDate(),
-        "upvoteCount": this.answers[0]?.upvotes || 0,
-        "author": {
-          "@type": "Person",
-          "name": "Anonymous"
-        }
-      };
-    }
-
-    const script = this.document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(data);
-    this.document.head.appendChild(script);
   }
 }

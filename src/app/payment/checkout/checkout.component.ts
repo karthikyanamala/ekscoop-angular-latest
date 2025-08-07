@@ -1,18 +1,35 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  Inject,
+  PLATFORM_ID,
+  inject
+} from '@angular/core';
+import {
+  CommonModule,
+  isPlatformBrowser
+} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
-import { Firestore, collection, getDocs, addDoc, doc, setDoc, getDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  setDoc,
+  getDoc
+} from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
 import { FooterComponent } from '../../footer/footer.component';
-declare var Razorpay: any;
 
+declare var Razorpay: any;
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, FormsModule,CornerBadgeComponent,FooterComponent],
+  imports: [CommonModule, FormsModule, CornerBadgeComponent, FooterComponent],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css'],
 })
@@ -20,6 +37,8 @@ export class CheckoutComponent implements OnInit {
   auth: Auth = inject(Auth);
   firestore: Firestore = inject(Firestore);
   router: Router = inject(Router);
+
+  isBrowser: boolean;
 
   user: User | null = null;
   uid: string = '';
@@ -35,7 +54,7 @@ export class CheckoutComponent implements OnInit {
   quantity = 1;
   unitPrice = 0;
   totalAmount = 0;
-  originalTotalAmount = 0; 
+  originalTotalAmount = 0;
   promoApplied = false;
 
   promoCode: string = '';
@@ -57,7 +76,13 @@ export class CheckoutComponent implements OnInit {
     isDefault: false,
   };
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+
   ngOnInit() {
+    if (!this.isBrowser) return;
+
     const storedProduct = localStorage.getItem('checkoutProduct');
     if (storedProduct) {
       try {
@@ -66,20 +91,18 @@ export class CheckoutComponent implements OnInit {
           this.product = parsed.product;
           this.productId = parsed.productId;
           this.quantity = parsed.quantity;
-          this.totalAmount = parsed.unitPrice * this.quantity;
+          this.unitPrice = parsed.unitPrice;
+          this.totalAmount = this.unitPrice * this.quantity;
           this.originalTotalAmount = this.totalAmount;
         } else {
-          console.warn('Incomplete product data:', parsed);
           this.router.navigate(['/home']);
           return;
         }
       } catch (err) {
-        console.error('Failed to parse checkout product data:', err);
         this.router.navigate(['/home']);
         return;
       }
     } else {
-      console.warn('No checkout product found.');
       this.router.navigate(['/home']);
       return;
     }
@@ -89,6 +112,7 @@ export class CheckoutComponent implements OnInit {
         this.router.navigate(['/login']);
         return;
       }
+
       this.user = user;
       this.uid = user.uid;
       this.fullName = user.displayName || '';
@@ -99,7 +123,10 @@ export class CheckoutComponent implements OnInit {
   }
 
   async loadAddresses() {
+    if (!this.isBrowser) return;
+
     try {
+      console.log('[QuestionDetailComponent54321234] Fetching answers...');
       const addrCol = collection(this.firestore, `users/${this.uid}/addresses`);
       const addrSnap = await getDocs(addrCol);
       this.addresses = addrSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -127,7 +154,10 @@ export class CheckoutComponent implements OnInit {
   }
 
   async saveAddress() {
+    if (!this.isBrowser) return;
+
     try {
+      console.log('[QuestionDetailComponent345634] Fetching answers...');
       const addrCol = collection(this.firestore, `users/${this.uid}/addresses`);
       await addDoc(addrCol, this.addressForm);
       this.showAddressModal = false;
@@ -142,6 +172,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   async applyPromo() {
+    if (!this.isBrowser) return;
+
     this.promoError = '';
     this.promoSuccess = '';
 
@@ -165,12 +197,7 @@ export class CheckoutComponent implements OnInit {
       }
 
       const promoData = promoSnap.data();
-      if (!promoData) {
-        this.promoError = 'Promo data missing.';
-        return;
-      }
-
-      if (promoData['active'] !== true) {
+      if (!promoData || promoData['active'] !== true) {
         this.promoError = 'This promo code is inactive.';
         return;
       }
@@ -208,7 +235,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   async placeOrder() {
-    if (!this.selectedAddress) {
+    if (!this.isBrowser || !this.selectedAddress) {
       alert('Please select a delivery address first!');
       return;
     }
@@ -247,19 +274,17 @@ export class CheckoutComponent implements OnInit {
 
         this.openRazorpay(order);
       } else {
-        console.error('Invalid response from server:', result);
         alert(result?.error || 'Failed to create payment order. Please try again.');
         this.loadingPayment = false;
       }
     } catch (error) {
-      console.error('Error creating Razorpay order:', error);
       alert('Payment initiation failed. Please try again.');
       this.loadingPayment = false;
     }
   }
 
   async openRazorpay(order: any) {
-    if (typeof Razorpay === 'undefined') {
+    if (!this.isBrowser || typeof Razorpay === 'undefined') {
       alert('Payment gateway failed to load. Please refresh the page or check your internet connection.');
       this.loadingPayment = false;
       return;
@@ -275,8 +300,6 @@ export class CheckoutComponent implements OnInit {
       order_id: order.id,
       theme: { color: '#ff6600' },
       handler: async (response: any) => {
-        console.log('Payment successful!', response);
-
         const orderData = {
           uid: this.uid,
           razorpayOrderId: order.id,
@@ -307,52 +330,36 @@ export class CheckoutComponent implements OnInit {
 
         try {
           const userOrderRef = doc(this.firestore, `users/${this.uid}/orders/${order.id}`);
-          await setDoc(userOrderRef, orderData);
-
           const adminOrderRef = doc(this.firestore, `orders/${order.id}`);
+          await setDoc(userOrderRef, orderData);
           await setDoc(adminOrderRef, orderData);
 
-          // ✅ Log promo usage if promo applied:
           if (this.promoApplied && this.promoCode) {
-            try {
-              const usageData = {
-                promoCode: this.promoCode.toUpperCase(),
-                discountPercent: this.promoDiscountPercent,
-                discountAmount: this.promoDiscountAmount,
-                influencerName: this.promoInfluencerName || 'Unknown',
-                userId: this.uid,
-                userName: this.fullName,
-                userEmail: this.email,
-                orderId: order.id,
-                finalAmount: this.totalAmount,
-                paidAt: new Date().toISOString(),
-                orderDetails: {
-                  products: [
-                    {
-                      name: this.product.name,
-                      image: this.product.image,
-                      quantity: this.quantity,
-                      unitPrice: this.unitPrice,
-                    },
-                  ],
-                  selectedAddress: this.selectedAddress,
-                },
-              };
+            const usageData = {
+              promoCode: this.promoCode.toUpperCase(),
+              discountPercent: this.promoDiscountPercent,
+              discountAmount: this.promoDiscountAmount,
+              influencerName: this.promoInfluencerName || 'Unknown',
+              userId: this.uid,
+              userName: this.fullName,
+              userEmail: this.email,
+              orderId: order.id,
+              finalAmount: this.totalAmount,
+              paidAt: new Date().toISOString(),
+              orderDetails: {
+                products: orderData.products,
+                selectedAddress: this.selectedAddress,
+              },
+            };
 
-              const promoUsageRef = doc(this.firestore, `promocode_usages/${order.id}`);
-              await setDoc(promoUsageRef, usageData);
-
-              console.log('Promo usage logged successfully.');
-            } catch (error) {
-              console.error('Failed to log promo usage:', error);
-            }
+            const promoUsageRef = doc(this.firestore, `promocode_usages/${order.id}`);
+            await setDoc(promoUsageRef, usageData);
           }
 
           alert('Payment successful & order saved!');
           this.loadingPayment = false;
           this.router.navigate(['/order-success']);
         } catch (error) {
-          console.error('Failed to save order details:', error);
           alert('Payment succeeded, but failed to save order. Contact support.');
           this.loadingPayment = false;
         }
@@ -364,7 +371,6 @@ export class CheckoutComponent implements OnInit {
       },
       modal: {
         ondismiss: () => {
-          console.log('Payment popup closed by user.');
           this.loadingPayment = false;
         },
       },
@@ -377,26 +383,25 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-async loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (document.getElementById('razorpay-script')) {
-      resolve(true);
-      return;
-    }
+  async loadRazorpayScript(): Promise<boolean> {
+    if (!this.isBrowser) return false;
 
-    const script = document.createElement('script');
-    script.id = 'razorpay-script';
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      console.error('Failed to load Razorpay SDK.');
-      resolve(false);
-    };
+    return new Promise((resolve) => {
+      if (document.getElementById('razorpay-script')) {
+        resolve(true);
+        return;
+      }
 
-    document.body.appendChild(script);
-  });
-}
+      const script = document.createElement('script');
+      script.id = 'razorpay-script';
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => {
+        console.error('Failed to load Razorpay SDK.');
+        resolve(false);
+      };
 
+      document.body.appendChild(script);
+    });
+  }
 }

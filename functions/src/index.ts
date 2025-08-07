@@ -113,6 +113,46 @@ export const createRazorpayOrder = onRequest(
   }
 );
 
+/**
+ * 🔍 getQuestionMeta
+ * Secure SSR-compatible endpoint to fetch question meta
+ * Returns: { title, description } from Firestore where slug == :slug
+ */
+export const getQuestionMeta = onRequest(
+  {region: "us-central1"}, async (req, res) => {
+    try {
+      const slug = req.query.slug;
+      if (!slug || typeof slug !== "string") {
+        res.status(400).json({error: "Missing or invalid slug parameter"});
+        return;
+      }
+
+      // Efficient Firestore query: limit to 1 and only fetch required fields
+      const snapshot = await db
+        .collection("QUESTIONS_PATH")
+        .where("slug", "==", slug)
+        .limit(1)
+        .select("title", "description")
+        .get();
+
+      if (snapshot.empty) {
+        res.status(404).json({error: "Question not found"});
+        return;
+      }
+
+      const doc = snapshot.docs[0].data();
+      res.status(200).json({
+        title: doc.title || "ekScoop | Question",
+        description:
+          doc.description ||
+          "Find out how YOU x 0.8 protein can be added to Indian foods"+
+           "like dal, poha, or curd.",
+      });
+    } catch (err) {
+      console.error("[getQuestionMeta] Error:", err);
+      res.status(500).json({error: "Internal Server Error"});
+    }
+  });
 
 const twilioSid = defineSecret("TWILIO_ACCOUNT_SID");
 const twilioToken = defineSecret("TWILIO_AUTH_TOKEN");
