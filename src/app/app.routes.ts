@@ -4,6 +4,7 @@ import { AdminAuthGuard } from './auth/admin-auth.guard'; // Import the guard
 import { QuestionResolver } from './community/question.resolver';
 import { QuestionDetailComponent } from './community/question-detail/question-detail.component';
 import { RenderMode, ServerRoute } from '@angular/ssr';
+import { TopQuestionsResolver } from './community/TopQuestionsResolver';
 export const routes: Routes = [
   // {
   //   path: 'admin',
@@ -30,8 +31,10 @@ export const routes: Routes = [
   loadComponent: () => import('./blog/blog/blog.component').then(m => m.BlogComponent)
 },
 { path: 'blog/:slug', loadComponent: () => import('./blog/blog-detail/blog-detail.component').then(m => m.BlogDetailComponent), data: { renderMode: 'server' }},
-{ path: 'comminity', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent) },
-{ path: 'dummmy', loadComponent: () => import('./dummy/dummy.component').then(m => m.DummyComponent) },
+{ path: 'comminity', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent),
+   resolve: { topQuestions: TopQuestionsResolver },
+  data: { renderMode: 'server' }
+ },
 {
  
     path: 'questions/:slug',
