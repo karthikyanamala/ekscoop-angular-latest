@@ -4,9 +4,78 @@ import * as admin from "firebase-admin";
 import Razorpay from "razorpay";
 import cors from "cors";
 import twilio from "twilio";
+import {
+  onDocumentCreated, onDocumentUpdated} from "firebase-functions/v2/firestore";
+import {google, indexing_v3 as indexingV3} from "googleapis";
+import {Storage} from "@google-cloud/storage";
 
 admin.initializeApp();
 const db = admin.firestore();
+
+/** Firestore document shape */
+type QuestionDoc = {
+  slug?: string;
+  title?: string;
+  description?: string;
+  answersCount?: number;
+};
+
+/** Allowed Indexing API action types */
+type IndexingType = "URL_UPDATED" | "URL_REMOVED";
+
+/**
+ * Lazily create the Google Indexing API client
+ *  (avoids doing auth at module load).
+ */
+let indexingClient: indexingV3.Indexing | null = null;
+/**
+ * Returns a cached Indexing API client, creating it on first use.
+ * @return {Promise<indexingV3.Indexing>} Authenticated Indexing client
+ */
+async function getIndexingClient(): Promise<indexingV3.Indexing> {
+  if (!indexingClient) {
+    const auth = new google.auth.GoogleAuth({
+      scopes: ["https://www.googleapis.com/auth/indexing"],
+    });
+    indexingClient = google.indexing({version: "v3", auth});
+  }
+  return indexingClient;
+}
+
+/**
+ * Submit a URL to Google Indexing API.
+ * @param {string} url - Full URL to index.
+ * @param {IndexingType} [type=URL_UPDATED] - Indexing action type.
+ */
+async function submitToIndexing(
+  url: string,
+  type: IndexingType = "URL_UPDATED"
+): Promise<void> {
+  try {
+    const client = await getIndexingClient();
+    const res = await client.urlNotifications.publish({
+      requestBody: {url, type},
+    });
+    console.log("✅ Indexing requested", {url, type, result: res.data});
+  } catch (err: unknown) {
+    console.error("❌ Indexing API error", {
+      url,
+      type,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
+/**
+ * Builds the full question URL from a given slug.
+ * @param {string} slug - The question's unique slug.
+ * @return {string} Full absolute URL to the question page.
+ */
+function questionUrlFromSlug(slug: string): string {
+  return `https://ekscoop.com/questions/${encodeURIComponent(slug)}`;
+}
+
+// ⬆️ END OF INSERT
 
 const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
 const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
@@ -278,4 +347,168 @@ export const sitemap = onRequest(async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 }
+);
+
+/** 🔔 New: Ping Google when a question is created */
+export const requestIndexingOnNewQuestion = onDocumentCreated(
+  {
+    region: "us-central1",
+    document: "QUESTIONS_PATH/{questionId}",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (event) => {
+    const data = event.data?.data() as QuestionDoc | undefined;
+    const slug = data?.slug;
+    if (!slug) {
+      console.log("No slug on new question; skipping indexing.");
+      return;
+    }
+    await submitToIndexing(questionUrlFromSlug(slug), "URL_UPDATED");
+  }
+);
+
+export const requestIndexingOnQuestionUpdate = onDocumentUpdated(
+  {
+    region: "us-central1",
+    document: "QUESTIONS_PATH/{questionId}",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (event) => {
+    const before = event.data?.before.data() as QuestionDoc | undefined;
+    const after = event.data?.after.data() as QuestionDoc | undefined;
+    if (!before || !after) return;
+
+    const changed =
+      before.slug !== after.slug ||
+      before.title !== after.title ||
+      before.description !== after.description ||
+      before.answersCount !== after.answersCount;
+
+    if (!changed) return;
+
+    const slug = after.slug ?? before.slug;
+    if (!slug) {
+      console.log("No slug available on update; skipping indexing.");
+      return;
+    }
+
+    await submitToIndexing(questionUrlFromSlug(slug), "URL_UPDATED");
+  }
+);
+
+
+const BUCKET_NAME = "ekscoop-website.appspot.com";
+const FILE_PATH = "browse/all-questions.html";
+
+let _storage: Storage | null = null;
+
+/**
+ * Lazily obtain the Cloud Storage bucket.
+ * Avoids doing I/O at module load.
+ * @return {object} Google Cloud Storage bucket instance
+ */
+function getBucket() {
+  if (!_storage) _storage = new Storage();
+  return _storage.bucket(BUCKET_NAME);
+}
+
+
+/**
+ * Wrap the provided list HTML in a minimal full HTML document.
+ * @param {string} body - HTML to insert inside the <ul> element.
+ * @return {string} Full HTML page string.
+ */
+function wrapHtml(body: string): string {
+  return `<!doctype html><html><head>
+<meta charset="utf-8"><title>All Questions</title>
+<meta name="robots" content="index,follow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head><body><h1>All Questions</h1><ul>
+${body}
+</ul></body></html>`;
+}
+
+/**
+ * Read a file from Cloud Storage; returns empty string if it does not exist.
+ * @param {string} path - Path within the bucket.
+ * @return {Promise<string>} UTF-8 contents or "" if missing.
+ */
+async function readFileOrEmpty(path: string): Promise<string> {
+  const file = getBucket().file(path);
+  const [exists] = await file.exists();
+  if (!exists) return "";
+  const [buf] = await file.download();
+  return buf.toString("utf8");
+}
+
+/**
+ * Write HTML content to Cloud Storage.
+ * @param {string} path - Path within the bucket.
+ * @param {string} html - HTML string to save.
+ * @return {Promise<void>} Resolves when saved.
+ */
+async function writeHtml(path: string, html: string): Promise<void> {
+  await getBucket().file(path).save(html, {
+    contentType: "text/html; charset=UTF-8",
+    metadata: {cacheControl: "public, max-age=60"},
+    gzip: true,
+    resumable: false,
+    validation: false,
+  });
+}
+
+/**
+ * HTML-escape a title for safe insertion into markup.
+ * @param {string} text - Unescaped text.
+ * @return {string} Escaped text.
+ */
+function escapeHtml(text: string): string {
+  return text.replace(/[<>&"]/g, (m) =>
+    ({
+      "<": "&lt;",
+      ">": "&gt;",
+      "&": "&amp;",
+      "\"": "&quot;",
+    }[m] as string)
+  );
+}
+
+/**
+ * Append one <li><a>…</a></li> to an existing <ul>…</ul> HTML blob.
+ * @param {string} html - Current HTML document string.
+ * @param {string} slug - Question slug.
+ * @param {string} title - Question title (will be escaped).
+ * @return {string} Updated HTML.
+ */
+function appendLink(html: string, slug: string, title: string): string {
+  const safeTitle = escapeHtml(title);
+  const line = `<li><a href="/questions/${
+    encodeURIComponent(slug)}">${safeTitle}</a></li>\n`;
+  return html.replace("</ul>", `${line}</ul>`);
+}
+
+/**
+ * Firestore onCreate trigger:
+ * append new question link to /browse/all-questions.html.
+ * @param {import("
+ * firebase-functions/v2/firestore").FirestoreEvent<unknown>} event
+ * @return {Promise<void>}
+ */
+export const appendAllQuestions = onDocumentCreated(
+  {region: "us-central1", document: "QUESTIONS_PATH/{id}"},
+  async (event) => {
+    const data = event.data?.data() as {
+      slug?: string; title?: string} | undefined;
+    const slug = data?.slug;
+    if (!slug) return;
+
+    let html = await readFileOrEmpty(FILE_PATH);
+    if (!html) html = wrapHtml("");
+
+    const title = data?.title || slug;
+    const updated = appendLink(html, slug, title);
+    await writeHtml(FILE_PATH, updated);
+  }
 );
