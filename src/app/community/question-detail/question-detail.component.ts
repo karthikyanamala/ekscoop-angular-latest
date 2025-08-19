@@ -31,6 +31,7 @@ import {
   isPlatformServer
 } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { increment } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-question-detail',
@@ -48,6 +49,8 @@ export class QuestionDetailComponent implements OnInit {
   answers: any[] = [];
   answerForm: FormGroup;
   showSuccessPopup = false;
+   userVote: 'like' | 'dislike' | null = null;
+  hasReported = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -185,4 +188,64 @@ export class QuestionDetailComponent implements OnInit {
       this.showSuccessPopup = false;
     }, 2000);
   }
+
+  // ✅ Like
+  async likeQuestion() {
+    if (!this.questionId || this.userVote === 'like') return;
+
+    const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
+
+    // Remove previous dislike if any
+    if (this.userVote === 'dislike') {
+      await updateDoc(questionRef, {
+        dislikes: increment(-1)
+      });
+      this.question.dislikes = (this.question.dislikes || 1) - 1;
+    }
+
+    await updateDoc(questionRef, {
+      likes: increment(1)
+    });
+
+    this.question.likes = (this.question.likes || 0) + 1;
+    this.userVote = 'like';
+  }
+
+  // ✅ Dislike
+  async dislikeQuestion() {
+    if (!this.questionId || this.userVote === 'dislike') return;
+
+    const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
+
+    // Remove previous like if any
+    if (this.userVote === 'like') {
+      await updateDoc(questionRef, {
+        likes: increment(-1)
+      });
+      this.question.likes = (this.question.likes || 1) - 1;
+    }
+
+    await updateDoc(questionRef, {
+      dislikes: increment(1)
+    });
+
+    this.question.dislikes = (this.question.dislikes || 0) + 1;
+    this.userVote = 'dislike';
+  }
+
+  // ✅ Report
+  async reportQuestion() {
+    if (!this.questionId || this.hasReported) return;
+
+    const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
+    await updateDoc(questionRef, {
+      reports: increment(1)
+    });
+
+    this.question.reports = (this.question.reports || 0) + 1;
+    this.hasReported = true;
+
+    alert("🚩 Thanks for flagging! Our team will review this question.");
+  }
 }
+

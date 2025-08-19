@@ -97,3 +97,11 @@ app.listen(PORT, () => {
   console.log(`🪣 Using bucket: ${BUCKET_NAME}`);
   console.log(`🗂️  GCS file for all-questions: gs://${BUCKET_NAME}/${ALL_Q_PATH}`);
 });
+
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  if (host === 'ekscoop.com') {
+    return res.redirect(301, `https://www.ekscoop.com${req.originalUrl}`);
+  }
+  next();
+});

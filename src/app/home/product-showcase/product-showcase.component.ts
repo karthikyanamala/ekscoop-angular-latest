@@ -1,4 +1,5 @@
-import { Component, ViewContainerRef, OnInit, OnDestroy } from '@angular/core';
+// product-showcase.component.ts
+import { Component, ViewContainerRef, OnInit, OnDestroy, Input, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component';
@@ -7,7 +8,6 @@ import { firstValueFrom } from 'rxjs';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 
 type VariantKey = 'traditional' | 'modern';
-
 type VariantData = {
   name: string;
   image: string;
@@ -25,12 +25,15 @@ type VariantData = {
   styleUrls: ['./product-showcase.component.css'],
 })
 export class ProductShowcaseComponent implements OnInit, OnDestroy {
+  // ✅ NEW: allow "sidebar" mode from the community page
+  @Input() variant: 'default' | 'sidebar' = 'default';
+  @HostBinding('class.sidebar') get isSidebar() { return this.variant === 'sidebar'; }
+
   selectedVariant: VariantKey | '' = '';
   quantity = 1;
   unitPrice = -1;
 
-  selectedImage: string = '';
-
+  selectedImage = '';
   isPaused = false;
   interval: any;
   currentSlide = 0;
@@ -64,7 +67,6 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
         'assets/modern.webp',
         'assets/gym-mode.webp',
         'assets/health-mode.webp',
-        
       ]
     }
   };
@@ -81,27 +83,15 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     this.startCarousel();
   }
 
-  ngOnDestroy() {
-    clearInterval(this.interval);
-  }
+  ngOnDestroy() { clearInterval(this.interval); }
 
   async loadPrices() {
     try {
       const traditionalSnap = await getDoc(doc(this.firestore, 'products/traditional'));
       const modernSnap = await getDoc(doc(this.firestore, 'products/modern'));
-
-      if (traditionalSnap.exists()) {
-        const data = traditionalSnap.data() as { price?: number };
-        this.variants.traditional.price = data.price ?? -1;
-      }
-
-      if (modernSnap.exists()) {
-        const data = modernSnap.data() as { price?: number };
-        this.variants.modern.price = data.price ?? -1;
-      }
-    } catch (error) {
-      console.error('Error loading prices:', error);
-    }
+      if (traditionalSnap.exists()) this.variants.traditional.price = (traditionalSnap.data() as any).price ?? -1;
+      if (modernSnap.exists()) this.variants.modern.price = (modernSnap.data() as any).price ?? -1;
+    } catch (error) { console.error('Error loading prices:', error); }
   }
 
   selectVariant(variant: string) {
@@ -113,49 +103,24 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  increaseQuantity() {
-    this.quantity++;
-  }
-
-  decreaseQuantity() {
-    if (this.quantity > 1) this.quantity--;
-  }
-
-  get calculatedPrice(): number {
-    return this.unitPrice > 0 ? this.unitPrice * this.quantity : 0;
-  }
+  increaseQuantity() { this.quantity++; }
+  decreaseQuantity() { if (this.quantity > 1) this.quantity--; }
+  get calculatedPrice(): number { return this.unitPrice > 0 ? this.unitPrice * this.quantity : 0; }
 
   async handleBuyNow() {
-    if (!this.selectedVariant) {
-      alert('Please select a variant first.');
-      return;
-    }
-    if (this.unitPrice <= 0) {
-      alert('Price unavailable.');
-      return;
-    }
-
-    const variantData = this.selectedVariantData;
-    if (!variantData) return;
+    if (!this.selectedVariant) return alert('Please select a variant first.');
+    if (this.unitPrice <= 0) return alert('Price unavailable.');
+    const variantData = this.selectedVariantData; if (!variantData) return;
 
     const currentUser = await firstValueFrom(this.authService.getCurrentUser());
-    if (!currentUser) {
-      this.showLoginPopup();
-      return;
-    }
+    if (!currentUser) { this.showLoginPopup(); return; }
 
-    localStorage.setItem(
-      'checkoutProduct',
-      JSON.stringify({
-        productId: this.selectedVariant,
-        product: {
-          name: variantData.name,
-          image: variantData.image,
-        },
-        quantity: this.quantity,
-        unitPrice: this.unitPrice,
-      })
-    );
+    localStorage.setItem('checkoutProduct', JSON.stringify({
+      productId: this.selectedVariant,
+      product: { name: variantData.name, image: variantData.image },
+      quantity: this.quantity,
+      unitPrice: this.unitPrice,
+    }));
     this.router.navigate(['/checkout']);
   }
 
@@ -171,14 +136,9 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     window.addEventListener('auth-success', onAuthSuccess);
   }
 
-  get selectedVariantData() {
-    return this.selectedVariant ? this.variants[this.selectedVariant] : null;
-  }
+  get selectedVariantData() { return this.selectedVariant ? this.variants[this.selectedVariant] : null; }
 
-  toggleCarousel() {
-    this.isPaused = !this.isPaused;
-  }
-
+  toggleCarousel() { this.isPaused = !this.isPaused; }
   startCarousel() {
     this.interval = setInterval(() => {
       if (!this.isPaused && !this.selectedVariant) {
@@ -186,12 +146,6 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       }
     }, 3000);
   }
-
-  goToSlide(index: number) {
-    this.currentSlide = index;
-  }
-
-  selectGalleryImage(image: string) {
-    this.selectedImage = image;
-  }
+  goToSlide(index: number) { this.currentSlide = index; }
+  selectGalleryImage(image: string) { this.selectedImage = image; }
 }
