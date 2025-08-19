@@ -8,11 +8,17 @@
     </div>
 
     <div class="question-meta">
-      <span>👁️ {{ question?.views || 0 }} views</span>
       <span>🕒 {{ question?.createdAt?.toDate() | date: 'medium' }}</span>
       <span>👤 {{ question?.author || 'Anonymous' }}</span>
     </div>
   </div>
+
+  <div class="question-actions">
+  <button (click)="likeQuestion()" [disabled]="userVote === 'like'">👍 {{ question?.likes || 0 }}</button>
+  <button (click)="dislikeQuestion()" [disabled]="userVote === 'dislike'">👎 {{ question?.dislikes || 0 }}</button>
+  <button (click)="reportQuestion()" [disabled]="hasReported">🚩 Report ({{ question?.reports || 0 }})</button>
+</div>
+
 
   <div class="answers-section">
     <h2>{{ answers.length }} Answers</h2>

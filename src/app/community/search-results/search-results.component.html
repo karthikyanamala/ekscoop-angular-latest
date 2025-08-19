@@ -1,10 +1,111 @@
-<app-ask-question></app-ask-question>
-<div class="community-container">
-  <h2 class="title">Community Questions</h2>
+<!-- 3-column grid: LEFT (product) • MAIN (community) • RIGHT (benefits) -->
+<div class="community-layout">
+  <!-- LEFT rail: Product -->
+  <aside class="sbar sbar-left">
+    <app-product-showcase variant="sidebar"></app-product-showcase>
+  </aside>
 
-  <div id="searchbox" class="searchbox"></div>
+  <!-- CENTER: Community — your existing content -->
+  <main class="community-main">
+    <div class="community-container">
+      <header class="community-hero">
+        <h2 class="title">Community Questions</h2>
+        <p class="subtitle">Learn, share, and help others use protein the right way.</p>
 
-  <div id="hits" class="hits-wrapper"></div>
+        <div id="searchbox" class="searchwrap"></div>
 
-  <div id="pagination" class="pagination-wrapper"></div>
+        <button class="ask-tab" (click)="openAsk()">Ask a Question</button>
+      </header>
+
+      <div id="hits" class="hits-wrapper"></div>
+    </div>
+  </main>
+
+  <!-- RIGHT rail: Benefits -->
+  <aside class="sbar sbar-right">
+    <section class="benefit-card">
+      <h3 class="b-title">Why Choose Our Protein?</h3>
+      <ul class="b-list">
+        <li><span class="b-ico b-ico-flash">⚡</span>
+            <div><strong>Instant Energy</strong><br><small>Quick absorption for immediate results</small></div></li>
+        <li><span class="b-ico b-ico-shield">🛡️</span>
+            <div><strong>100% Natural</strong><br><small>Pure plant-based protein, no chemicals</small></div></li>
+        <li><span class="b-ico b-ico-growth">📈</span>
+            <div><strong>Muscle Growth</strong><br><small>Complete amino acids for strength</small></div></li>
+        <li><span class="b-ico b-ico-expert">👥</span>
+            <div><strong>Expert Approved</strong><br><small>Recommended by nutritionists</small></div></li>
+      </ul>
+      <a class="btn-primary w-full" href="/products">Learn More</a>
+    </section>
+
+    <section class="benefit-card soft quick-facts">
+      <h4 class="b-title">Quick Facts:</h4>
+      <ul class="q-list">
+        <li>✓ 16.7g protein per serving</li>
+        <li>✓ Zero added sugar</li>
+        <li>✓ Vegan & diabetic-friendly</li>
+        <li>✓ Made in India</li>
+        <li>✓ 30-day money back</li>
+      </ul>
+    </section>
+  </aside>
+</div>
+
+<!-- MOBILE: one-tap sheets -->
+<button class="fab-shop" (click)="openShop()" aria-label="Open product">YOU x 0.8</button>
+<button class="fab-benefits" (click)="openBenefits()" aria-label="Open benefits">Benefits</button>
+
+<!-- Product sheet -->
+<div class="sheet-backdrop" *ngIf="showShop" (click)="closeShop()">
+  <div class="sheet" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <div class="sheet-header">
+      <strong>YOU x 0.8</strong>
+      <button class="sheet-close" (click)="closeShop()" aria-label="Close">×</button>
+    </div>
+    <div class="sheet-body">
+      <app-product-showcase variant="sidebar"></app-product-showcase>
+    </div>
+  </div>
+</div>
+
+<!-- Benefits sheet -->
+<div class="sheet-backdrop" *ngIf="showBenefits" (click)="closeBenefits()">
+  <div class="sheet" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <div class="sheet-header">
+      <strong>Why Choose Our Protein</strong>
+      <button class="sheet-close" (click)="closeBenefits()" aria-label="Close">×</button>
+    </div>
+    <div class="sheet-body">
+      <section class="benefit-card">
+        <ul class="b-list">
+          <li><span class="b-ico b-ico-flash">⚡</span>
+              <div><strong>Instant Energy</strong><br><small>Quick absorption for immediate results</small></div></li>
+          <li><span class="b-ico b-ico-shield">🛡️</span>
+              <div><strong>100% Natural</strong><br><small>Pure plant-based protein, no chemicals</small></div></li>
+          <li><span class="b-ico b-ico-growth">📈</span>
+              <div><strong>Muscle Growth</strong><br><small>Complete amino acids for strength</small></div></li>
+          <li><span class="b-ico b-ico-expert">👥</span>
+              <div><strong>Expert Approved</strong><br><small>Recommended by nutritionists</small></div></li>
+        </ul>
+      </section>
+      <section class="benefit-card soft quick-facts">
+        <h4 class="b-title">Quick Facts</h4>
+        <ul class="q-list">
+          <li>✓ 16.7g protein per serving</li>
+          <li>✓ Zero added sugar</li>
+          <li>✓ Vegan & diabetic-friendly</li>
+          <li>✓ Made in India</li>
+          <li>✓ 30-day money back</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Ask modal (unchanged) -->
+<div class="modal-overlay" *ngIf="showAsk" (click)="closeAsk()" aria-hidden="true">
+  <div class="modal-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <button class="modal-close" aria-label="Close" (click)="closeAsk()">×</button>
+    <app-ask-question (submitted)="onAskPosted()" (cancel)="closeAsk()"></app-ask-question>
+  </div>
 </div>

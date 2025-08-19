@@ -398,3 +398,124 @@
 .thumbnail-row img.active {
   border-color: orange;
 }
+
+/* ===================== SIDEBAR VARIANT ===================== */
+/* Host class is added by @HostBinding above */
+:host.sidebar { display: block; }
+
+/* tighter spacing + inherit sidebar width */
+:host.sidebar .showcase { padding: 0; background: transparent; }
+:host.sidebar .container { width: 100%; max-width: none; margin: 0; }
+
+/* hide big hero texts in sidebar */
+:host.sidebar .title-block { display: none; }
+
+/* stack vertically, small gaps */
+:host.sidebar .showcase-grid {
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+/* card look that matches the community sidebar */
+:host.sidebar .image-box {
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fff7ec 0%, #fff2e1 100%);
+  box-shadow: 0 8px 18px rgba(255,140,60,.10);
+}
+:host.sidebar .image-box img { border-radius: 12px; }
+
+/* smaller floating tag */
+:host.sidebar .floating-tag {
+  top: 8px; right: 8px;
+  padding: 8px 10px; border-radius: 12px;
+}
+:host.sidebar .floating-content .protein { font-size: 14px; }
+:host.sidebar .floating-content .label { font-size: 10px; }
+
+/* compact thumbnails */
+:host.sidebar .thumbnail-row { gap: 6px; margin-top: 10px; }
+:host.sidebar .thumbnail-row img { width: 40px; height: 40px; border-radius: 6px; }
+
+/* details column becomes compact */
+:host.sidebar .details { flex: 1 1 auto; }
+
+/* smaller headings/cards */
+:host.sidebar .variant-selector h3 { font-size: 16px; margin: 8px 0; }
+:host.sidebar .variant-options { gap: 8px; }
+:host.sidebar .variant-card {
+  padding: 10px; border-radius: 10px;
+  border-color: #f3caa1;
+}
+:host.sidebar .variant-card.active { background: #fff7ec; border-color: #ffb36b; }
+:host.sidebar .variant-name { font-size: 14px; }
+:host.sidebar .variant-description { font-size: 12px; }
+
+/* optional: collapse long sections to keep sidebar short */
+:host.sidebar .features,
+:host.sidebar .nutrition-facts,
+:host.sidebar .ratings-price,
+:host.sidebar .quantity-selector {
+  display: none;
+}
+
+/* keep the CTA visible and neat */
+:host.sidebar .add-cart-btn {
+  margin-top: 10px;
+  height: 42px;
+  font-size: 15px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#ffb76c,#ff8c40);
+  box-shadow: 0 10px 24px rgba(255,140,60,.24);
+}
+
+/* carousel tweaks (still works in sidebar) */
+:host.sidebar .carousel-slide-container { height: 220px; }
+:host.sidebar .carousel-toggle-btn { bottom: 8px; right: 8px; }
+/* ===== Sidebar fit (host has .sidebar via HostBinding) ===== */
+:host.sidebar .showcase{ padding: 0; background: transparent; }
+:host.sidebar .container{ width: 100%; max-width: none; margin: 0; }
+:host.sidebar .title-block{ display: none; }          /* hide big header in rail */
+
+/* Stack vertically, tighter gaps */
+:host.sidebar .showcase-grid{ flex-direction: column; gap: 12px; }
+
+/* Make media fill the rail neatly */
+:host.sidebar .image-container{ width: 100%; }
+:host.sidebar .image-box{
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg,#fff7ec 0%, #fff2e1 100%);
+  box-shadow: 0 10px 22px rgba(255,140,60,.10);
+}
+:host.sidebar .image-box img{ width: 100%; display: block; border-radius: 12px; }
+
+/* Smaller floating chip so it doesn’t overlap oddly */
+:host.sidebar .floating-tag{
+  top: 8px; right: 8px; padding: 8px 10px; border-radius: 12px;
+}
+:host.sidebar .floating-content .protein{ font-size: 14px; }
+:host.sidebar .floating-content .label{ font-size: 10px; }
+
+/* Variant cards compact */
+:host.sidebar .variant-selector h3{ font-size: 16px; margin: 10px 0; }
+:host.sidebar .variant-options{ gap: 8px; }
+:host.sidebar .variant-card{ padding: 10px; border-radius: 10px; border-color: #f3caa1; }
+:host.sidebar .variant-card.active{ background: #fff7ec; border-color: #ffb36b; }
+:host.sidebar .variant-name{ font-size: 14px; }
+:host.sidebar .variant-description{ font-size: 12px; }
+
+/* Keep CTA compact and premium */
+:host.sidebar .add-cart-btn{
+  margin-top: 10px;
+  height: 44px;
+  font-size: 15px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#ffb76c,#ff8c40);
+  box-shadow: 0 10px 24px rgba(255,140,60,.24);
+}
+
+/* Carousel shorter in rail */
+:host.sidebar .carousel-slide-container{ height: 220px; }
+:host.sidebar .carousel-toggle-btn{ bottom: 8px; right: 8px; }
