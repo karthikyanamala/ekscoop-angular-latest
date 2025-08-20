@@ -16,11 +16,12 @@ import { isPlatformBrowser } from '@angular/common';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { ProductShowcaseComponent } from '../../home/product-showcase/product-showcase.component';
-
+import { RouterLink } from '@angular/router';
+import { ProfileComponent } from '../../profile/profile.component';
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [AskQuestionComponent,CommonModule,ProductShowcaseComponent],
+  imports: [AskQuestionComponent,CommonModule,ProductShowcaseComponent, RouterLink,ProfileComponent],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.css'],

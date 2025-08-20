@@ -3,7 +3,6 @@ import { isPlatformBrowser } from '@angular/common';
 import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, signOut, User } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
-
 @Injectable({
   providedIn: 'root'
 })

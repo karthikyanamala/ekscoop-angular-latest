@@ -743,3 +743,160 @@
 .sheet-body{ padding:12px; }
 @keyframes slideUp{ from{ transform:translateY(12%); opacity:.85;} to{ transform:none; opacity:1;} }
 @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+:root { --header-h: 64px; }
+
+.with-sticky { padding-top: var(--header-h); }
+
+/* ensure modal/sheets sit above content but below mobile menu from header */
+.sheet-backdrop,
+.modal-overlay { z-index: 900; }
+:root{ --ek-h: 64px; }
+.with-sticky{ padding-top: var(--ek-h); }
+/* Sticky strip container */
+.home-btn-wrap{
+  position: sticky; top: 0; z-index: 1000;
+  background: rgba(255,255,255,.7);
+  backdrop-filter: saturate(140%) blur(6px);
+  border-bottom: 1px solid rgba(2,6,23,.06);
+}
+
+/* Inner layout */
+.home-btn-wrap .container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: grid;
+grid-template-columns: auto 1fr auto;; /* left | center | right */
+  align-items: center;
+  gap: 16px;
+}
+
+/* Home pill (left) */
+.home-btn{
+  justify-self: start;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(2,6,23,.08);
+  font-weight: 600;
+  text-decoration: none;
+  color: #0f172a;
+  box-shadow: 0 6px 18px rgba(2,6,23,.06);
+  transition: all .2s ease;
+}
+.home-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 20px rgba(2,6,23,.1); }
+
+/* Socials (center) */
+.social-links{
+  justify-self: center;
+  display: flex;
+  gap: 16px;
+}
+.social-links a{
+  font-size: 18px;
+  color: #475569;
+  transition: color .2s ease;
+}
+.social-links a:hover{ color: #ef6c00; }
+
+/* Right rail: profile + promo */
+.right-rail{
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+
+/* The profile component sits inline here; tweak spacing if needed */
+.right-rail app-profile{
+  display: inline-flex;       /* shrink to fit */
+  width: auto !important;     /* override any 100% inside */
+  max-width: none !important; /* just in case */
+  flex: 0 0 auto;             /* don't stretch in flex row */
+}
+
+/* Promo button */
+.promo-btn{
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#ff9800,#ef6c00);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(239,108,0,.25);
+  transition: transform .2s ease, box-shadow .2s ease;
+  white-space: nowrap;
+}
+.promo-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(239,108,0,.35);
+}
+
+/* Subtle underline */
+.home-ambient{
+  height: 3px;
+  background: linear-gradient(90deg,#ffb267,#ff7a1a 40%,#ef6c00 65%,#ffa94d);
+  opacity: .25;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 768px){
+  .home-btn-wrap .container{
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .home-btn{ justify-self: center; }
+  .social-links{ justify-self: center; }
+  .right-rail{ justify-self: center; flex-wrap: wrap; }
+}
+/* Main bar */
+.home-btn-wrap .container {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* left | center | right */
+  align-items: center;
+  gap: 16px;
+}
+
+/* Right side items in one line */
+.right-rail {
+  display: flex;
+  align-items: center;
+  gap: 10px;              /* reduce space between profile & coupon */
+  justify-content: flex-end;
+}
+
+/* Force app-profile to shrink-fit */
+.right-rail app-profile {
+  display: inline-flex;
+  width: auto !important;
+  max-width: none !important;
+  flex: 0 0 auto;
+}
+
+/* Coupon button */
+.promo-btn {
+  background: #ff7a18;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.promo-btn:hover { background: #e65c00; }
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .home-btn-wrap .container {
+    grid-template-columns: 1fr;
+  }
+  .right-rail {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

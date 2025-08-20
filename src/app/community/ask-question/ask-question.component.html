@@ -1,9 +1,6 @@
 <div class="popup-success" *ngIf="showPopup">
-  <div class="popup-content">
-    ✅ Question posted successfully!
-  </div>
+  <div class="popup-content">✅ Question posted successfully!</div>
 </div>
-
 
 <div class="ask-question-wrapper">
   <h2>Ask a Question</h2>
@@ -17,5 +14,8 @@
   <label>Tags (comma separated)</label>
   <input [(ngModel)]="tagInput" placeholder="e.g., roti, wheat, protein" />
 
-  <button (click)="submitQuestion()">Post Question</button>
+  <!-- The button simply calls a gated handler -->
+  <button (click)="onSubmitClick()" [disabled]="isPosting">
+    {{ isPosting ? 'Posting...' : 'Post Question' }}
+  </button>
 </div>
