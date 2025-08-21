@@ -31,7 +31,7 @@ export const routes: Routes = [
   loadComponent: () => import('./blog/blog/blog.component').then(m => m.BlogComponent)
 },
 { path: 'blog/:slug', loadComponent: () => import('./blog/blog-detail/blog-detail.component').then(m => m.BlogDetailComponent), data: { renderMode: 'server' }},
-{ path: 'comminity', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent),
+{ path: 'community', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent),
    resolve: { topQuestions: TopQuestionsResolver },
   data: { renderMode: 'server' }
  },
