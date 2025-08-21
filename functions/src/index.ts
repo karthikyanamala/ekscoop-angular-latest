@@ -72,7 +72,7 @@ async function submitToIndexing(
  * @return {string} Full absolute URL to the question page.
  */
 function questionUrlFromSlug(slug: string): string {
-  return `https://ekscoop.com/questions/${encodeURIComponent(slug)}`;
+  return `https://www.ekscoop.com/questions/${encodeURIComponent(slug)}`;
 }
 
 // ⬆️ END OF INSERT
@@ -329,7 +329,7 @@ export const sitemap = onRequest(async (req, res) => {
       new Date().toISOString();
       return `
   <url>
-    <loc>https://ekscoop.com/questions/${slug}</loc>
+    <loc>https://www.ekscoop.com/questions/${slug}</loc>
     <lastmod>${updatedAt}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

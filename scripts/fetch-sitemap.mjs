@@ -6,28 +6,18 @@ const targetPath = 'src/sitemap.xml';
 
 const staticUrls = [
   {
-    loc: 'https://ekscoop.com/',
+    loc: 'https://www.ekscoop.com/',
     changefreq: 'daily',
     priority: '1.0',
   },
   {
-    loc: 'https://ekscoop.com/partner-with-us',
-    changefreq: 'monthly',
-    priority: '0.9',
-  },
-  {
-    loc: 'https://ekscoop.com/about-us',
+    loc: 'https://www.ekscoop.com/about-us',
     changefreq: 'yearly',
     priority: '0.7',
   },
   {
-    loc: 'https://ekscoop.com/contact-us',
+    loc: 'https://www.ekscoop.com/contact-us',
     changefreq: 'yearly',
-    priority: '0.5',
-  },
-  {
-    loc: 'https://ekscoop.com/meal-section',
-    changefreq: 'monthly',
     priority: '0.5',
   },
   {
