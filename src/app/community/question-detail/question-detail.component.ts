@@ -58,10 +58,8 @@ export class QuestionDetailComponent implements OnInit {
   userVote: 'like' | 'dislike' | null = null;
   hasReported = false;
 
-  // 👉 new: keep buttons disabled until flags are loaded
   isFlagsLoading = true;
   private questionReady = false;
-
   private currentUid: string | null = null;
 
   constructor(
@@ -77,26 +75,32 @@ export class QuestionDetailComponent implements OnInit {
   ) {
     this.answerForm = this.fb.group({ content: [''] });
 
+    // ----- SSR: apply meta & canonical immediately -----
     const data = this.route.snapshot.data['question'];
     if (data?.meta && isPlatformServer(this.platformId)) {
       const { title, description, url, image } = data.meta;
       this.titleService.setTitle(title);
       this.meta.updateTag({ name: 'description', content: description });
-      this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+      this.meta.updateTag({ name: 'robots', content: data.robots || 'index, follow' });
+
+      this.meta.updateTag({ property: 'og:type', content: 'article' });
       this.meta.updateTag({ property: 'og:title', content: title });
       this.meta.updateTag({ property: 'og:description', content: description });
       this.meta.updateTag({ property: 'og:url', content: url });
       this.meta.updateTag({ property: 'og:image', content: image });
-      this.meta.updateTag({ property: 'og:type', content: 'article' });
+
+      this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
       this.meta.updateTag({ name: 'twitter:title', content: title });
       this.meta.updateTag({ name: 'twitter:description', content: description });
       this.meta.updateTag({ name: 'twitter:image', content: image });
-      this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
 
       const link: HTMLLinkElement = this.document.createElement('link');
       link.setAttribute('rel', 'canonical');
-      link.setAttribute('href', url);
+      link.setAttribute('href', data.canonical || url);
       this.document.head.appendChild(link);
+
+      // Inject resolver-provided JSON-LD if present
+      if (data.jsonLd) this.setJsonLd('jsonld-question', data.jsonLd);
     }
   }
 
@@ -104,37 +108,52 @@ export class QuestionDetailComponent implements OnInit {
     const slug = this.route.snapshot.paramMap.get('slug');
     if (!slug) return;
 
-    const data = this.route.snapshot.data['question'];
-    this.questionId = data.id;
-    this.question = data;
-    this.questionReady = true; // question id is known
+    const dataFromResolver = this.route.snapshot.data['question'];
+    this.questionId = dataFromResolver?.id;
+    this.question = dataFromResolver;
+    this.questionReady = true;
 
     if (isPlatformBrowser(this.platformId)) {
-      // Observe auth and load flags when both uid and qid are known
+      // auth → flags
       this.authService.getCurrentUser().subscribe(async user => {
         this.currentUid = user?.uid || null;
         if (this.currentUid && this.questionReady) {
           await this.loadUserFlags();
         } else if (!this.currentUid) {
-          // no user -> stop the loading spinner so buttons enable in neutral state
           this.isFlagsLoading = false;
         }
       });
 
       await this.fetchQuestionFromFirestore(slug);
       await this.fetchAnswers();
-      this.injectStructuredData();
 
-      // If uid already present by now, make sure flags are loaded
-      if (this.currentUid) {
-        await this.loadUserFlags();
-      } else {
-        this.isFlagsLoading = false;
+      // Update meta on the client too (useful if SSR had fallback)
+      if (this.question?.title) {
+        const title = this.question.title;
+        const description = this.question?.description || 'Q&A about YOU x 0.8 plant protein.';
+        const url = `https://ekscoop.com/questions/${encodeURIComponent(slug)}`;
+        const image = 'https://ekscoop.com/assets/social-preview.jpg';
+
+        this.titleService.setTitle(title);
+        this.meta.updateTag({ name: 'description', content: description });
+        this.meta.updateTag({ property: 'og:title', content: title });
+        this.meta.updateTag({ property: 'og:description', content: description });
+        this.meta.updateTag({ property: 'og:url', content: url });
+        this.meta.updateTag({ property: 'og:image', content: image });
+        this.meta.updateTag({ name: 'twitter:title', content: title });
+        this.meta.updateTag({ name: 'twitter:description', content: description });
+        this.meta.updateTag({ name: 'twitter:image', content: image });
       }
+
+      // Generate/refresh JSON-LD from live data (no bestAnswer)
+      this.refreshClientJsonLd(slug);
+
+      if (this.currentUid) await this.loadUserFlags();
+      else this.isFlagsLoading = false;
     }
   }
 
-  // --------- data fetch ---------
+  // ---------- Firestore fetch ----------
   async fetchQuestionFromFirestore(slug: string) {
     const questionsRef = collection(this.firestore, 'QUESTIONS_PATH');
     const q = query(questionsRef, where('slug', '==', slug));
@@ -149,41 +168,71 @@ export class QuestionDetailComponent implements OnInit {
 
   async fetchAnswers() {
     if (!this.questionId) return;
-    const answersRef = collection(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/answers`
-    );
+    const answersRef = collection(this.firestore, `QUESTIONS_PATH/${this.questionId}/answers`);
     const q = query(answersRef, orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
     this.answers = snap.docs.map(d => d.data());
   }
 
-  private injectStructuredData() {
-    const data: any = {
-      '@context': 'https://schema.org',
-      '@type': 'Question',
-      name: this.question?.title,
-      text: this.question?.description,
-      dateCreated: this.question?.createdAt?.toDate?.(),
-      author: { '@type': 'Person', name: 'Anonymous' },
-      answerCount: this.answers.length,
-    };
-    if (this.answers.length > 0) {
-      data.acceptedAnswer = {
-        '@type': 'Answer',
-        text: this.answers[0]?.content,
-        dateCreated: this.answers[0]?.createdAt?.toDate?.(),
-        upvoteCount: this.answers[0]?.upvotes || 0,
-        author: { '@type': 'Person', name: 'Anonymous' },
-      };
+  // ---------- JSON-LD helpers ----------
+  private isoDate(d: any): string | undefined {
+    try {
+      if (!d) return undefined;
+      if (typeof d?.toDate === 'function') return d.toDate().toISOString();
+      if (d instanceof Date) return d.toISOString();
+      const dt = new Date(d);
+      return isNaN(+dt) ? undefined : dt.toISOString();
+    } catch {
+      return undefined;
     }
-    const script = this.document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(data);
-    this.document.head.appendChild(script);
   }
 
-  // --------- auth gates with custom popup ---------
+  private setJsonLd(id: string, data: any) {
+    let script = this.document.head.querySelector<HTMLScriptElement>(`script#${id}[type="application/ld+json"]`);
+    const json = JSON.stringify(data);
+    if (!script) {
+      script = this.document.createElement('script');
+      script.type = 'application/ld+json';
+      script.id = id;
+      script.text = json;
+      this.document.head.appendChild(script);
+    } else {
+      script.text = json;
+    }
+  }
+
+  private refreshClientJsonLd(slug: string) {
+    const q = this.question || {};
+    const answers = Array.isArray(this.answers) ? this.answers : [];
+
+    const item: any = {
+      '@context': 'https://schema.org',
+      '@type': 'QAPage',
+      mainEntity: {
+        '@type': 'Question',
+        name: q.title || '',
+        text: q.description || '',
+        dateCreated: this.isoDate(q.createdAt),
+        upvoteCount: q.likes || 0,
+        answerCount: answers.length
+      }
+    };
+
+    if (answers.length) {
+      item.mainEntity.suggestedAnswer = answers.map((a: any, i: number) => ({
+        '@type': 'Answer',
+        text: a.content || '',
+        upvoteCount: a.upvotes || 0,
+        dateCreated: this.isoDate(a.createdAt),
+        url: `https://ekscoop.com/questions/${encodeURIComponent(slug)}#answer-${i + 1}`,
+        author: { '@type': 'Person', name: a.author || 'Anonymous' }
+      }));
+    }
+
+    this.setJsonLd('jsonld-question', item);
+  }
+
+  // ---------- auth gates with custom popup ----------
   private async ensureSignedIn(): Promise<boolean> {
     const user = await firstValueFrom(this.authService.getCurrentUser());
     if (user) {
@@ -199,10 +248,8 @@ export class QuestionDetailComponent implements OnInit {
     ref.instance.title = title;
     ref.instance.subtitle = subtitle;
 
-    // close (X or Cancel)
     ref.instance.closed.subscribe(() => this.vcr.clear());
 
-    // success
     const onAuthSuccess = () => {
       this.vcr.clear();
       window.removeEventListener('auth-success', onAuthSuccess);
@@ -217,7 +264,7 @@ export class QuestionDetailComponent implements OnInit {
     return ok;
   }
 
-  // --------- load per-user flags ---------
+  // ---------- per-user flags ----------
   private async loadUserFlags() {
     if (!this.currentUid || !this.questionId) {
       this.isFlagsLoading = false;
@@ -225,30 +272,22 @@ export class QuestionDetailComponent implements OnInit {
     }
     this.isFlagsLoading = true;
 
-    // vote
-    const voteRef = doc(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/votes/${this.currentUid}`
-    );
+    const voteRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}/votes/${this.currentUid}`);
     const voteSnap = await getDoc(voteRef);
     this.userVote = voteSnap.exists() ? ((voteSnap.data() as any).vote ?? null) : null;
 
-    // report
-    const reportRef = doc(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/reports/${this.currentUid}`
-    );
+    const reportRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}/reports/${this.currentUid}`);
     const reportSnap = await getDoc(reportRef);
     this.hasReported = reportSnap.exists();
 
     this.isFlagsLoading = false;
   }
 
-  // --------- UI handlers (custom messages) ---------
+  // ---------- UI handlers ----------
   async onLikeClick() {
     if (!(await this.ensureSignedInWithPopup('Sign in to Vote', 'Log in to like or dislike this question.'))) return;
     await this.likeQuestion();
-    await this.loadUserFlags(); // keep UI in sync
+    await this.loadUserFlags();
   }
   async onDislikeClick() {
     if (!(await this.ensureSignedInWithPopup('Sign in to Vote', 'Log in to like or dislike this question.'))) return;
@@ -265,16 +304,13 @@ export class QuestionDetailComponent implements OnInit {
     await this.submitAnswer();
   }
 
-  // --------- writes ---------
+  // ---------- writes ----------
   async submitAnswer() {
     const content = (this.answerForm.value.content || '').trim();
     if (!content || !this.currentUid) return;
 
     const user = await firstValueFrom(this.authService.getCurrentUser());
-    const answersRef = collection(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/answers`
-    );
+    const answersRef = collection(this.firestore, `QUESTIONS_PATH/${this.questionId}/answers`);
     await addDoc(answersRef, {
       content,
       createdAt: serverTimestamp(),
@@ -284,13 +320,14 @@ export class QuestionDetailComponent implements OnInit {
     });
 
     const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
-    await updateDoc(questionRef, {
-      answersCount: (this.question.answersCount || 0) + 1,
-    });
+    await updateDoc(questionRef, { answersCount: (this.question.answersCount || 0) + 1 });
 
     this.answerForm.reset();
     this.showSuccessPopup = true;
     await this.fetchAnswers();
+    // refresh JSON-LD after posting an answer
+    const slug = this.route.snapshot.paramMap.get('slug') || '';
+    this.refreshClientJsonLd(slug);
     setTimeout(() => (this.showSuccessPopup = false), 2000);
   }
 
@@ -298,10 +335,7 @@ export class QuestionDetailComponent implements OnInit {
     if (!this.questionId || !this.currentUid) return;
 
     const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
-    const voteRef = doc(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/votes/${this.currentUid}`
-    );
+    const voteRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}/votes/${this.currentUid}`);
 
     const prevSnap = await getDoc(voteRef);
     const prev = prevSnap.exists() ? (prevSnap.data() as any).vote : null;
@@ -323,10 +357,7 @@ export class QuestionDetailComponent implements OnInit {
     if (!this.questionId || !this.currentUid) return;
 
     const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
-    const voteRef = doc(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/votes/${this.currentUid}`
-    );
+    const voteRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}/votes/${this.currentUid}`);
 
     const prevSnap = await getDoc(voteRef);
     const prev = prevSnap.exists() ? (prevSnap.data() as any).vote : null;
@@ -348,10 +379,7 @@ export class QuestionDetailComponent implements OnInit {
     if (!this.questionId || !this.currentUid || this.hasReported) return;
 
     const questionRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}`);
-    const reportRef = doc(
-      this.firestore,
-      `QUESTIONS_PATH/${this.questionId}/reports/${this.currentUid}`
-    );
+    const reportRef = doc(this.firestore, `QUESTIONS_PATH/${this.questionId}/reports/${this.currentUid}`);
 
     await updateDoc(questionRef, { reports: increment(1) });
     await setDoc(reportRef, { at: serverTimestamp() });
