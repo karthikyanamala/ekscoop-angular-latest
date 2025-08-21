@@ -1,73 +1,65 @@
 <section class="hero-section">
+  <!-- ambience -->
+  <div class="sunrise-halo"></div>
   <div class="blobs">
     <div class="blob blob1"></div>
     <div class="blob blob2"></div>
     <div class="blob blob3"></div>
-    <div class="hero-sun"></div> <!-- NEW central glow -->
+    <div class="hero-sun"></div>
   </div>
 
   <div class="container hero-container">
     <div class="hero-grid">
-      <!-- Left Side -->
+      <!-- LEFT: keep your existing copy/buttons exactly as-is -->
       <div class="hero-text">
         <h1>
-          <span class="highlight">Perfect Nutrition</span><br/>
+          <span class="highlight">Perfect Nutrition</span><br />
           <span class="subheading">Every Hour of the Day</span>
         </h1>
+
         <p class="description">
-          
-          YOU x 0.8 is an unflavoured, plant-based protein powder that mixes into your daily Indian foods like roti, dal, or poha — adding nutrition without changing taste.
-          
+          YOU x 0.8 is an unflavoured, plant-based protein powder that mixes into your daily Indian foods like
+          roti, dal, or poha — adding nutrition without changing taste.
         </p>
-
-
-
 
         <div class="trust-badges">
           <div class="badge green">✓ Vegan</div>
           <div class="badge blue">✓ Diabetic-Friendly</div>
           <div class="badge orange">✓ 16.7g Protein<span class="per-sachet">/sachet</span></div>
-          <div class="badge teal">✓ Clean Protien</div>
-         
+          <div class="badge teal">✓ Clean Protein</div>
         </div>
-
-        
 
         <div class="cta-buttons">
           <button class="btn order-btn" (click)="scrollToProduct()">Order Now</button>
-
-          
-
         </div>
-        
-
       </div>
 
-      <!-- Right Side -->
-<!-- Right Side -->
-<div class="hero-images">
-  <!-- Desktop View -->
-  <ng-container *ngIf="!isMobile">
-    <div class="secondary-image">
-      <img src="../../../assets/traditional-webp.webp" alt="Traditional Design"  fetchpriority="high"/>
-    </div>
-    <div class="main-image">
-      <img src="../../../assets/modern.webp" alt="Modern Design" fetchpriority="high"/>
-    </div>
-  </ng-container>
+      <!-- RIGHT: Lovable-like image cards -->
+      <div class="hero-images">
+        <div class="cards-row">
+          <!-- Modern (Blue) -->
+          <figure class="product-card">
+            <div class="product-frame modern">
+              <img src="assets/modern.webp" alt="YOU x 0.8 - Modern Edition" loading="eager" fetchpriority="high" />
+            </div>
+            <figcaption>
+              <div class="card-title">Modern Edition</div>
+              <div class="card-sub">Perfect for fitness enthusiasts</div>
+            </figcaption>
+          </figure>
 
-  <!-- Mobile View (Toggle Every 2s) -->
-  <ng-container *ngIf="isMobile">
-    <div class="main-image fade-image">
-      <img
-        [src]="showModern ? '../../../assets/modern.webp' : '../../../assets/traditional-webp.webp'"
-        [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
-        [attr.fetchpriority]="showModern ? null : 'high'"
-      />
-    </div>
-  </ng-container>
-</div>
-
+          <!-- Traditional (Red) -->
+          <figure class="product-card">
+            <div class="product-frame traditional">
+              <img src="assets/traditional-webp.webp" alt="YOU x 0.8 - Traditional Edition" loading="eager" />
+            </div>
+            <figcaption>
+              <div class="card-title">Traditional Edition</div>
+              <div class="card-sub">Inspired by Indian heritage</div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
   </div>
 </section>
