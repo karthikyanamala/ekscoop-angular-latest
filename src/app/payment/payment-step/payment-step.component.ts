@@ -91,7 +91,7 @@ export class PaymentStepComponent {
 
   openRazorpay(order: any): void {
     const options = {
-      key: 'rzp_test_m6JDLl9bJGsHV6', // ✅ Replace with live/test key
+      key: 'rzp_live_REDs7iq8XucX6d', // ✅ Replace with live/test key
       amount: order.amount,
       currency: order.currency,
       name: 'ekScoop',

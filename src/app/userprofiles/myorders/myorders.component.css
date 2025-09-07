@@ -90,3 +90,10 @@
   margin: 0 auto;
   padding: 120px 20px 20px; /* Increased top padding to 120px for clearance */
 }
+/* myorders.component.css */
+.order-actions { margin-top: 12px; display:flex; justify-content:flex-end; }
+.track-btn {
+  text-decoration: none; padding: 8px 14px; border-radius: 10px;
+  font-weight: 600; border: 1px solid #ffa94d; transition: .2s;
+}
+.track-btn:hover { background:#ffe8cc; }

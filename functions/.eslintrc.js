@@ -30,5 +30,6 @@ module.exports = {
     quotes: ["error", "double"],
     "import/no-unresolved": "off",
     indent: ["error", 2],
+    "linebreak-style": ["error", "unix"]
   },
 };

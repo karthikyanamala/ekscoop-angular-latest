@@ -1,77 +1,91 @@
+<app-corner-badge></app-corner-badge>
 
-<!-- Your component's specific content goes here -->
- <app-corner-badge></app-corner-badge>
- 
-<div class="profile-page-container" *ngIf="!loading; else loadingTpl">
-   <app-profile-header></app-profile-header>
-  <h2>MY ADDRESSES</h2>
+<!-- Only render interactive content in the browser -->
+<ng-container *ngIf="isBrowser; else ssrSkeleton">
+  <div class="profile-page-container" *ngIf="!loading; else loadingTpl">
+    <app-profile-header></app-profile-header>
+    <h2>MY ADDRESSES</h2>
 
-  <div class="address-grid">
-    <div class="add-new" (click)="openNewAddressModal()">+ Add new address</div>
+    <div class="address-grid">
+      <div class="add-new" (click)="openNewAddressModal()">+ Add new address</div>
 
-    <div class="address-card" *ngFor="let addr of addresses">
-      <div class="address-header">
-        <strong>{{ addr.fullName }}</strong>
-        <span *ngIf="addr.isDefault" class="default-badge">(Default)</span>
-      </div>
-      <div class="address-details">
-        <p>{{ addr.phoneNumber }}, {{ addr.addressLine }}</p>
-        <p>{{ addr.locality }}, {{ addr.city.toUpperCase() }}, {{ addr.state.toUpperCase() }}, {{ addr.pincode }}</p>
-      </div>
-      <div class="address-actions">
-        <button (click)="openEditModal(addr)">Edit</button>
-        <button (click)="confirmDelete(addr.id)">Remove</button>
+      <div class="address-card" *ngFor="let addr of addresses">
+        <div class="address-header">
+          <strong>{{ addr.fullName }}</strong>
+          <span *ngIf="addr.isDefault" class="default-badge">(Default)</span>
+        </div>
+        <div class="address-details">
+          <p>{{ addr.phoneNumber }}, {{ addr.addressLine }}</p>
+          <p>{{ addr.locality }}, {{ addr.city?.toUpperCase() }}, {{ addr.state?.toUpperCase() }}, {{ addr.pincode }}</p>
+        </div>
+        <div class="address-actions">
+          <button (click)="openEditModal(addr)">Edit</button>
+          <button (click)="confirmDelete(addr.id)">Remove</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Edit Address Modal -->
-<div class="modal" *ngIf="showEditModal">
-  <div class="modal-content">
-    <h3>{{ selectedAddressId ? 'Edit Address' : 'Add Address' }}</h3>
-    <form (ngSubmit)="saveAddress()">
-      <label>Full Name*</label>
-      <input [(ngModel)]="addressForm.fullName" name="fullName" required />
+  <!-- Edit Address Modal -->
+  <div class="modal" *ngIf="showEditModal">
+    <div class="modal-content">
+      <h3>{{ selectedAddressId ? 'Edit Address' : 'Add Address' }}</h3>
 
-      <label>Email*</label>
-      <input [(ngModel)]="addressForm.email" name="email" required />
+      <form #f="ngForm" (ngSubmit)="saveAddress(f)">
+        <label>Full Name*</label>
+        <input [(ngModel)]="addressForm.fullName" name="fullName" required />
 
-      <label>Mobile No.*</label>
-      <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" required />
+        <label>Email*</label>
+        <input [(ngModel)]="addressForm.email" name="email" required />
 
-      <label>Address*</label>
-      <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
+        <label>Mobile No.*</label>
+        <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" required />
 
-      <div class="address-row">
-        <input placeholder="Locality" [(ngModel)]="addressForm.locality" name="locality" />
-        <input placeholder="Pincode*" [(ngModel)]="addressForm.pincode" name="pincode" required />
-      </div>
+        <label>Address*</label>
+        <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
 
-      <div class="address-row">
-        <input placeholder="City*" [(ngModel)]="addressForm.city" name="city" required />
-        <input placeholder="State*" [(ngModel)]="addressForm.state" name="state" required />
-      </div>
+        <div class="address-row">
+          <input placeholder="Locality" [(ngModel)]="addressForm.locality" name="locality" />
+          <input placeholder="Pincode*" [(ngModel)]="addressForm.pincode" name="pincode" required
+                 (ngModelChange)="onPinChange($event)" maxlength="6" />
+        </div>
 
-      <label class="checkbox">
-        <input type="checkbox" [(ngModel)]="addressForm.isDefault" name="isDefault" />
-        Make this default address
-      </label>
+        <div class="address-row">
+          <input placeholder="City*" [(ngModel)]="addressForm.city" name="city" required />
+          <input placeholder="State*" [(ngModel)]="addressForm.state" name="state" required />
+        </div>
 
-      <button type="submit">Save Address</button>
-      <button type="button" class="close" (click)="showEditModal=false">Cancel</button>
-    </form>
+        <div class="pin-status" *ngIf="addressForm.pincode">
+          <span *ngIf="pinStatus==='checking'">Checking serviceability…</span>
+          <span *ngIf="pinStatus==='ok'">✅ Serviceable</span>
+          <span *ngIf="pinStatus==='not_serviceable'">❌ Not serviceable</span>
+          <span *ngIf="pinStatus==='error'">⚠️ Couldn’t verify. Try again.</span>
+        </div>
+
+        <button type="submit" [disabled]="!canSave(f.valid)">Save Address</button>
+        <button type="button" class="close" (click)="showEditModal=false">Cancel</button>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal" *ngIf="showDeleteModal">
-  <div class="modal-content">
-    <p>Are you sure you want to <span class="delete-text">Delete</span> this Address?</p>
-    <button (click)="showDeleteModal=false">Cancel</button>
-    <button (click)="deleteAddress()">Delete</button>
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" *ngIf="showDeleteModal">
+    <div class="modal-content">
+      <p>Are you sure you want to <span class="delete-text">Delete</span> this Address?</p>
+      <button (click)="showDeleteModal=false">Cancel</button>
+      <button (click)="deleteAddress()">Delete</button>
+    </div>
   </div>
-</div>
+</ng-container>
+
+<!-- SSR skeleton (no client SDKs) -->
+<ng-template #ssrSkeleton>
+  <div class="profile-page-container">
+    <app-profile-header></app-profile-header>
+    <h2>MY ADDRESSES</h2>
+    <div class="loading">Loading…</div>
+  </div>
+</ng-template>
 
 <ng-template #loadingTpl>
   <div class="loading">Loading...</div>
