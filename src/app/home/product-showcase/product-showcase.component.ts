@@ -1,10 +1,13 @@
-// product-showcase.component.ts
-import { Component, ViewContainerRef, OnInit, OnDestroy, Input, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component, ViewContainerRef, OnInit, OnDestroy,
+  Input, HostBinding, Inject, EnvironmentInjector, PLATFORM_ID
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component';
-import { AuthService } from '../../services/auth.service';
 import { firstValueFrom } from 'rxjs';
+
+import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component'; // <-- ensure standalone:true
+import { AuthService } from '../../services/auth.service';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 
 type VariantKey = 'traditional' | 'modern';
@@ -20,12 +23,12 @@ type VariantData = {
 @Component({
   selector: 'app-product-showcase',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AuthPopupComponent], // <-- important for dynamic createComponent
   templateUrl: './product-showcase.component.html',
   styleUrls: ['./product-showcase.component.css'],
 })
 export class ProductShowcaseComponent implements OnInit, OnDestroy {
-  // ✅ NEW: allow "sidebar" mode from the community page
+  // sidebar mode (if you ever embed it elsewhere)
   @Input() variant: 'default' | 'sidebar' = 'default';
   @HostBinding('class.sidebar') get isSidebar() { return this.variant === 'sidebar'; }
 
@@ -71,27 +74,41 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     }
   };
 
+  private isBrowser = false;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private authService: AuthService,
     private router: Router,
-    private firestore: Firestore
-  ) {}
+    private firestore: Firestore,
+    @Inject(PLATFORM_ID) platformId: Object,
+    private envInjector: EnvironmentInjector
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
     this.loadPrices();
-    this.startCarousel();
+    if (this.isBrowser) this.startCarousel(); // SSR-safe
   }
 
-  ngOnDestroy() { clearInterval(this.interval); }
+  ngOnDestroy() {
+    if (this.interval) clearInterval(this.interval);
+  }
 
   async loadPrices() {
     try {
       const traditionalSnap = await getDoc(doc(this.firestore, 'products/traditional'));
       const modernSnap = await getDoc(doc(this.firestore, 'products/modern'));
-      if (traditionalSnap.exists()) this.variants.traditional.price = (traditionalSnap.data() as any).price ?? -1;
-      if (modernSnap.exists()) this.variants.modern.price = (modernSnap.data() as any).price ?? -1;
-    } catch (error) { console.error('Error loading prices:', error); }
+      if (traditionalSnap.exists()) {
+        this.variants.traditional.price = (traditionalSnap.data() as any).price ?? -1;
+      }
+      if (modernSnap.exists()) {
+        this.variants.modern.price = (modernSnap.data() as any).price ?? -1;
+      }
+    } catch (error) {
+      console.error('Error loading prices:', error);
+    }
   }
 
   selectVariant(variant: string) {
@@ -125,8 +142,11 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
   }
 
   showLoginPopup() {
+    if (!this.isBrowser) return; // no window on server
     this.viewContainerRef.clear();
-    const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent);
+    const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent, {
+      environmentInjector: this.envInjector, // ensure providers are resolved anywhere
+    });
     const onAuthSuccess = () => {
       this.viewContainerRef.clear();
       window.removeEventListener('auth-success', onAuthSuccess);
@@ -136,9 +156,12 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     window.addEventListener('auth-success', onAuthSuccess);
   }
 
-  get selectedVariantData() { return this.selectedVariant ? this.variants[this.selectedVariant] : null; }
+  get selectedVariantData() {
+    return this.selectedVariant ? this.variants[this.selectedVariant] : null;
+  }
 
   toggleCarousel() { this.isPaused = !this.isPaused; }
+
   startCarousel() {
     this.interval = setInterval(() => {
       if (!this.isPaused && !this.selectedVariant) {
@@ -146,6 +169,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       }
     }, 3000);
   }
+
   goToSlide(index: number) { this.currentSlide = index; }
   selectGalleryImage(image: string) { this.selectedImage = image; }
 }

@@ -297,3 +297,6 @@ app-corner-badge {
 }
 
 /* Modal styles remain as you already have them */
+.pin-status { margin: 6px 0; font-size: 13px; }
+.chip { margin-left: 8px; padding: 2px 8px; border-radius: 12px; background:#eee; }
+.chip.on { background:#d1f7d6; }

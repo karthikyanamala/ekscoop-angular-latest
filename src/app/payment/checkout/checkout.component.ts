@@ -26,6 +26,8 @@ import { FooterComponent } from '../../footer/footer.component';
 
 declare var Razorpay: any;
 
+type PinStatus = 'idle' | 'checking' | 'ok' | 'bad' | 'invalid';
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -64,6 +66,11 @@ export class CheckoutComponent implements OnInit {
   promoError: string = '';
   promoSuccess: string = '';
 
+  // NEW: pin validation state
+  pincodeStatus: PinStatus = 'idle';
+  private pincodeTimer: any = null;
+  savingAddress = false;
+
   addressForm: any = {
     fullName: '',
     email: '',
@@ -74,6 +81,7 @@ export class CheckoutComponent implements OnInit {
     city: '',
     state: '',
     isDefault: false,
+    serviceable: null as boolean | null, // will be set after lookup
   };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -126,10 +134,10 @@ export class CheckoutComponent implements OnInit {
     if (!this.isBrowser) return;
 
     try {
-      console.log('[QuestionDetailComponent54321234] Fetching answers...');
       const addrCol = collection(this.firestore, `users/${this.uid}/addresses`);
       const addrSnap = await getDocs(addrCol);
-      this.addresses = addrSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      this.addresses = addrSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
       if (this.addresses.length > 0 && !this.selectedAddressId) {
         this.selectedAddressId = this.addresses[0].id;
       }
@@ -149,28 +157,83 @@ export class CheckoutComponent implements OnInit {
       city: '',
       state: '',
       isDefault: false,
+      serviceable: null,
     };
+    this.pincodeStatus = 'idle';
     this.showAddressModal = true;
-  }
-
-  async saveAddress() {
-    if (!this.isBrowser) return;
-
-    try {
-      console.log('[QuestionDetailComponent345634] Fetching answers...');
-      const addrCol = collection(this.firestore, `users/${this.uid}/addresses`);
-      await addDoc(addrCol, this.addressForm);
-      this.showAddressModal = false;
-      await this.loadAddresses();
-    } catch (error) {
-      console.error('Failed to save address:', error);
-    }
   }
 
   get selectedAddress() {
     return this.addresses.find(addr => addr.id === this.selectedAddressId) || null;
   }
 
+  // === PINCODE LOOKUP FLOW ===
+  onPincodeInput(val: string) {
+    if (!this.isBrowser) return;
+
+    // digits only, max 6
+    const pin = (val || '').replace(/\D/g, '').slice(0, 6);
+    this.addressForm.pincode = pin;
+
+    // reset state while typing
+    this.pincodeStatus = pin.length === 6 ? 'checking' : 'idle';
+
+    // debounce
+    if (this.pincodeTimer) clearTimeout(this.pincodeTimer);
+
+    if (pin.length === 6) {
+      this.pincodeTimer = setTimeout(() => this.lookupPincode(pin), 300);
+    } else {
+      this.addressForm.city = '';
+      this.addressForm.state = '';
+      this.addressForm.serviceable = null;
+    }
+  }
+
+  onPincodeBlur() {
+    if (this.addressForm.pincode && this.addressForm.pincode.length === 6 &&
+        this.pincodeStatus !== 'ok' && this.pincodeStatus !== 'bad') {
+      this.lookupPincode(this.addressForm.pincode);
+    }
+  }
+
+  private async lookupPincode(pin: string) {
+    if (!this.isBrowser) return;
+    this.pincodeStatus = 'checking';
+
+    try {
+      const res = await fetch(
+        `https://us-central1-ekscoop-website.cloudfunctions.net/pincodeLookup?pin=${encodeURIComponent(pin)}`
+      );
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+
+      // Expecting:
+      // { ok: true, pin: '560067', city: 'BANGALORE', state: '', serviceable: true }
+      if (!data || data.ok !== true) {
+        this.pincodeStatus = 'invalid';
+        this.addressForm.city = '';
+        this.addressForm.state = '';
+        this.addressForm.serviceable = null;
+        return;
+      }
+
+      // Normalize and auto-fill. Keep editable (state might be empty from API)
+      this.addressForm.city = (data.city || '').toString().trim();
+      this.addressForm.state = (data.state || '').toString().trim();
+      this.addressForm.serviceable = !!data.serviceable;
+
+      this.pincodeStatus = data.serviceable ? 'ok' : 'bad';
+    } catch (e) {
+      console.error('PIN lookup failed:', e);
+      this.pincodeStatus = 'invalid';
+      this.addressForm.city = '';
+      this.addressForm.state = '';
+      this.addressForm.serviceable = null;
+    }
+  }
+
+  // === PROMO ===
   async applyPromo() {
     if (!this.isBrowser) return;
 
@@ -234,9 +297,52 @@ export class CheckoutComponent implements OnInit {
     this.promoError = '';
   }
 
+  // === SAVE ADDRESS ===
+  async saveAddress() {
+    if (!this.isBrowser) return;
+
+    if (!this.addressForm.pincode || this.addressForm.pincode.length !== 6) {
+      alert('Please enter a valid 6-digit pincode.');
+      return;
+    }
+    if (this.pincodeStatus !== 'ok' || this.addressForm.serviceable !== true) {
+      alert('This pincode is not serviceable. Please use a different address.');
+      return;
+    }
+
+    // Require city and state (state may be blank in API, but must be filled by user)
+    if (!this.addressForm.city || !this.addressForm.state) {
+      alert('Please fill City and State.');
+      return;
+    }
+
+    this.savingAddress = true;
+    try {
+      const addrCol = collection(this.firestore, `users/${this.uid}/addresses`);
+      await addDoc(addrCol, {
+        ...this.addressForm,
+        city: this.addressForm.city || '',
+        state: this.addressForm.state || '',
+        serviceable: true,
+      });
+      this.showAddressModal = false;
+      await this.loadAddresses();
+    } catch (error) {
+      console.error('Failed to save address:', error);
+      alert('Failed to save address. Please try again.');
+    } finally {
+      this.savingAddress = false;
+    }
+  }
+
+  // === PAYMENT ===
   async placeOrder() {
     if (!this.isBrowser || !this.selectedAddress) {
       alert('Please select a delivery address first!');
+      return;
+    }
+    if (this.selectedAddress.serviceable === false) {
+      alert('Selected address pincode is not serviceable. Please choose another address.');
       return;
     }
 
@@ -291,11 +397,20 @@ export class CheckoutComponent implements OnInit {
     }
 
     const options = {
-      key: 'rzp_test_w83QYksMRrJXUy',
+      key: 'rzp_live_REDs7iq8XucX6d',
       amount: order.amount,
       currency: order.currency,
       name: 'ekScoop',
       description: 'Protein Sachets Order',
+      notes: {
+        product_name: this.product.name,
+        product_quantity: this.quantity,
+        product_unitPrice: this.unitPrice,
+        shipping_name: this.fullName,
+        shipping_email: this.selectedAddress.email,
+        shipping_phone: this.selectedAddress.phoneNumber,
+        shipping_address: `${this.selectedAddress.addressLine},${this.selectedAddress.locality}, ${this.selectedAddress.city},  ${this.selectedAddress.state}, ${this.selectedAddress.pincode}`,
+      },
       image: 'https://ekscoop.com/assets/favicon/android-chrome-192x192.png',
       order_id: order.id,
       theme: { color: '#ff6600' },

@@ -1,4 +1,5 @@
 <app-corner-badge></app-corner-badge>
+
 <div class="checkout-page">
   <div class="header">
     <h1>Secure Checkout</h1>
@@ -8,22 +9,21 @@
   <div class="main-grid">
     <div class="checkout-left">
       <!-- Account Info -->
-    <div class="card">
-  <div class="card-header">
-    <h2>Account Information</h2>
-  </div>
-  <div class="card-content account-info-grid">
-    <div>
-      <label for="fullName">Full Name</label>
-      <input id="fullName" type="text" [value]="fullName" disabled />
-    </div>
-    <div>
-      <label for="email">Email</label>
-      <input id="email" type="email" [value]="email" disabled />
-    </div>
-  </div>
-</div>
-
+      <div class="card">
+        <div class="card-header">
+          <h2>Account Information</h2>
+        </div>
+        <div class="card-content account-info-grid">
+          <div>
+            <label for="fullName">Full Name</label>
+            <input id="fullName" type="text" [value]="fullName" disabled />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" [value]="email" disabled />
+          </div>
+        </div>
+      </div>
 
       <!-- Delivery Address -->
       <div class="card">
@@ -36,12 +36,31 @@
         </div>
         <div class="card-content">
           <div *ngIf="addresses.length > 0" class="addresses-list">
-            <label *ngFor="let addr of addresses" class="address-option" [class.selected]="addr.id === selectedAddressId">
-              <input type="radio" name="selectedAddress" [value]="addr.id" [(ngModel)]="selectedAddressId" />
+            <label
+              *ngFor="let addr of addresses"
+              class="address-option"
+              [class.selected]="addr.id === selectedAddressId"
+              [class.not-serviceable]="addr.serviceable === false"
+            >
+              <input
+                type="radio"
+                name="selectedAddress"
+                [value]="addr.id"
+                [(ngModel)]="selectedAddressId"
+                [disabled]="addr.serviceable === false"
+              />
               <div class="address-content">
                 <strong>{{ addr.fullName }}</strong>
                 <p>{{ addr.phoneNumber }}, {{ addr.addressLine }}</p>
-                <p>{{ addr.locality }}, {{ addr.city.toUpperCase() }}, {{ addr.state.toUpperCase() }}, {{ addr.pincode }}</p>
+                <p>
+                  {{ addr.locality }},
+                  {{ (addr.city || '').toUpperCase() }},
+                  {{ (addr.state || '').toUpperCase() }},
+                  {{ addr.pincode }}
+                </p>
+
+                <span *ngIf="addr.serviceable === false" class="tag-bad">Not serviceable</span>
+                <span *ngIf="addr.serviceable === true" class="tag-ok">Serviceable</span>
               </div>
             </label>
           </div>
@@ -87,9 +106,8 @@
           <p *ngIf="promoError" class="promo-error">{{ promoError }}</p>
           <p *ngIf="promoSuccess" class="promo-success">{{ promoSuccess }}</p>
           <div class="promo-actions" *ngIf="promoApplied">
-  <button class="remove-btn" (click)="removePromo()">Remove Promo</button>
-</div>
-
+            <button class="remove-btn" (click)="removePromo()">Remove Promo</button>
+          </div>
         </div>
 
         <div *ngIf="selectedAddressId" class="delivery-address">
@@ -97,8 +115,12 @@
           <p *ngIf="selectedAddress">
             {{ selectedAddress.fullName }}<br />
             {{ selectedAddress.phoneNumber }}, {{ selectedAddress.addressLine }}<br />
-            {{ selectedAddress.locality }}, {{ selectedAddress.city.toUpperCase() }}, {{ selectedAddress.state.toUpperCase() }}<br />
+            {{ selectedAddress.locality }}, {{ selectedAddress.city?.toUpperCase() }},
+            {{ selectedAddress.state?.toUpperCase() }}<br />
             {{ selectedAddress.pincode }}
+          </p>
+          <p *ngIf="selectedAddress?.serviceable === false" class="pin-bad small">
+            Selected address pincode is not serviceable.
           </p>
         </div>
 
@@ -117,60 +139,81 @@
 
   <!-- Add New Address Modal -->
   <div class="modal-overlay" *ngIf="showAddressModal">
-<div class="modal-content">
-  <button class="close-btn" (click)="showAddressModal = false">×</button>
-  <h3>Add New Address</h3>
+    <div class="modal-content">
+      <button class="close-btn" (click)="showAddressModal = false">×</button>
+      <h3>Add New Address</h3>
 
-  <form (ngSubmit)="saveAddress()">
-    <div class="form-grid">
-      <div>
-        <label>Full Name*</label>
-        <input [(ngModel)]="addressForm.fullName" name="fullName" required />
-      </div>
-      <div>
-        <label>Email*</label>
-        <input [(ngModel)]="addressForm.email" name="email" type="email" required />
-      </div>
+      <form (ngSubmit)="saveAddress()">
+        <div class="form-grid">
+          <div>
+            <label>Full Name*</label>
+            <input [(ngModel)]="addressForm.fullName" name="fullName" required />
+          </div>
+          <div>
+            <label>Email*</label>
+            <input [(ngModel)]="addressForm.email" name="email" type="email" required />
+          </div>
 
-      <div class="full-width">
-        <label>Mobile No.*</label>
-        <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" required />
-      </div>
+          <div class="full-width">
+            <label>Mobile No.*</label>
+            <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" required />
+          </div>
 
-      <div class="full-width">
-        <label>Address*</label>
-        <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
-      </div>
+          <div class="full-width">
+            <label>Address*</label>
+            <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
+          </div>
 
-      <div class="full-width">
-        <label>Locality</label>
-        <input [(ngModel)]="addressForm.locality" name="locality" />
-      </div>
+          <div class="full-width">
+            <label>Locality</label>
+            <input [(ngModel)]="addressForm.locality" name="locality" />
+          </div>
 
-      <div>
-        <label>Pincode*</label>
-        <input [(ngModel)]="addressForm.pincode" name="pincode" required />
-      </div>
+          <!-- PINCODE with lookup + status -->
+          <div>
+            <label>Pincode*</label>
+            <input
+              [(ngModel)]="addressForm.pincode"
+              name="pincode"
+              required
+              maxlength="6"
+              inputmode="numeric"
+              pattern="\d{6}"
+              (ngModelChange)="onPincodeInput($event)"
+              (blur)="onPincodeBlur()"
+              [class.input-ok]="pincodeStatus === 'ok'"
+              [class.input-bad]="pincodeStatus === 'bad' || pincodeStatus === 'invalid'"
+            />
+            <p *ngIf="pincodeStatus === 'checking'" class="pin-info">Checking serviceability…</p>
+            <p *ngIf="pincodeStatus === 'ok'" class="pin-ok">✓ Serviceable</p>
+            <p *ngIf="pincodeStatus === 'bad'" class="pin-bad">✗ Not serviceable for delivery</p>
+            <p *ngIf="pincodeStatus === 'invalid'" class="pin-bad">Couldn’t validate this pincode. Try again.</p>
+          </div>
 
-      <div>
-        <label>City*</label>
-        <input [(ngModel)]="addressForm.city" name="city" required />
-      </div>
+          <!-- City/State auto-fill but editable (state may be blank in API) -->
+          <div>
+            <label>City*</label>
+            <input [(ngModel)]="addressForm.city" name="city" required />
+          </div>
 
-      <div class="full-width">
-        <label>State*</label>
-        <input [(ngModel)]="addressForm.state" name="state" required />
-      </div>
+          <div class="full-width">
+            <label>State*</label>
+            <input [(ngModel)]="addressForm.state" name="state" required />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="submit"
+            class="save-btn"
+            [disabled]="pincodeStatus !== 'ok' || savingAddress"
+          >
+            {{ savingAddress ? 'Saving…' : 'Save Address' }}
+          </button>
+          <button type="button" class="cancel-btn" (click)="showAddressModal = false">Cancel</button>
+        </div>
+      </form>
     </div>
-
-    <div class="modal-actions">
-      <button type="submit" class="save-btn">Save Address</button>
-      <button type="button" class="cancel-btn" (click)="showAddressModal = false">Cancel</button>
-    </div>
-  </form>
-</div>
-
-
   </div>
 
   <!-- Payment Loading -->
@@ -181,4 +224,5 @@
     </div>
   </div>
 </div>
+
 <app-footer></app-footer>

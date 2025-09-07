@@ -45,7 +45,7 @@
           },
           "configurations": {
             "production": {
-              "optimization": true,
+              "optimization": false,
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,

@@ -11,6 +11,10 @@
       </div>
       <div class="date">{{ order.paidAt?.toDate() | date:'medium' }}</div>
     </div>
+    <!-- Add this anywhere inside each .order-card footer/header -->
+<div class="order-actions">
+  <a class="track-btn" [routerLink]="['/orders', order.id]">Track order</a>
+</div>
     <div class="products">
       <div class="product" *ngFor="let p of order.products">
         <img [src]="p.image" alt="{{p.name}}">
