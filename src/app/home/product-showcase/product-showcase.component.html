@@ -1,100 +1,114 @@
-<section id="product-showcase" class="showcase">
+<section id="product-showcase" class="showcase" aria-label="Protein product showcase">
+  
   <div class="container">
-    <!-- Title Block -->
-    <div class="title-block">
+
+    <header class="title-block">
       <h2>Choose Your Perfect Protein</h2>
       <p>Both variants offer the same premium nutrition in different packaging</p>
-    </div>
+    </header>
 
     <div class="showcase-grid">
-      <!-- Product Image -->
-      <div class="image-container">
-        <div class="image-box">
-          <!-- Show selected variant image -->
-         <img
-  *ngIf="selectedVariantData"
-  [src]="selectedImage || selectedVariantData.image"
-  [alt]="selectedVariantData.name" />
+      <!-- LEFT: preselect tiles (no autoplay) OR hero once selected -->
+      <div class="image-col">
 
-          <!-- Show carousel when no variant is selected -->
-          <div *ngIf="!selectedVariant" class="placeholder">
-        <div class="carousel-wrapper" *ngIf="!selectedVariant">
-  <div class="carousel-slide-container">
-    <div
-      class="carousel-slide"
-      *ngFor="let img of carouselImages; let i = index"
-      [class.active]="i === currentSlide">
-      <img [src]="img" alt="Product visual" />
-    </div>
-  </div>
+        <!-- Before selection: two tappable tiles with dynamic prices -->
+        <div class="preselect-tiles card" *ngIf="!selectedVariant">
+          <button class="tile" type="button" (click)="selectVariant('modern')">
+            <img src="assets/modern.webp" alt="Active Lifestyle" />
+            <div class="tile-meta">
+              <div class="tile-title">Active Lifestyle</div>
+              <div class="tile-sub">Designed for active individuals</div>
+              <div class="tile-price">
+                <ng-container *ngIf="mrpForTile('modern') as mrp; else onlyEffM">
+                  <span class="eff">{{ priceForTile('modern') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+                  <span class="mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span></span>
+                  <span class="off" *ngIf="offForTile('modern') as off">({{ off }}% OFF)</span>
+                </ng-container>
+                <ng-template #onlyEffM>
+                  <span class="eff">{{ priceForTile('modern') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+                </ng-template>
+              </div>
+            </div>
+          </button>
 
-  <!-- Dots -->
-  <div class="carousel-dots">
-    <span *ngFor="let dot of carouselImages; let i = index"
-          [class.active]="i === currentSlide"
-          (click)="goToSlide(i)"></span>
-  </div>
-  <button class="carousel-toggle-btn" (click)="toggleCarousel()">
-  {{ isPaused ? '▶️' : '⏸️' }}
-</button>
-</div>
-
-          </div>
-
-            <div class="thumbnail-row" *ngIf="selectedVariantData">
-    <img *ngFor="let img of selectedVariantData.gallery"
-         [src]="img"
-         [class.active]="img === selectedImage"
-         (click)="selectGalleryImage(img)"
-         alt="Thumbnail" />
-  </div>
+          <button class="tile" type="button" (click)="selectVariant('traditional')">
+            <img src="assets/traditional-webp.webp" alt="Traditional Design" />
+            <div class="tile-meta">
+              <div class="tile-title">Traditional Design</div>
+              <div class="tile-sub">Perfect for traditional Indian meals</div>
+              <div class="tile-price">
+                <ng-container *ngIf="mrpForTile('traditional') as mrp; else onlyEffT">
+                  <span class="eff">{{ priceForTile('traditional') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+                  <span class="mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span></span>
+                  <span class="off" *ngIf="offForTile('traditional') as off">({{ off }}% OFF)</span>
+                </ng-container>
+                <ng-template #onlyEffT>
+                  <span class="eff">{{ priceForTile('traditional') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+                </ng-template>
+              </div>
+            </div>
+          </button>
         </div>
 
-        <!-- Floating Protein Tag -->
-        <div class="floating-tag" *ngIf="selectedVariantData">
-          <div class="floating-content">
-            <div class="protein">16.7g</div>
-            <div class="label">Protein</div>
+        <!-- After selection: hero + thumbnails -->
+        <ng-container *ngIf="selectedVariantData">
+          <div class="image-box">
+            <img
+              class="hero-img"
+              [src]="selectedImage || selectedVariantData.image"
+              [alt]="selectedVariantData.name"
+              decoding="async"
+              loading="eager"
+            />
           </div>
-        </div>
+
+          <div class="thumbnail-row" *ngIf="selectedVariantData" role="list">
+            <img *ngFor="let img of selectedVariantData.gallery"
+                 role="listitem"
+                 [src]="img"
+                 [alt]="'Preview ' + selectedVariantData.name"
+                 [class.active]="img === selectedImage"
+                 (click)="selectGalleryImage(img)" />
+          </div>
+        </ng-container>
       </div>
 
-      <!-- Details Block -->
+      <!-- RIGHT: Details / Actions -->
       <div class="details">
-        <!-- Variant Selector -->
-        <div class="variant-selector">
+
+        <!-- Variant selector (so user can switch anytime) -->
+        <section class="variant-selector card" aria-label="Variant selection">
           <h3>Select Variant*</h3>
           <div class="variant-options">
-            <ng-container *ngFor="let key of (variants | keyvalue)">
-              <ng-container *ngIf="key?.value?.name; else skipVariant">
-                <div
-                  (click)="selectVariant(key.key)"
-                  class="variant-card"
-                  [ngClass]="{ 'active': selectedVariant === key.key }">
-                  <div class="variant-name">{{ key.value.name }}</div>
-                  <div class="variant-description">{{ key.value.description }}</div>
-                </div>
-              </ng-container>
-              <ng-template #skipVariant></ng-template>
-            </ng-container>
-          </div>
-        </div>
+            <button type="button"
+                    class="variant-card"
+                    [class.active]="selectedVariant==='modern'"
+                    (click)="selectVariant('modern')">
+              <div class="variant-name">Active Lifestyle</div>
+              <div class="variant-description">Designed for active individuals</div>
+            </button>
 
-        <!-- Key Benefits -->
-        <div *ngIf="selectedVariantData" class="features">
+            <button type="button"
+                    class="variant-card"
+                    [class.active]="selectedVariant==='traditional'"
+                    (click)="selectVariant('traditional')">
+              <div class="variant-name">Traditional Design</div>
+              <div class="variant-description">Perfect for traditional Indian meals</div>
+            </button>
+          </div>
+        </section>
+
+        <!-- Key benefits -->
+        <section class="features card" *ngIf="selectedVariantData">
           <h4>Key Benefits</h4>
           <ul>
-            <li *ngFor="let feature of selectedVariantData.features">
-              ✔ {{ feature }}
-            </li>
+            <li *ngFor="let feature of selectedVariantData.features">✔ {{ feature }}</li>
           </ul>
-        </div>
+        </section>
 
-        <!-- Nutrition Facts -->
-        <div class="nutrition-facts">
-          <h4>
-            Nutrition Facts <span class="per-sachet">/ per sachet</span>
-          </h4>
+        <!-- Nutrition (static facts text, no prices here) -->
+        <section class="nutrition card">
+          <h4>Nutrition Facts <span class="muted">/ per sachet</span></h4>
           <div class="nutrition-grid">
             <div>
               <div class="value orange">16.7g</div>
@@ -105,41 +119,59 @@
               <div class="label">Net Weight</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Ratings and Price -->
-        <div class="ratings-price" *ngIf="selectedVariantData">
-          <div class="ratings">
-            <span *ngFor="let star of [].constructor(5)">⭐</span>
-            <span class="reviews">4.8/5 (2,500+ reviews)</span>
+        <!-- Pricing (all dynamic) -->
+        <section class="pricing card" *ngIf="selectedVariantData">
+          <div class="rating">
+            <span class="stars" aria-hidden="true">★★★★★</span>
+            <span class="reviews muted">4.8/5 (2,500+ reviews)</span>
           </div>
-          <div class="price-stock">
-            <div class="price">₹{{ calculatedPrice }}</div>
-            <div class="stock">In Stock • Free delivery</div>
-          </div>
-        </div>
 
-        <!-- Quantity Selector -->
-        <div *ngIf="selectedVariantData" class="quantity-selector">
-          <label for="quantity">
+          <div class="price-row">
+            <div class="mrp" *ngIf="displayMrp as mrp">
+              MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+            <div class="deal-badge" *ngIf="discountPercent > 0">LIMITED DEAL</div>
+          </div>
+
+          <div class="deal-row">
+            <div class="price">{{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div>
+            <div class="off" *ngIf="discountPercent > 0">({{ discountPercent }}% OFF)</div>
+          </div>
+
+          <p class="promo-note">
+            🏷️ In Every 2 orders, <strong>One can claim monthly gym membership up to ₹1000 <a href="/promo-details" class="promo-link">More details →</a> </strong>.
+          </p>
+        </section>
+
+        <!-- Quantity -->
+        <section class="qty card" *ngIf="selectedVariantData" aria-label="Quantity">
+          <label class="qty-label">
             Quantity (kg)
-            <span class="per-sachet">/ {{ quantity * 50 }} sachets</span>:
+            <span class="muted">/ {{ quantity * 50 }} sachets</span>
           </label>
-          <div class="quantity-controls">
-            <button (click)="decreaseQuantity()" class="qty-btn">-</button>
-            <span class="qty-display">{{ quantity }}</span>
-            <button (click)="increaseQuantity()" class="qty-btn">+</button>
-          </div>
-        </div>
 
-        <!-- Buy Now Button -->
-        <button
-          class="add-cart-btn"
-          [disabled]="!selectedVariantData"
-          (click)="handleBuyNow()">
-          {{ selectedVariantData ? 'Buy Now - ₹' + calculatedPrice : 'Select Variant First' }}
+          <div class="qty-controls" role="group" aria-label="Quantity controls">
+            <button class="qty-btn" type="button" (click)="decreaseQuantity()" aria-label="Decrease quantity">−</button>
+            <span class="qty-display" aria-live="polite">{{ quantity }}</span>
+            <button class="qty-btn" type="button" (click)="increaseQuantity()" aria-label="Increase quantity">+</button>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <button class="primary-btn" type="button"
+                [disabled]="!selectedVariantData || displayUnitPrice<=0"
+                (click)="handleBuyNow()">
+          {{ selectedVariantData ? ('Buy Now - ' + (calculatedPrice | currency:'INR':'symbol-narrow':'1.0-0')) : 'Select Variant First' }}
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- Sticky mobile buy bar -->
+  <div class="sticky-buy" *ngIf="selectedVariantData && displayUnitPrice>0">
+    <div class="sticky-price">{{ calculatedPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div>
+    <button class="sticky-btn" type="button" (click)="handleBuyNow()">Buy Now</button>
   </div>
 </section>

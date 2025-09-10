@@ -6,7 +6,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component'; // <-- ensure standalone:true
+import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component';
 import { AuthService } from '../../services/auth.service';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 
@@ -16,36 +16,28 @@ type VariantData = {
   image: string;
   description: string;
   features: string[];
-  price: number;
+  price: number;               // MRP
+  discountedPrice?: number;    // Offer price
   gallery: string[];
 };
 
 @Component({
   selector: 'app-product-showcase',
   standalone: true,
-  imports: [CommonModule, AuthPopupComponent], // <-- important for dynamic createComponent
+  imports: [CommonModule, AuthPopupComponent],
   templateUrl: './product-showcase.component.html',
   styleUrls: ['./product-showcase.component.css'],
 })
 export class ProductShowcaseComponent implements OnInit, OnDestroy {
-  // sidebar mode (if you ever embed it elsewhere)
   @Input() variant: 'default' | 'sidebar' = 'default';
   @HostBinding('class.sidebar') get isSidebar() { return this.variant === 'sidebar'; }
 
   selectedVariant: VariantKey | '' = '';
   quantity = 1;
-  unitPrice = -1;
-
   selectedImage = '';
-  isPaused = false;
-  interval: any;
-  currentSlide = 0;
 
-  carouselImages: string[] = [
-    'assets/traditional-webp.webp',
-    'assets/modern.webp',
-    'assets/gym-mode.webp'
-  ];
+  /** render hint so we can avoid showing 0s while SSR hydrating */
+  loadingPrices = true;
 
   variants: Record<VariantKey, VariantData> = {
     traditional: {
@@ -54,6 +46,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       description: 'Perfect for traditional Indian meals',
       features: ['Add to roti dough', 'Stir into dal', 'Mix with poha'],
       price: -1,
+      discountedPrice: undefined,
       gallery: [
         'assets/traditional-webp.webp',
         'assets/family-mode.webp',
@@ -66,6 +59,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       description: 'Designed for active individuals',
       features: ['Feel stronger daily', 'Feel active', '16.7g protein'],
       price: -1,
+      discountedPrice: undefined,
       gallery: [
         'assets/modern.webp',
         'assets/gym-mode.webp',
@@ -83,69 +77,120 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     private firestore: Firestore,
     @Inject(PLATFORM_ID) platformId: Object,
     private envInjector: EnvironmentInjector
-  ) {
-    this.isBrowser = isPlatformBrowser(platformId);
-  }
+  ) { this.isBrowser = isPlatformBrowser(platformId); }
 
   ngOnInit(): void {
-    this.loadPrices();
-    if (this.isBrowser) this.startCarousel(); // SSR-safe
-  }
-
-  ngOnDestroy() {
-    if (this.interval) clearInterval(this.interval);
-  }
-
-  async loadPrices() {
-    try {
-      const traditionalSnap = await getDoc(doc(this.firestore, 'products/traditional'));
-      const modernSnap = await getDoc(doc(this.firestore, 'products/modern'));
-      if (traditionalSnap.exists()) {
-        this.variants.traditional.price = (traditionalSnap.data() as any).price ?? -1;
-      }
-      if (modernSnap.exists()) {
-        this.variants.modern.price = (modernSnap.data() as any).price ?? -1;
-      }
-    } catch (error) {
-      console.error('Error loading prices:', error);
+    // ✅ Don’t touch AngularFire on the server
+    if (this.isBrowser) {
+      this.loadPrices().finally(() => (this.loadingPrices = false));
+    } else {
+      this.loadingPrices = false; // render skeleton quickly on SSR
     }
   }
+  ngOnDestroy() {}
 
-  selectVariant(variant: string) {
-    if (variant === 'traditional' || variant === 'modern') {
-      this.selectedVariant = variant as VariantKey;
+  /** Load MRP & Discounted_Price from Firestore — BROWSER ONLY */
+  private async loadPrices() {
+    const read = async (id: VariantKey) => {
+      const snap = await getDoc(doc(this.firestore, `products/${id}`));
+      if (!snap.exists()) return;
+      const data = snap.data() as any;
+
+      const price = Number(data?.price ?? -1);
+      const discounted = Number(
+        data?.Discounted_Price ?? data?.discountedPrice ?? NaN
+      );
+
+      this.variants[id].price = isFinite(price) ? price : -1;
+      this.variants[id].discountedPrice = isFinite(discounted) ? discounted : undefined;
+    };
+
+    await Promise.all([read('traditional'), read('modern')]);
+  }
+
+  /** Effective unit price for a given variant (discount or MRP). */
+  private effectivePrice(v: VariantData): number {
+    const offer = v.discountedPrice ?? 0;
+    if (offer > 0 && v.price > offer) return offer;
+    return v.price > 0 ? v.price : 0;
+  }
+
+  // --- Display helpers ---
+  get selectedVariantData() {
+    return this.selectedVariant ? this.variants[this.selectedVariant] : null;
+  }
+  get displayUnitPrice(): number {
+    const v = this.selectedVariantData; return v ? this.effectivePrice(v) : 0;
+  }
+  get displayMrp(): number | null {
+    const v = this.selectedVariantData;
+    if (!v) return null;
+    const eff = this.effectivePrice(v);
+    return v.price > eff && v.price > 0 ? v.price : null;
+  }
+  get discountPercent(): number {
+    const v = this.selectedVariantData;
+    if (!v) return 0;
+    const eff = this.effectivePrice(v);
+    if (v.price > eff && v.price > 0) {
+      return Math.round(((v.price - eff) / v.price) * 100);
+    }
+    return 0;
+  }
+  get calculatedPrice(): number {
+    const unit = this.displayUnitPrice;
+    return unit > 0 ? unit * this.quantity : 0;
+  }
+
+  // Tiles:
+  priceForTile(key: VariantKey): number { return this.effectivePrice(this.variants[key]); }
+  mrpForTile(key: VariantKey): number | null {
+    const v = this.variants[key]; const eff = this.effectivePrice(v);
+    return v.price > eff && v.price > 0 ? v.price : null;
+  }
+  offForTile(key: VariantKey): number {
+    const v = this.variants[key]; const eff = this.effectivePrice(v);
+    return v.price > eff && v.price > 0 ? Math.round(((v.price - eff) / v.price) * 100) : 0;
+  }
+
+  selectVariant(key: string) {
+    if (key === 'traditional' || key === 'modern') {
+      this.selectedVariant = key as VariantKey;
       const selected = this.variants[this.selectedVariant];
-      this.unitPrice = selected.price > 0 ? selected.price : -1;
       this.selectedImage = selected.gallery[0];
     }
   }
 
   increaseQuantity() { this.quantity++; }
   decreaseQuantity() { if (this.quantity > 1) this.quantity--; }
-  get calculatedPrice(): number { return this.unitPrice > 0 ? this.unitPrice * this.quantity : 0; }
 
   async handleBuyNow() {
     if (!this.selectedVariant) return alert('Please select a variant first.');
-    if (this.unitPrice <= 0) return alert('Price unavailable.');
-    const variantData = this.selectedVariantData; if (!variantData) return;
+    const v = this.selectedVariantData; if (!v) return;
+    const unit = this.effectivePrice(v);
+    if (unit <= 0) return alert('Price unavailable.');
 
-    const currentUser = await firstValueFrom(this.authService.getCurrentUser());
-    if (!currentUser) { this.showLoginPopup(); return; }
+    const user = await firstValueFrom(this.authService.getCurrentUser());
+    if (!user) { this.showLoginPopup(); return; }
 
+    // localStorage is browser-only; this runs after hydration
     localStorage.setItem('checkoutProduct', JSON.stringify({
       productId: this.selectedVariant,
-      product: { name: variantData.name, image: variantData.image },
+      product: { name: v.name, image: v.image },
       quantity: this.quantity,
-      unitPrice: this.unitPrice,
+      unitPrice: unit,
+      mrp: v.price,
+      discountedPrice: v.discountedPrice ?? null
     }));
+
     this.router.navigate(['/checkout']);
   }
 
   showLoginPopup() {
-    if (!this.isBrowser) return; // no window on server
+    if (!this.isBrowser) return;
     this.viewContainerRef.clear();
-    const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent, {
-      environmentInjector: this.envInjector, // ensure providers are resolved anywhere
+    this.viewContainerRef.createComponent(AuthPopupComponent, {
+      environmentInjector: this.envInjector,
     });
     const onAuthSuccess = () => {
       this.viewContainerRef.clear();
@@ -156,20 +201,5 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     window.addEventListener('auth-success', onAuthSuccess);
   }
 
-  get selectedVariantData() {
-    return this.selectedVariant ? this.variants[this.selectedVariant] : null;
-  }
-
-  toggleCarousel() { this.isPaused = !this.isPaused; }
-
-  startCarousel() {
-    this.interval = setInterval(() => {
-      if (!this.isPaused && !this.selectedVariant) {
-        this.currentSlide = (this.currentSlide + 1) % this.carouselImages.length;
-      }
-    }, 3000);
-  }
-
-  goToSlide(index: number) { this.currentSlide = index; }
-  selectGalleryImage(image: string) { this.selectedImage = image; }
+  selectGalleryImage(img: string) { this.selectedImage = img; }
 }

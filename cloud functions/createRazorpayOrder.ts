@@ -40,40 +40,27 @@ export const createRazorpayOrder = onRequest(
           return;
         }
 
-        // ✅ Fetch product pricing from Firestore
+        // ✅ Fetch product price from Firestore
         const productDoc = await db.collection("products").doc(productId).get();
         if (!productDoc.exists) {
           res.status(404).send({error: "Product not found"});
           return;
         }
 
-        const productData = productDoc.data() || {};
-        const mrp = productData?.price;
-        const discounted =
-          typeof productData?.Discounted_Price === "number"?
-            productData.Discounted_Price:
-            (typeof productData?.discountedPrice === "number"?
-              productData.discountedPrice:
-              undefined);
-
-        if (typeof mrp !== "number") {
+        const productData = productDoc.data();
+        const unitPrice = productData?.price;
+        if (typeof unitPrice !== "number") {
           res.status(500).send({error: "Invalid product price in database"});
           return;
         }
 
-        // ✅ Use discounted price when valid; else fall back to MRP
-        const unitEffective =
-          (typeof discounted === "number" && discounted >
-            0 && discounted < mrp)? discounted : mrp;
-
-        // Subtotal BEFORE promo (this is what the UI shows)
-        let amount = unitEffective * quantity;
+        let amount = unitPrice * quantity;
         const baseAmount = amount; // keep original for % derivation
-
         let discountPercent = 0;
         let discountAmount = 0;
 
-        // ✅ Validate & apply promo on the EFFECTIVE subtotal (not MRP)
+        // ✅ Validate promo if passed (flat discountAmount
+        // takes priority over percentage)
         if (promoCode) {
           const promoSnap = await
           db.collection("promocodes").doc(promoCode).get();
@@ -84,11 +71,13 @@ export const createRazorpayOrder = onRequest(
 
           const p = promoSnap.data() || {};
 
+          // must be active
           if (p?.active !== true) {
             res.status(400).send({error: "Promo code inactive or invalid"});
             return;
           }
 
+          // optional: validity window (ISO strings)
           const now = Date.now();
           const fromOk = !p.validFrom ||
           (new Date(p.validFrom).getTime() <= now);
@@ -98,6 +87,7 @@ export const createRazorpayOrder = onRequest(
             return;
           }
 
+          // optional: minimum order amount
           if (typeof p.minOrderAmount === "number" &&
             baseAmount < p.minOrderAmount) {
             res.status(400).send({error: `Minimum order amount is ₹
@@ -105,9 +95,10 @@ export const createRazorpayOrder = onRequest(
             return;
           }
 
-          // Prefer flat discountAmount; else use percentage (optionally capped)
+          // compute discount (prefer flat amount)
           if (typeof p.discountAmount === "number" && p.discountAmount > 0) {
             discountAmount = Math.min(p.discountAmount, amount);
+            // derive % for response (for UI only)
             discountPercent = Math.round((discountAmount / baseAmount) * 100);
           } else if (typeof p.discountPercentage === "number" &&
             p.discountPercentage > 0) {

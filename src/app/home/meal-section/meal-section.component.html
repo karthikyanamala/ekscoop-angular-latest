@@ -1,80 +1,234 @@
-<section class="meal-section">
+<section class="meals-section">
   <div class="container">
 
-    <!-- Meal Selector Buttons -->
-    <div class="meal-selector">
-      <button
-        *ngFor="let mealKey of mealOrder"
-        (click)="selectMeal(mealKey)"
-        [class.active]="selectedMeal === mealKey">
-        <span class="meal-icon">{{ meals[mealKey].icon }}</span>
-        {{ meals[mealKey].title }}
-      </button>
-    </div>
+    <!-- BREAKFAST -->
+    <div class="meal-card theme-sunrise breakfast">
+      <!-- <div class="ambient sun"></div> -->
+      <div class="ambient rays"></div>
 
-    <!-- Selected Meal Content -->
-    <div *ngIf="selectedMeal" class="meal-content" [style.background]="meals[selectedMeal].bgColor">
-      <div class="meal-text">
-        <div class="meal-header">
-          <div class="icon-box">{{ meals[selectedMeal].icon }}</div>
-          <div>
-            <h3>{{ meals[selectedMeal].title }}</h3>
-            <p>{{ meals[selectedMeal].subtitle }}</p>
-          </div>
-        </div>
-
-        <h4>{{ meals[selectedMeal].mainText }}</h4>
-        <p>{{ meals[selectedMeal].description }}</p>
-
-        <ul>
-          <li *ngFor="let f of meals[selectedMeal].features">
-            ✔ {{ f }}
-          </li>
-        </ul>
-
-        <button class="see-how-btn" (click)="openModal()">See How to Use</button>
-      </div>
-
-      <!-- Meal Images -->
-      <div class="meal-images">
-        <div class="img-box">
-          <img src="../../../assets/traditional-webp.webp" alt="Traditional Variant" />
-        </div>
-        <div class="img-box">
-          <img src="../../../assets/modern.webp" alt="Modern Variant" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Usage Modal -->
-    <div class="modal" *ngIf="showModal">
-      <div class="modal-content">
-        <button class="close-btn" (click)="closeModal()">X</button>
-        <h3>How to Use YOU x 0.8 Protein Powder</h3>
-        
-        <div class="intro-text">
-          <p>
-            You already know how to cook your favorite foods — whether it's dosa, poha, or upma. 
-            We're not here to teach you how to make them. We're just here to show you how to 
-            <strong>make them stronger 💪 — without changing the taste.</strong>
-          </p>
-        </div>
-
-        <div class="instructions-grid">
-          <div class="instruction-card" *ngFor="let ins of usageInstructions">
-            <div class="instruction-icon">{{ ins.icon }}</div>
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">☀️</div>
             <div>
-              <h5>{{ ins.title }}</h5>
-              <p>{{ ins.description }}</p>
+              <h3 class="meal-title">Breakfast</h3>
+              <p class="meal-time">Morning</p>
             </div>
           </div>
+
+          <h4 class="meal-description">Kickstart the day right</h4>
+          <p class="meal-details">Stir YOU x 0.8 into dosa/idli batter, poha, or upma. Light on stomach, strong on nutrition.</p>
+
+          <ul class="meal-benefits">
+            <li>• Best with idli, dosa, poha</li>
+            <li>• Gentle on stomach</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('breakfast')">See How to Use</button>
         </div>
 
-        <div class="trust-message">
-          We're Indians — we know how to balance our flavors. 
-          <strong>Trust yourself.</strong> You can mix <strong>YOU x 0.8</strong> into your food without messing up the taste.
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=900&h=600&fit=crop&crop=center" alt="Poha breakfast" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recipe -->
+      <div id="breakfast-recipe" class="recipe-section" [class.show]="visibleMeals['breakfast']">
+        <div class="recipe-header">
+          <h3>🍽️ Protein-Rich Breakfast</h3>
+          <button class="close-recipe" (click)="hideRecipe('breakfast')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>How to use YOU x 0.8 at breakfast</h4>
+          <ul>
+            <li><strong>Dosa/Idli:</strong> Mix into batter and cook as usual.</li>
+            <li><strong>Poha:</strong> Stir in 2–3 mins before turning off the stove.</li>
+            <li><strong>Upma:</strong> Add in the last 2–3 mins; mix well.</li>
+            <li><strong>Sambar/Rasam:</strong> Add after boiling; stir and serve.</li>
+            <li><strong>Curd Rice:</strong> Blend with curd; mix with rice.</li>
+            <li><strong>Chapati:</strong> Add while kneading for softer, protein-rich rotis.</li>
+          </ul>
+          <a class="cta-inline" href="/products">Order YOU x 0.8 Now</a>
         </div>
       </div>
     </div>
+
+    <!-- LUNCH -->
+    <div class="meal-card theme-day lunch">
+      <div class="ambient leaf leaf-1">🌿</div>
+      <div class="ambient leaf leaf-2">🍃</div>
+
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">🍽️</div>
+            <div>
+              <h3 class="meal-title">Lunch</h3>
+              <p class="meal-time">Afternoon</p>
+            </div>
+          </div>
+
+          <h4 class="meal-description">Power your afternoon</h4>
+          <p class="meal-details">Add YOU x 0.8 to dal, sambar, rasam or curry for sustained energy.</p>
+
+          <ul class="meal-benefits">
+            <li>• Maintains energy levels</li>
+            <li>• Completes your plate</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('lunch')">See How to Use</button>
+        </div>
+
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=900&h=600&fit=crop&crop=center" alt="Dal lunch" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="lunch-recipe" class="recipe-section" [class.show]="visibleMeals['lunch']">
+        <div class="recipe-header">
+          <h3>🍛 Protein-Enhanced Dal</h3>
+          <button class="close-recipe" (click)="hideRecipe('lunch')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>Upgrade your lunch</h4>
+          <ul>
+            <li><strong>Sambar:</strong> Stir 1 scoop into hot sambar after cooking.</li>
+            <li><strong>Rasam:</strong> Add after simmering; mix and serve.</li>
+            <li><strong>Dal:</strong> Add after dal is cooked; whisk smooth.</li>
+            <li><strong>Veg Curry:</strong> Sprinkle and fold in during last 2–3 mins.</li>
+            <li><strong>Rice bowls:</strong> Blend into curd rice/lemon rice while mixing.</li>
+            <li><strong>Chapati:</strong> Knead into dough for a protein-rich meal.</li>
+          </ul>
+          <a class="cta-inline" href="/products">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SNACKS -->
+    <div class="meal-card theme-evening snacks">
+      <div class="ambient cookie">🍪</div>
+
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">🍪</div>
+            <div>
+              <h3 class="meal-title">Snacks</h3>
+              <p class="meal-time">Evening</p>
+            </div>
+          </div>
+
+          <h4 class="meal-description">Evening nutrition boost</h4>
+          <p class="meal-details">Turn smart snacks into strong snacks — with YOU x 0.8.</p>
+
+          <ul class="meal-benefits">
+            <li>• More satiety, less cravings</li>
+            <li>• No change in taste</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('snacks')">See How to Use</button>
+        </div>
+
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=900&h=600&fit=crop&crop=center" alt="Evening snacks" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="snacks-recipe" class="recipe-section" [class.show]="visibleMeals['snacks']">
+        <div class="recipe-header">
+          <h3>🥪 Protein Power Snacks</h3>
+          <button class="close-recipe" (click)="hideRecipe('snacks')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>Snack time = protein time</h4>
+          <ul>
+            <li><strong>Salads:</strong> Mix a scoop into the bowl and toss.</li>
+            <li><strong>Boiled chana/sprouts:</strong> Sprinkle, add lemon & masala, mix.</li>
+            <li><strong>Curd snacks:</strong> Blend with curd for chaats and bowls.</li>
+            <li><strong>Sandwiches:</strong> Mix into chutney/spread.</li>
+            <li><strong>Fruit bowls:</strong> Stir with yogurt or peanut butter topping.</li>
+            <li><strong>Tiffin snacks:</strong> Add right before finishing; serve warm.</li>
+          </ul>
+          <a class="cta-inline" href="/products">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- DINNER -->
+    <div class="meal-card theme-night dinner">
+      <div class="ambient moon">🌙</div>
+      <div class="ambient star star-1">✦</div>
+      <div class="ambient star star-2">✧</div>
+      <div class="ambient star star-3">✦</div>
+
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">🌙</div>
+            <div>
+              <h3 class="meal-title">Dinner</h3>
+              <p class="meal-time">Night</p>
+            </div>
+          </div>
+
+          <h4 class="meal-description">Recover while you rest</h4>
+          <p class="meal-details">End the day with YOU x 0.8 mixed into rasam, curd rice or chapati dough.</p>
+
+          <ul class="meal-benefits">
+            <li>• Supports overnight recovery</li>
+            <li>• Light dinner, full nutrition</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('dinner')">See How to Use</button>
+        </div>
+
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=900&h=600&fit=crop&crop=center" alt="Roti dinner" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dinner-recipe" class="recipe-section" [class.show]="visibleMeals['dinner']">
+        <div class="recipe-header">
+          <h3>🍽️ Protein-Rich Roti & Curry</h3>
+          <button class="close-recipe" (click)="hideRecipe('dinner')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>End your day with the right fuel</h4>
+          <ul>
+            <li><strong>Rasam/light soups:</strong> Add right before turning off the stove or when slightly cool.</li>
+            <li><strong>Curd rice:</strong> Blend into curd; mix with rice.</li>
+            <li><strong>Chapati:</strong> Knead into dough for soft, protein-rich rotis.</li>
+            <li><strong>Sabzi/Curry:</strong> Stir in 2–3 mins before finishing.</li>
+            <li><strong>Lemon/Jeera rice:</strong> Mix powder with ghee/oil; toss with rice.</li>
+            <li><strong>Khichdi:</strong> Stir in after cooking; cover for 2 mins, then serve.</li>
+          </ul>
+          <a class="cta-inline" href="/products">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
   </div>
+</section>
+
+<!-- Footer CTA -->
+<section class="footer-cta">
+  <h3 class="cta-title">Ready to Transform Your Meals?</h3>
+  <p class="cta-description">Start your journey with YOU x 0.8 plant protein — zero sugar, zero flavour, pure strength.</p>
+  <a href="/products"><button class="cta-btn">Order Your YOU x 0.8 Now</button></a>
 </section>

@@ -3,18 +3,21 @@
 <div class="profile-wrapper">
   <div class="profile-page-container" *ngIf="!loading; else loadingTpl">
     <app-profile-header></app-profile-header>
+
     <h2>My Profile</h2>
 
-    <form (ngSubmit)="updateProfile()">
-      <div>
+    <form (ngSubmit)="updateProfile()" novalidate>
+      <div class="row">
         <label>Full Name</label>
-        <input [(ngModel)]="profile.fullName" name="fullName" disabled>
-      </div>
-      <div>
-        <label>Email</label>
-        <input [(ngModel)]="profile.email" name="email" disabled>
+        <input [(ngModel)]="profile.fullName" name="fullName" disabled />
       </div>
 
+      <div class="row">
+        <label>Email</label>
+        <input [(ngModel)]="profile.email" name="email" disabled />
+      </div>
+
+      <!-- Phone + OTP -->
       <div class="phone-otp-container">
         <div class="phone-field">
           <label>Phone Number</label>
@@ -22,31 +25,45 @@
             [(ngModel)]="profile.phoneNumber"
             name="phoneNumber"
             placeholder="Enter your phone number"
-            [disabled]="phoneVerified || sendingOtp || verifyingOtp || genderAlreadySaved"
+            [disabled]="phoneVerified || sendingOtp || verifyingOtp"
           />
+          <small class="hint" *ngIf="!phoneVerified">Enter 10-digit number</small>
+          <small class="ok" *ngIf="phoneVerified">✅ Verified</small>
         </div>
-        <button type="button" class="send-otp-btn" (click)="openOtpModal()"
-          [disabled]="!isPhoneValid() || phoneVerified || sendingOtp || verifyingOtp || genderAlreadySaved">
+
+        <button
+          type="button"
+          class="send-otp-btn"
+          (click)="openOtpModal()"
+          [disabled]="!isPhoneValid() || phoneVerified || sendingOtp || verifyingOtp"
+        >
           {{ sendingOtp ? '🐢 Sending...' : 'Send OTP' }}
         </button>
       </div>
 
-      <div>
+      <!-- Gender -->
+      <div class="row">
         <label>Gender</label>
-        <select [(ngModel)]="profile.gender" name="gender"
-          [disabled]="savingProfile || verifyingOtp || genderAlreadySaved">
-          <option value="">-- Enter your gender --</option>
+        <select
+          [(ngModel)]="profile.gender"
+          name="gender"
+          [disabled]="genderLocked || savingProfile || verifyingOtp"
+        >
+          <option value="">-- Select your gender --</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
+        <small class="ok" *ngIf="genderLocked">🔒 Saved</small>
       </div>
 
-<button type="submit"
-  [disabled]="savingProfile || (phoneVerified && genderAlreadySaved)">
-  {{ savingProfile ? '🙈 Saving...' : 'Save Changes' }}
-</button>
-
+      <!-- Submit -->
+      <button
+        type="submit"
+        [disabled]="savingProfile"
+      >
+        {{ savingProfile ? '🙈 Saving...' : 'Save Changes' }}
+      </button>
 
       <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
       <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -60,15 +77,19 @@
     </div>
   </ng-template>
 
+  <!-- OTP Modal -->
   <div class="modal" *ngIf="showOtpModal">
     <div class="modal-content">
       <h3>Verify OTP</h3>
       <input [(ngModel)]="enteredOtp" placeholder="Enter OTP" />
       <div *ngIf="otpError" class="otp-error">{{ otpError }}</div>
+
       <button (click)="verifyOtp()" [disabled]="verifyingOtp">
         {{ verifyingOtp ? '🔒 Verifying...' : 'Submit' }}
       </button>
-      <button class="close" (click)="closeOtpModal()" [disabled]="verifyingOtp">Cancel</button>
+      <button class="close" (click)="closeOtpModal()" [disabled]="verifyingOtp">
+        Cancel
+      </button>
     </div>
   </div>
 </div>
