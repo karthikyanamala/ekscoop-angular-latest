@@ -31,7 +31,7 @@ import { ProductShowcaseComponent } from '../home/product-showcase/product-showc
   styles: [`
     .product-wrap {
       max-width: 1200px;
-      margin: 0 auto;
+      margin: 60px auto;
       padding: 2rem 1rem;
     }
   `]

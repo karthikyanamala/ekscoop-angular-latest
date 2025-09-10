@@ -28,6 +28,18 @@ declare var Razorpay: any;
 
 type PinStatus = 'idle' | 'checking' | 'ok' | 'bad' | 'invalid';
 
+/** Firestore promocode document shape (supported fields) */
+type PromoDoc = {
+  active?: boolean;
+  label?: string;
+  discountAmount?: number;       // ₹ flat off (preferred if present)
+  discountPercentage?: number;   // % off (fallback)
+  minOrderAmount?: number;       // optional constraint
+  maxDiscount?: number;          // optional cap for % discounts
+  validFrom?: string;            // ISO
+  validTo?: string;              // ISO
+};
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -55,18 +67,17 @@ export class CheckoutComponent implements OnInit {
   product = { name: '', image: '' };
   quantity = 1;
   unitPrice = 0;
-  totalAmount = 0;
-  originalTotalAmount = 0;
+  totalAmount = 0;              // mutable (after promo)
+  originalTotalAmount = 0;      // original (before promo)
   promoApplied = false;
 
   promoCode: string = '';
-  promoDiscountPercent: number = 0;
+  promoDiscountPercent: number = 0;  // derived/for display when flat used
   promoDiscountAmount: number = 0;
-  promoInfluencerName: string = '';
   promoError: string = '';
   promoSuccess: string = '';
 
-  // NEW: pin validation state
+  // PIN validation
   pincodeStatus: PinStatus = 'idle';
   private pincodeTimer: any = null;
   savingAddress = false;
@@ -81,7 +92,7 @@ export class CheckoutComponent implements OnInit {
     city: '',
     state: '',
     isDefault: false,
-    serviceable: null as boolean | null, // will be set after lookup
+    serviceable: null as boolean | null,
   };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -106,7 +117,7 @@ export class CheckoutComponent implements OnInit {
           this.router.navigate(['/home']);
           return;
         }
-      } catch (err) {
+      } catch {
         this.router.navigate(['/home']);
         return;
       }
@@ -167,18 +178,15 @@ export class CheckoutComponent implements OnInit {
     return this.addresses.find(addr => addr.id === this.selectedAddressId) || null;
   }
 
-  // === PINCODE LOOKUP FLOW ===
+  // ===== PINCODE LOOKUP =====
   onPincodeInput(val: string) {
     if (!this.isBrowser) return;
 
-    // digits only, max 6
     const pin = (val || '').replace(/\D/g, '').slice(0, 6);
     this.addressForm.pincode = pin;
 
-    // reset state while typing
     this.pincodeStatus = pin.length === 6 ? 'checking' : 'idle';
 
-    // debounce
     if (this.pincodeTimer) clearTimeout(this.pincodeTimer);
 
     if (pin.length === 6) {
@@ -208,8 +216,6 @@ export class CheckoutComponent implements OnInit {
       if (!res.ok) throw new Error('Network error');
       const data = await res.json();
 
-      // Expecting:
-      // { ok: true, pin: '560067', city: 'BANGALORE', state: '', serviceable: true }
       if (!data || data.ok !== true) {
         this.pincodeStatus = 'invalid';
         this.addressForm.city = '';
@@ -218,7 +224,6 @@ export class CheckoutComponent implements OnInit {
         return;
       }
 
-      // Normalize and auto-fill. Keep editable (state might be empty from API)
       this.addressForm.city = (data.city || '').toString().trim();
       this.addressForm.state = (data.state || '').toString().trim();
       this.addressForm.serviceable = !!data.serviceable;
@@ -233,7 +238,32 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  // === PROMO ===
+  // ===== PROMO HELPERS =====
+  private nowIso() { return new Date().toISOString(); }
+
+  private isWithinWindow(p: PromoDoc): boolean {
+    const now = new Date(this.nowIso()).getTime();
+    const from = p.validFrom ? new Date(p.validFrom).getTime() : -Infinity;
+    const to   = p.validTo   ? new Date(p.validTo).getTime()   :  Infinity;
+    return now >= from && now <= to;
+  }
+
+  /** Prefer flat amount; fall back to % (capped by maxDiscount if provided). */
+  private computeDiscount(total: number, p: PromoDoc): number {
+    if (typeof p.discountAmount === 'number' && p.discountAmount > 0) {
+      return Math.min(p.discountAmount, total);
+    }
+    if (typeof p.discountPercentage === 'number' && p.discountPercentage > 0) {
+      const raw = Math.floor(total * (p.discountPercentage / 100));
+      const capped = (typeof p.maxDiscount === 'number' && p.maxDiscount > 0)
+        ? Math.min(raw, p.maxDiscount)
+        : raw;
+      return Math.min(capped, total);
+    }
+    return 0;
+  }
+
+  // ===== PROMO (APPLY / REMOVE) =====
   async applyPromo() {
     if (!this.isBrowser) return;
 
@@ -245,13 +275,14 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    if (!this.promoCode || this.promoCode.trim().length < 3) {
+    const code = (this.promoCode || '').trim().toUpperCase();
+    if (code.length < 3) {
       this.promoError = 'Enter a valid promo code.';
       return;
     }
 
     try {
-      const promoRef = doc(this.firestore, `promocodes/${this.promoCode.toUpperCase()}`);
+      const promoRef = doc(this.firestore, `promocodes/${code}`);
       const promoSnap = await getDoc(promoRef);
 
       if (!promoSnap.exists()) {
@@ -259,23 +290,36 @@ export class CheckoutComponent implements OnInit {
         return;
       }
 
-      const promoData = promoSnap.data();
-      if (!promoData || promoData['active'] !== true) {
+      const promo = (promoSnap.data() as PromoDoc) || {};
+      if (promo.active !== true) {
         this.promoError = 'This promo code is inactive.';
         return;
       }
 
-      if (typeof promoData['discountPercentage'] === 'number') {
-        this.promoDiscountPercent = promoData['discountPercentage'];
-        this.promoDiscountAmount = Math.floor(this.totalAmount * (this.promoDiscountPercent / 100));
-        this.totalAmount = this.totalAmount - this.promoDiscountAmount;
-        this.promoInfluencerName = promoData['influencerName'] ?? 'Unknown';
-
-        this.promoSuccess = `Promo applied! You saved ₹${this.promoDiscountAmount}. Influencer: ${this.promoInfluencerName}`;
-        this.promoApplied = true;
-      } else {
-        this.promoError = 'Promo found but invalid discount percentage.';
+      if (!this.isWithinWindow(promo)) {
+        this.promoError = 'This promo code is not valid at this time.';
+        return;
       }
+
+      if (typeof promo.minOrderAmount === 'number' &&
+          this.totalAmount < promo.minOrderAmount) {
+        this.promoError = `Minimum order amount is ₹${promo.minOrderAmount} for this code.`;
+        return;
+      }
+
+      const discount = this.computeDiscount(this.totalAmount, promo);
+      if (discount <= 0) {
+        this.promoError = 'Promo found but no discount applicable.';
+        return;
+      }
+
+      this.promoDiscountAmount = discount;
+      this.promoDiscountPercent = Math.round((discount / this.totalAmount) * 100);
+      this.totalAmount = Math.max(0, this.totalAmount - discount);
+
+      const label = promo.label ? ` (${promo.label})` : '';
+      this.promoSuccess = `Promo applied${label}! You saved ₹${discount}.`;
+      this.promoApplied = true;
     } catch (error) {
       console.error('Error applying promo:', error);
       this.promoError = 'Something went wrong applying promo. Try again.';
@@ -297,7 +341,7 @@ export class CheckoutComponent implements OnInit {
     this.promoError = '';
   }
 
-  // === SAVE ADDRESS ===
+  // ===== SAVE ADDRESS =====
   async saveAddress() {
     if (!this.isBrowser) return;
 
@@ -309,8 +353,6 @@ export class CheckoutComponent implements OnInit {
       alert('This pincode is not serviceable. Please use a different address.');
       return;
     }
-
-    // Require city and state (state may be blank in API, but must be filled by user)
     if (!this.addressForm.city || !this.addressForm.state) {
       alert('Please fill City and State.');
       return;
@@ -335,7 +377,7 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  // === PAYMENT ===
+  // ===== PAYMENT =====
   async placeOrder() {
     if (!this.isBrowser || !this.selectedAddress) {
       alert('Please select a delivery address first!');
@@ -368,14 +410,18 @@ export class CheckoutComponent implements OnInit {
       if (result?.order?.id) {
         const { order, promo } = result;
 
+        // Update these with server truth
         this.unitPrice = (order.amount / 100) / this.quantity;
         this.totalAmount = order.amount / 100;
 
+        // If server sends back promo info, reflect it (no influencer text)
         if (promo) {
-          this.promoDiscountPercent = promo.discountPercent;
-          this.promoDiscountAmount = promo.discountAmount;
-          this.promoInfluencerName = promo.influencerName;
-          this.promoSuccess = `Promo applied! You saved ₹${promo.discountAmount}. Influencer: ${promo.influencerName}`;
+          this.promoDiscountPercent = promo.discountPercent || 0;
+          this.promoDiscountAmount = promo.discountAmount || 0;
+          if (this.promoDiscountAmount > 0) {
+            this.promoSuccess = `Promo applied! You saved ₹${this.promoDiscountAmount}.`;
+            this.promoApplied = true;
+          }
         }
 
         this.openRazorpay(order);
@@ -423,7 +469,7 @@ export class CheckoutComponent implements OnInit {
           paidAt: new Date(),
           amount: order.amount / 100,
           finalAmount: this.totalAmount,
-          promoCodeUsed: this.promoCode || null,
+          promoCodeUsed: this.promoApplied ? (this.promoCode || null) : null,
           promoDiscountPercent: this.promoDiscountPercent,
           promoDiscountAmount: this.promoDiscountAmount,
           currency: order.currency,
@@ -449,12 +495,12 @@ export class CheckoutComponent implements OnInit {
           await setDoc(userOrderRef, orderData);
           await setDoc(adminOrderRef, orderData);
 
+          // Record promo usage (no influencer fields)
           if (this.promoApplied && this.promoCode) {
             const usageData = {
               promoCode: this.promoCode.toUpperCase(),
               discountPercent: this.promoDiscountPercent,
               discountAmount: this.promoDiscountAmount,
-              influencerName: this.promoInfluencerName || 'Unknown',
               userId: this.uid,
               userName: this.fullName,
               userEmail: this.email,

@@ -1,324 +1,257 @@
 <app-corner-badge></app-corner-badge>
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1 class="hero-title">Perfect Nutrition</h1>
-        <h2 class="hero-subtitle">Every Hour of the Day</h2>
-        <p class="hero-description">
-            Discover how YOU x 0.8 plant protein transforms every meal into a nutritional powerhouse
-        </p>
-        
-        <div class="protein-illustration">
-            <div class="protein-badge">
-                <span class="protein-symbol">₹45/-</span>
-                <div class="protein-label">
-                    <img src="../../assets/family-mode.png" alt="">
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Meal Sections -->
-    <section class="meals-section">
-        <div class="container">
-            <!-- Breakfast -->
-            <div class="meal-card breakfast">
-                <div class="meal-content">
-                    <div class="meal-info">
-                        <div class="meal-header">
-                            <div class="meal-icon">☀️</div>
-                            <div>
-                                <h3 class="meal-title">Breakfast</h3>
-                                <p class="meal-time">Morning</p>
-                            </div>
-                        </div>
-                        
-                        <h4 class="meal-description">Use YOU x 0.8 with your breakfast</h4>
-                        <p class="meal-details">Mix YOU x 0.8 into every bowl. Kick start your day with perfect protein!</p>
+<!-- Hero -->
+<section class="hero">
+  <h1 class="hero-title">Perfect Nutrition</h1>
+  <h2 class="hero-subtitle">Every Hour of the Day</h2>
+  <p class="hero-description">
+    Discover how YOU x 0.8 plant protein turns regular Indian meals into powerful nutrition — with zero taste change.
+  </p>
 
-                        <div class="meal-benefits">
-                            <div class="benefit-item">• Best with idly, dosa, poha or any breakfast</div>
-                            <div class="benefit-item">• Gentle on stomach, strong on nutrition</div>
-                        </div>
-
-                        <button class="meal-btn" (click)="showRecipe('breakfast')">Try with Breakfast</button>
-                    </div>
-
-                    <div class="meal-image">
-                        <div class="food-container">
-                            <img src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center" alt="Poha breakfast" class="food-img">
-                            <div class="protein-overlay">
-                                YOU x 0.8<br/>PLANT<br/>PROTEIN
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Section -->
- <div
-  id="breakfast-recipe"
-  class="recipe-section"
-  [class.show]="visibleMeals['breakfast']"
->
-
-  <div class="recipe-header">
-    <h3>🍽️ Protein-Rich Breakfast</h3>
-    <button class="close-recipe" (click)="hideRecipe('breakfast')">✕</button>
+  <div class="protein-illustration">
+    <div class="protein-badge">
+      <span class="protein-symbol">₹45/-</span>
+      <div class="protein-label">
+        <img src="../../assets/family-mode.png" alt="Family mode" />
+      </div>
+    </div>
   </div>
-  
-                        <div class="recipe-how-to-use">
-  <h4>How to Use YOU x 0.8 Protein Powder</h4>
-  <p>
-    You already know how to cook your favorite foods — whether it’s dosa, poha, or upma. 
-    We’re not here to teach you how to make them. We’re just here to show you how to 
-    make them stronger 💪 — without changing the taste.
-  </p>
+</section>
 
-  <h5>Just stir it in. That’s it.</h5>
-  <ul>
-    <li><strong>For Dosa/Idli:</strong> Mix  YOU x 0.8 into your dosa or idli batter. that's it.</li>
-<li><strong>For Poha:</strong> Add YOU x 0.8 towards the end — just 2–3 minutes before turning off the stove.</li>
-    <li><strong>For Upma:</strong> Stir in during the final few minutes of cooking. No taste change.</li>
-    <li><strong>For Sambar or Rasam:</strong> Mix protein and stir it in after boiling.</li>
-    <li><strong>For Curd Rice:</strong> Just blend it with curd before mixing rice.</li>
-    <li><strong>For Chapati:</strong> Add it while kneading dough. No one will even notice!</li>
-  </ul>
+<!-- Meals -->
+<section class="meals-section">
+  <div class="container">
 
-  <p>
-    We’re Indians — we know how to balance our flavors. Too salty? We fix it. Too spicy? We know how to cool it down.
-    So trust yourself — you can mix YOU x 0.8 into your food without messing up the taste.
-  </p>
+    <!-- BREAKFAST -->
+    <div class="meal-card theme-sunrise breakfast">
+      <div class="ambient sun"></div>
+      <div class="ambient rays"></div>
 
-  <h5>Make your food perfect. Now with protein.</h5>
-
-
-                    </div>
-                </div>
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">☀️</div>
+            <div>
+              <h3 class="meal-title">Breakfast</h3>
+              <p class="meal-time">Morning</p>
             </div>
+          </div>
 
-            <!-- Lunch -->
-            <div class="meal-card lunch">
-                <div class="meal-content">
-                    <div class="meal-info">
-                        <div class="meal-header">
-                            <div class="meal-icon">🍽️</div>
-                            <div>
-                                <h3 class="meal-title">Lunch</h3>
-                                <p class="meal-time">Afternoon</p>
-                            </div>
-                        </div>
-                        
-                        <h4 class="meal-description">Power Your Afternoon</h4>
-                        <p class="meal-details">Add YOU x 0.8 to your dal, curry, or any main course for sustained energy.</p>
+          <h4 class="meal-description">Kickstart the day right</h4>
+          <p class="meal-details">Stir YOU x 0.8 into dosa/idli batter, poha, or upma. Light on stomach, strong on nutrition.</p>
 
-                        <div class="meal-benefits">
-                            <div class="benefit-item">• Maintains energy levels</div>
-                            <div class="benefit-item">• Perfect protein complement</div>
-                        </div>
+          <ul class="meal-benefits">
+            <li>• Best with idli, dosa, poha</li>
+            <li>• Gentle on stomach</li>
+          </ul>
 
-                        <button class="meal-btn" (click)="showRecipe('lunch')">Try with Lunch</button>
-                    </div>
-
-                    <div class="meal-image">
-                        <div class="food-container">
-                            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop&crop=center" alt="Dal lunch" class="food-img">
-                            <div class="protein-overlay">
-                                YOU x 0.8<br/>PLANT<br/>PROTEIN
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Section -->
-                 <div
-  id="lunch-recipe"
-  class="recipe-section"
-  [class.show]="visibleMeals['lunch']"
->
-                    <div class="recipe-header">
-                        <h3>🍛 Protein-Enhanced Dal Recipe</h3>
-                        <button class="close-recipe" (click)="hideRecipe('lunch')">✕</button>
-                    </div>
-                    
-                     <div class="recipe-how-to-use">
-  <h4>Upgrade Your Lunch with YOU x 0.8</h4>
-  <p>
-    South Indian lunches are comforting, balanced, and full of flavor — dal, rasam, sambar, poriyal, rice, chapati. 
-    But most of them are low in protein. Don’t change the food. Just stir in strength.
-  </p>
-
-  <h5>It blends right in. No taste change.</h5>
-  <ul>
-    <li><strong>For Sambar:</strong> Mix 1 scoop, stir into hot sambar after cooking.</li>
-    <li><strong>For Rasam:</strong> Add after simmering, just before turning off the stove. Stir well.</li>
-    <li><strong>For Dal:</strong> Add after the dal is cooked.</li>
-    <li><strong>For Vegetable Curry:</strong> Sprinkle over the curry in the last few minutes of cooking and mix gently.</li>
-    <li><strong>For Rice:</strong> Blend into curd rice, lemon rice, or tamarind rice while mixing — no one will know!</li>
-    <li><strong>For Chapati:</strong> Add while kneading the dough for a soft, protein-rich lunch.</li>
-  </ul>
-
-  <p>
-    You already cook these meals perfectly. YOU x 0.8 just makes them stronger — without changing the flavor, texture, or tradition.
-  </p>
-
-  <h5>Same lunch. More strength.</h5>
-</div>
-
-                </div>
-            </div>
-
-            <!-- Snacks -->
-            <div class="meal-card snacks">
-                <div class="meal-content">
-                    <div class="meal-info">
-                        <div class="meal-header">
-                            <div class="meal-icon">🍪</div>
-                            <div>
-                                <h3 class="meal-title">Snacks</h3>
-                                <p class="meal-time">Evening</p>
-                            </div>
-                        </div>
-                        
-                        <h4 class="meal-description">Evening Nutrition Boost</h4>
-                        <p class="meal-details">Transform your evening snacks into protein-rich treats with YOU x 0.8.</p>
-
-                        <div class="meal-benefits">
-                            <div class="benefit-item">• Satisfies hunger healthily</div>
-                            <div class="benefit-item">• Prevents late-night cravings</div>
-                        </div>
-
-                        <button class="meal-btn" (click)="showRecipe('snacks')">Try with Snacks</button>
-                    </div>
-
-                    <div class="meal-image">
-                        <div class="food-container">
-                            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop&crop=center" alt="Evening snacks" class="food-img">
-                            <div class="protein-overlay">
-                                YOU x 0.8<br/>PLANT<br/>PROTEIN
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Section -->
-                <div
-  id="snacks-recipe"
-  class="recipe-section"
-  [class.show]="visibleMeals['snacks']"
->
-                    <div class="recipe-header">
-                        <h3>🥪 Protein Power Snacks Recipe</h3>
-                        <button class="close-recipe" (click)="hideRecipe('snacks')">✕</button>
-                    </div>
-                   
-                       <div class="recipe-how-to-use">
-  <h4>Snack Time = Protein Time</h4>
-  <p>
-    Evening snacks don’t have to be junk. Whether you love salads, sprouts, boiled chana, or curd snacks — 
-    YOU x 0.8 makes them more filling and powerful. No extra effort, just stir and enjoy.
-  </p>
-
-  <h5>Protein without changing your favorite snack.</h5>
-  <ul>
-    <li><strong>For Salads:</strong> Mix YOU x 0.8 it to your salad bowl, that's it.</li>
-    <li><strong>For Boiled Chana or Sprouts:</strong> Sprinkle a scoop and mix with spices and lemon before serving.</li>
-    <li><strong>For Curd-based Snacks:</strong> Blend with curd for spiced curd bowls, dahi papdi, or chaats.</li>
-    <li><strong>For Vegetable Sandwiches:</strong> Mix into your chutney or sandwich spread.</li>
-    <li><strong>For Fruit Bowls:</strong> Stir with honey, yogurt, or peanut butter for a protein-rich topping.</li>
-    <li><strong>For Tiffin Snacks (like sundal, idli fry):</strong> Add just before finishing, mix gently, and serve warm.</li>
-  </ul>
-
-  <p>
-    Your snacks are already smart. Now make them strong too — with YOU x 0.8. 
-    More satiety, more strength, less guilt.
-  </p>
-
-  <h5>Healthy snacks. Now with hidden power.</h5>
-
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dinner -->
-            <div class="meal-card dinner">
-                <div class="meal-content">
-                    <div class="meal-info">
-                        <div class="meal-header">
-                            <div class="meal-icon">🌙</div>
-                            <div>
-                                <h3 class="meal-title">Dinner</h3>
-                                <p class="meal-time">Night</p>
-                            </div>
-                        </div>
-                        
-                        <h4 class="meal-description">Night Recovery Blend</h4>
-                        <p class="meal-details">End your day right with YOU x 0.8 mixed into your dinner for overnight recovery.</p>
-
-                        <div class="meal-benefits">
-                            <div class="benefit-item">• Supports muscle recovery</div>
-                            <div class="benefit-item">• Better sleep quality</div>
-                        </div>
-
-                        <button class="meal-btn" (click)="showRecipe('dinner')">Try with Dinner</button>
-                    </div>
-
-                    <div class="meal-image">
-                        <div class="food-container">
-                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center" alt="Roti dinner" class="food-img">
-                            <div class="protein-overlay">
-                                YOU x 0.8<br/>PLANT<br/>PROTEIN
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Section -->
-                 <div
-  id="dinner-recipe"
-  class="recipe-section"
-  [class.show]="visibleMeals['dinner']"
->
-                    <div class="recipe-header">
-                        <h3>🍽️ Protein-Rich Roti & Curry Recipe</h3>
-                        <button class="close-recipe" (click)="hideRecipe('dinner')">✕</button>
-                    </div>
-                   
-                        <div class="recipe-how-to-use">
-  <h4>End Your Day with the Right Nutrition</h4>
-  <p>
-    Dinner is where most families keep it light — some chapati, rice, rasam, or curd. But light shouldn’t mean low protein.
-    Just stir in YOU x 0.8 to make your meal complete, without changing the taste or routine.
-  </p>
-
-  <h5>Silent nutrition for peaceful nights.</h5>
-  <ul>
-    <li><strong>For Rasam or Light Soups:</strong> Mix protein right before turning off the stove, or when it cool's down.</li>
-    <li><strong>For Curd Rice:</strong> Blend protein into curd and mix with rice as usual. No change in taste.</li>
-    <li><strong>For Chapati Dinner:</strong> Add protein while kneading dough — soft and rich in protein.</li>
-    <li><strong>For Sabzi/Curry:</strong> Stir in protein 2–3 mins before finishing the sabzi. Mix gently.</li>
-    <li><strong>For Lemon or Jeera Rice:</strong> Mix the powder with a spoon of ghee or oil before tossing with rice.</li>
-    <li><strong>For Khichdi:</strong> Stir into the pot after cooking, cover for 2 minutes, then serve.</li>
-  </ul>
-
-  <p>
-    Dinner is your body’s last chance to get the right fuel before rest. Add YOU x 0.8 and give your family a protein-rich close to the day.
-  </p>
-
-  <h5>Light dinner. Full nutrition.</h5>
-</div>
-
-                    
-                </div>
-            </div>
+          <button class="meal-btn" (click)="showRecipe('breakfast')">See How to Use</button>
         </div>
-    </section>
 
-    <!-- Footer CTA -->
-    <section class="footer-cta">
-        <h3 class="cta-title">Ready to Transform Your Meals?</h3>
-        <p class="cta-description">Start your journey to perfect nutrition with YOU x 0.8 plant protein</p>
-        <a href="/shop-finder"><button class="cta-btn">Order Your YOU x 0.8 Now</button></a>
-    </section>
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=900&h=600&fit=crop&crop=center" alt="Poha breakfast" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
 
+      <!-- Recipe -->
+      <div id="breakfast-recipe" class="recipe-section" [class.show]="visibleMeals['breakfast']">
+        <div class="recipe-header">
+          <h3>🍽️ Protein-Rich Breakfast</h3>
+          <button class="close-recipe" (click)="hideRecipe('breakfast')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>How to use YOU x 0.8 at breakfast</h4>
+          <ul>
+            <li><strong>Dosa/Idli:</strong> Mix into batter and cook as usual.</li>
+            <li><strong>Poha:</strong> Stir in 2–3 mins before turning off the stove.</li>
+            <li><strong>Upma:</strong> Add in the last 2–3 mins; mix well.</li>
+            <li><strong>Sambar/Rasam:</strong> Add after boiling; stir and serve.</li>
+            <li><strong>Curd Rice:</strong> Blend with curd; mix with rice.</li>
+            <li><strong>Chapati:</strong> Add while kneading for softer, protein-rich rotis.</li>
+          </ul>
+          <a class="cta-inline" href="/shop-finder">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- LUNCH -->
+    <div class="meal-card theme-day lunch">
+      <div class="ambient leaf leaf-1">🌿</div>
+      <div class="ambient leaf leaf-2">🍃</div>
+
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">🍽️</div>
+            <div>
+              <h3 class="meal-title">Lunch</h3>
+              <p class="meal-time">Afternoon</p>
+            </div>
+          </div>
+
+          <h4 class="meal-description">Power your afternoon</h4>
+          <p class="meal-details">Add YOU x 0.8 to dal, sambar, rasam or curry for sustained energy.</p>
+
+          <ul class="meal-benefits">
+            <li>• Maintains energy levels</li>
+            <li>• Completes your plate</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('lunch')">See How to Use</button>
+        </div>
+
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=900&h=600&fit=crop&crop=center" alt="Dal lunch" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="lunch-recipe" class="recipe-section" [class.show]="visibleMeals['lunch']">
+        <div class="recipe-header">
+          <h3>🍛 Protein-Enhanced Dal</h3>
+          <button class="close-recipe" (click)="hideRecipe('lunch')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>Upgrade your lunch</h4>
+          <ul>
+            <li><strong>Sambar:</strong> Stir 1 scoop into hot sambar after cooking.</li>
+            <li><strong>Rasam:</strong> Add after simmering; mix and serve.</li>
+            <li><strong>Dal:</strong> Add after dal is cooked; whisk smooth.</li>
+            <li><strong>Veg Curry:</strong> Sprinkle and fold in during last 2–3 mins.</li>
+            <li><strong>Rice bowls:</strong> Blend into curd rice/lemon rice while mixing.</li>
+            <li><strong>Chapati:</strong> Knead into dough for a protein-rich meal.</li>
+          </ul>
+          <a class="cta-inline" href="/shop-finder">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SNACKS -->
+    <div class="meal-card theme-evening snacks">
+      <div class="ambient cookie">🍪</div>
+
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">🍪</div>
+            <div>
+              <h3 class="meal-title">Snacks</h3>
+              <p class="meal-time">Evening</p>
+            </div>
+          </div>
+
+          <h4 class="meal-description">Evening nutrition boost</h4>
+          <p class="meal-details">Turn smart snacks into strong snacks — with YOU x 0.8.</p>
+
+          <ul class="meal-benefits">
+            <li>• More satiety, less cravings</li>
+            <li>• No change in taste</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('snacks')">See How to Use</button>
+        </div>
+
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=900&h=600&fit=crop&crop=center" alt="Evening snacks" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="snacks-recipe" class="recipe-section" [class.show]="visibleMeals['snacks']">
+        <div class="recipe-header">
+          <h3>🥪 Protein Power Snacks</h3>
+          <button class="close-recipe" (click)="hideRecipe('snacks')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>Snack time = protein time</h4>
+          <ul>
+            <li><strong>Salads:</strong> Mix a scoop into the bowl and toss.</li>
+            <li><strong>Boiled chana/sprouts:</strong> Sprinkle, add lemon & masala, mix.</li>
+            <li><strong>Curd snacks:</strong> Blend with curd for chaats and bowls.</li>
+            <li><strong>Sandwiches:</strong> Mix into chutney/spread.</li>
+            <li><strong>Fruit bowls:</strong> Stir with yogurt or peanut butter topping.</li>
+            <li><strong>Tiffin snacks:</strong> Add right before finishing; serve warm.</li>
+          </ul>
+          <a class="cta-inline" href="/shop-finder">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- DINNER -->
+    <div class="meal-card theme-night dinner">
+      <div class="ambient moon">🌙</div>
+      <div class="ambient star star-1">✦</div>
+      <div class="ambient star star-2">✧</div>
+      <div class="ambient star star-3">✦</div>
+
+      <div class="meal-content">
+        <div class="meal-info">
+          <div class="meal-header">
+            <div class="meal-icon">🌙</div>
+            <div>
+              <h3 class="meal-title">Dinner</h3>
+              <p class="meal-time">Night</p>
+            </div>
+          </div>
+
+          <h4 class="meal-description">Recover while you rest</h4>
+          <p class="meal-details">End the day with YOU x 0.8 mixed into rasam, curd rice or chapati dough.</p>
+
+          <ul class="meal-benefits">
+            <li>• Supports overnight recovery</li>
+            <li>• Light dinner, full nutrition</li>
+          </ul>
+
+          <button class="meal-btn" (click)="showRecipe('dinner')">See How to Use</button>
+        </div>
+
+        <div class="meal-image">
+          <div class="food-container">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=900&h=600&fit=crop&crop=center" alt="Roti dinner" class="food-img" />
+            <div class="protein-overlay">YOU x 0.8<br />PLANT<br />PROTEIN</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dinner-recipe" class="recipe-section" [class.show]="visibleMeals['dinner']">
+        <div class="recipe-header">
+          <h3>🍽️ Protein-Rich Roti & Curry</h3>
+          <button class="close-recipe" (click)="hideRecipe('dinner')">✕</button>
+        </div>
+
+        <div class="recipe-how-to-use">
+          <h4>End your day with the right fuel</h4>
+          <ul>
+            <li><strong>Rasam/light soups:</strong> Add right before turning off the stove or when slightly cool.</li>
+            <li><strong>Curd rice:</strong> Blend into curd; mix with rice.</li>
+            <li><strong>Chapati:</strong> Knead into dough for soft, protein-rich rotis.</li>
+            <li><strong>Sabzi/Curry:</strong> Stir in 2–3 mins before finishing.</li>
+            <li><strong>Lemon/Jeera rice:</strong> Mix powder with ghee/oil; toss with rice.</li>
+            <li><strong>Khichdi:</strong> Stir in after cooking; cover for 2 mins, then serve.</li>
+          </ul>
+          <a class="cta-inline" href="/shop-finder">Order YOU x 0.8 Now</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Footer CTA -->
+<section class="footer-cta">
+  <h3 class="cta-title">Ready to Transform Your Meals?</h3>
+  <p class="cta-description">Start your journey with YOU x 0.8 plant protein — zero sugar, zero flavour, pure strength.</p>
+  <a href="/shop-finder"><button class="cta-btn">Order Your YOU x 0.8 Now</button></a>
+</section>
 
 <app-footer></app-footer>
