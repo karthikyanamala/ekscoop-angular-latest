@@ -26,6 +26,7 @@ export const routes: Routes = [
 {path:'checkout',loadComponent:()=>import('./payment/checkout/checkout.component').then(m=>m.CheckoutComponent)},
 {path:'products',loadComponent:()=>import('./products_Page/product-page.component').then(m=>m.ProductPageComponent)},
 {path:'orders',loadComponent:()=>import('./userprofiles/myorders/myorders.component').then(m=>m.MyOrdersComponent)},
+{path:'offers/gym-offer-1000',loadComponent:()=>import('./gym-coupon-page/cashback-page.component').then(m=>m.CashbackPageComponent)},
 {
     path: 'orders/:orderId',
     loadComponent: () =>

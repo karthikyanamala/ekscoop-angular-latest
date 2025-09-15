@@ -48,7 +48,7 @@ export const createRazorpayOrder = onRequest(
         }
 
         const productData = productDoc.data();
-        const unitPrice = productData?.price;
+        const unitPrice = productData?.Discounted_Price;
         if (typeof unitPrice !== "number") {
           res.status(500).send({error: "Invalid product price in database"});
           return;
