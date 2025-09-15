@@ -1,16 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
-import {
-  Firestore, doc, getDoc, updateDoc, serverTimestamp,
-} from '@angular/fire/firestore';
-import { Functions, httpsCallable } from '@angular/fire/functions';
-
+import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { RouterModule } from '@angular/router';
 import { ProfileHeaderComponent } from '../profile-header/profile-header.component';
 import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 
 @Component({
   selector: 'app-profile',
@@ -20,60 +16,39 @@ import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component'
   styleUrls: ['./userprofile.component.css'],
 })
 export class ProfileComponent implements OnInit {
-  private auth: Auth = inject(Auth);
-  private firestore: Firestore = inject(Firestore);
-  private functions: Functions = inject(Functions);
+  auth: Auth = inject(Auth);
+  firestore: Firestore = inject(Firestore);
+  functions: Functions = inject(Functions);
 
-  uid = '';
+  uid: string = '';
   profile: any = { fullName: '', phoneNumber: '', gender: '', email: '' };
 
   loading = true;
-
-  // UI states
   sendingOtp = false;
   verifyingOtp = false;
   savingProfile = false;
-
-  // Locks
-  phoneVerified = false;   // phone field locked once verified
-  genderLocked = false;    // gender select locked once saved
-
-  // OTP modal state
+  phoneVerified = false;
   showOtpModal = false;
   enteredOtp = '';
   otpError = '';
-
-  // messages
   errorMessage = '';
   successMessage = '';
+  genderAlreadySaved = false;
 
   ngOnInit() {
     onAuthStateChanged(this.auth, async (user: User | null) => {
-      if (!user) {
-        this.errorMessage = 'Please login first.';
-        this.loading = false;
-        return;
-      }
+      if (!user) { this.errorMessage = 'Please login first.'; this.loading = false; return; }
       this.uid = user.uid;
-
       try {
-        const profileRef = doc(this.firestore, `users/${this.uid}`);
-        const snap = await getDoc(profileRef);
-        if (snap.exists()) {
-          const data = snap.data() as any;
-          this.profile = {
-            fullName: data.fullName || '',
-            email: data.email || user.email || '',
-            phoneNumber: data.phoneNumber || '',
-            gender: data.gender || '',
-          };
-
-          // derive locks from stored flags
-          this.phoneVerified = !!data.verified;
-          this.genderLocked = !!data.genderLocked || !!data.gender;
+        const profileDoc = doc(this.firestore, `users/${this.uid}`);
+        const profileSnap = await getDoc(profileDoc);
+        if (profileSnap.exists()) {
+          this.profile = profileSnap.data();
+          this.phoneVerified = !!this.profile.verified;
+          this.genderAlreadySaved = !!this.profile.gender;
         }
-      } catch (err) {
-        console.error(err);
+      } catch (error: any) {
+        console.error(error);
         this.errorMessage = 'Failed to load profile.';
       } finally {
         this.loading = false;
@@ -81,29 +56,19 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  /* ----------------------------- OTP flow ----------------------------- */
-
   async openOtpModal() {
     this.enteredOtp = '';
     this.otpError = '';
-    this.successMessage = '';
-    this.errorMessage = '';
-
-    // basic validation before calling function
-    if (!this.isPhoneValid()) {
-      this.errorMessage = 'Please enter a valid 10-digit phone number.';
-      return;
-    }
-
     this.showOtpModal = true;
     this.sendingOtp = true;
 
     try {
       const sendOtpFn = httpsCallable(this.functions, 'sendOtp');
-      const phoneE164 = '+91' + String(this.profile.phoneNumber);
-      await sendOtpFn({ phone: phoneE164 });
+      const phoneWithCountryCode = '+91' + this.profile.phoneNumber;
+      await sendOtpFn({ phone: phoneWithCountryCode });
       this.successMessage = 'OTP sent successfully!';
-    } catch (error) {
+      this.errorMessage = '';
+    } catch (error: any) {
       console.error(error);
       this.errorMessage = 'Failed to send OTP. Please try again.';
       this.showOtpModal = false;
@@ -114,26 +79,14 @@ export class ProfileComponent implements OnInit {
 
   async verifyOtp() {
     this.verifyingOtp = true;
-    this.otpError = '';
     try {
       const verifyOtpFn = httpsCallable(this.functions, 'verifyOtp');
-      const phoneE164 = '+91' + String(this.profile.phoneNumber);
-      await verifyOtpFn({ uid: this.uid, phone: phoneE164, otp: this.enteredOtp });
-
-      // lock phone
+      const phoneWithCountryCode = '+91' + this.profile.phoneNumber;
+      await verifyOtpFn({ uid: this.uid, phone: phoneWithCountryCode, otp: this.enteredOtp });
       this.phoneVerified = true;
       this.successMessage = 'Phone verified successfully!';
       this.showOtpModal = false;
-
-      // persist verification flags
-      const ref = doc(this.firestore, `users/${this.uid}`);
-      await updateDoc(ref, {
-        verified: true,
-        verifiedPhoneNumber: this.profile.phoneNumber,
-        verifiedAt: serverTimestamp(),
-        phoneNumber: this.profile.phoneNumber, // keep phone in sync
-      });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       this.otpError = 'Invalid OTP. Please try again.';
       this.phoneVerified = false;
@@ -142,42 +95,30 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  closeOtpModal() { this.showOtpModal = false; }
-
-  /* -------------------------- Save profile --------------------------- */
-
   async updateProfile() {
     this.successMessage = '';
     this.errorMessage = '';
 
-    // Validate requireds
-    if (!this.isPhoneValid()) {
-      this.errorMessage = 'Please enter a valid 10-digit phone number.';
+    // ✅ Always validate inputs before saving
+    if (!this.isPhoneValid() || !this.profile.gender) {
+      this.errorMessage = 'Please enter both phone number and gender.';
       return;
     }
     if (!this.phoneVerified) {
-      this.errorMessage = 'Please verify your phone number before saving.';
-      return;
-    }
-    if (!this.profile.gender) {
-      this.errorMessage = 'Please select your gender.';
+      this.errorMessage = 'Phone number must be verified before saving.';
       return;
     }
 
     this.savingProfile = true;
     try {
-      const ref = doc(this.firestore, `users/${this.uid}`);
-      await updateDoc(ref, {
+      const profileDoc = doc(this.firestore, `users/${this.uid}`);
+      await updateDoc(profileDoc, {
         phoneNumber: this.profile.phoneNumber,
         gender: this.profile.gender,
-        // lock gender once saved
-        genderLocked: true,
-        updatedAt: serverTimestamp(),
       });
-
-      this.genderLocked = true;
       this.successMessage = 'Profile updated successfully!';
-    } catch (error) {
+      this.genderAlreadySaved = true;
+    } catch (error: any) {
       console.error(error);
       this.errorMessage = 'Failed to update profile.';
     } finally {
@@ -185,9 +126,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  /* --------------------------- utilities ---------------------------- */
+  isPhoneValid(): boolean { return /^\d{10}$/.test(this.profile.phoneNumber || ''); }
 
-  isPhoneValid(): boolean {
-    return /^\d{10}$/.test(String(this.profile.phoneNumber || '').trim());
-  }
+  closeOtpModal() { this.showOtpModal = false; }
 }

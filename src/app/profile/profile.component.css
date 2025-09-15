@@ -3,50 +3,59 @@
   display: inline-block;
 }
 
+/* your existing button, with tiny visual polish */
 .profile-btn {
-  background: white;
-  border: none;
+  background: #fff;
+  border: 1px solid #ddd;
   margin-left: 85px;
   font-weight: 600;
   cursor: pointer;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: box-shadow .15s ease, background .15s ease;
 }
+.profile-btn:hover { background:#f9fafb; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+
+.caret { font-size: 12px; margin-left: 4px; transition: transform .15s ease; }
+.caret.up { transform: rotate(180deg); }
 
 .profile-menu {
   position: absolute;
   top: 40px;
   right: 0;
-  display: none;
+  display: flex;                   /* no more display:none; controlled by *ngIf */
   flex-direction: column;
   background: white;
   border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  border-radius: 10px;
   z-index: 1000;
+  min-width: 170px;
+  padding: 6px;
+  animation: fadeIn .15s ease-out;
 }
 
-.profile-dropdown:hover .profile-menu {
-  display: flex;
-}
+/* remove the hover-to-open rule */
+ /* .profile-dropdown:hover .profile-menu { display: flex; } */
 
-.profile-menu a, .profile-menu button {
-  padding: 10px 15px;
+.profile-menu a,
+.profile-menu button {
+  padding: 10px 12px;
   text-align: left;
   border: none;
   background: white;
   width: 100%;
   cursor: pointer;
   font-size: 14px;
+  border-radius: 6px;
 }
+.profile-menu a:hover,
+.profile-menu button:hover { background: #f5f5f5; }
 
-.profile-menu a:hover, .profile-menu button:hover {
-  background: #f1f1f1;
-}
-
-.logout-btn {
-  color: red;
-}
+.logout-btn { color: #d32f2f; }
 /* Clean Login Button */
 .login-clean-btn {
   display: flex;

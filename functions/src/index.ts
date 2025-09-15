@@ -1,157 +1,117 @@
-import {onRequest} from "firebase-functions/v2/https";
+import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {defineSecret} from "firebase-functions/params";
 import * as admin from "firebase-admin";
-import Razorpay from "razorpay";
-import cors from "cors";
 
+if (!admin.apps.length) admin.initializeApp();
 
-admin.initializeApp();
-const db = admin.firestore();
+// ---- Types ----
+interface OrderAddress {
+  fullName?: string;
+  addressLine?: string;
+  locality?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  phoneNumber?: string;
+}
 
-const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
-const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
+interface Order {
+  customer?: { name?: string };
+  fullName?: string;
+  finalAmount?: number;
+  amount?: number;
+  promoCodeUsed?: string;
+  selectedAddress?: OrderAddress;
+}
 
-const corsHandler = cors({origin: true});
+// ---- Secrets ----
+const TWILIO_ACCOUNT_SID = defineSecret("TWILIO_ACCOUNT_SID"); // AC...
+const TWILIO_AUTH_TOKEN = defineSecret("TWILIO_AUTH_TOKEN");
+const TWILIO_PHONE_NUMBER = defineSecret("TWILIO_PHONE_NUMBER");
 
-export const createRazorpayOrder = onRequest(
+// Admin recipients (E.164)
+const ADMIN_RECIPIENTS = ["+919666334055", "+918512041097"];
+
+export const notifyAdminOnOrder = onDocumentCreated(
   {
     region: "us-central1",
-    secrets: [razorpayKeyId, razorpayKeySecret],
+    document: "orders/{orderId}",
+    secrets: [TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER],
+    timeoutSeconds: 60,
   },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        if (req.method !== "POST") {
-          res.status(405).send({error: "Only POST requests allowed"});
-          return;
-        }
+  async (event) => {
+    const orderId = event.params.orderId;
+    const snap = event.data;
+    if (!snap) {
+      console.error("notifyAdminOnOrder: empty snapshot");
+      return null;
+    }
 
-        const {productId, quantity} = req.body;
-        const promoCode = req.headers["x-promo-code"] ?
-          String(req.headers["x-promo-code"]).toUpperCase():null;
+    const order = snap.data() as Order;
 
-        if (!productId || typeof productId !== "string") {
-          res.status(400).send({error: "Missing or invalid productId"});
-          return;
-        }
+    // Basic fields
+    const customerName =
+      (order.customer && order.customer.name) ||
+      order.fullName ||
+      (order.selectedAddress && order.selectedAddress.fullName) ||
+      "N/A";
 
-        if (!quantity || typeof quantity !== "number" || quantity <= 0) {
-          res.status(400).send({error: "Quantity must be a positive number"});
-          return;
-        }
+    const amount =
+      typeof order.finalAmount === "number"? order.finalAmount :
+        typeof order.amount === "number"? order.amount: "N/A";
 
-        // ✅ Fetch product pricing from Firestore
-        const productDoc = await db.collection("products").doc(productId).get();
-        if (!productDoc.exists) {
-          res.status(404).send({error: "Product not found"});
-          return;
-        }
+    const promo = order.promoCodeUsed || "None";
 
-        const productData = productDoc.data() || {};
-        const mrp = productData?.price;
-        const discounted =
-          typeof productData?.Discounted_Price === "number"?
-            productData.Discounted_Price:
-            (typeof productData?.discountedPrice === "number"?
-              productData.discountedPrice:
-              undefined);
+    // Address
+    const addr: OrderAddress = order.selectedAddress || {};
+    const addressLines = [
+      (addr.fullName || customerName || "").trim(),
+      (addr.addressLine || "").trim(),
+      (addr.locality || "").trim(),
+      ((addr.city || "") + (addr.state ? ", " + addr.state : "") +
+      (addr.pincode ? " " + addr.pincode : "")).trim(),
+      (addr.phoneNumber ? "Phone: " + addr.phoneNumber : "").trim(),
+    ].filter(Boolean) as string[];
 
-        if (typeof mrp !== "number") {
-          res.status(500).send({error: "Invalid product price in database"});
-          return;
-        }
+    const addressText = addressLines.join("\n");
 
-        // ✅ Use discounted price when valid; else fall back to MRP
-        const unitEffective =
-          (typeof discounted === "number" && discounted >
-            0 && discounted < mrp)? discounted : mrp;
+    // Build SMS body (double quotes only)
+    const smsBody =
+      "🛒 New Order Placed!\n" +
+      "Order ID: " + orderId + "\n" +
+      "Customer: " + customerName + "\n" +
+      "Amount: ₹" + amount + "\n" +
+      "Promo: " + promo + "\n\n" +
+      "📦 Delivery Address:\n" + addressText;
 
-        // Subtotal BEFORE promo (this is what the UI shows)
-        let amount = unitEffective * quantity;
-        const baseAmount = amount; // keep original for % derivation
+    try {
+      // Lazy import Twilio to avoid ESM-at-startup crash
+      const {default: twilio} = await import("twilio");
 
-        let discountPercent = 0;
-        let discountAmount = 0;
+      const accountSid = TWILIO_ACCOUNT_SID.value();
+      const authToken = TWILIO_AUTH_TOKEN.value();
+      const fromNumber = TWILIO_PHONE_NUMBER.value();
 
-        // ✅ Validate & apply promo on the EFFECTIVE subtotal (not MRP)
-        if (promoCode) {
-          const promoSnap = await
-          db.collection("promocodes").doc(promoCode).get();
-          if (!promoSnap.exists) {
-            res.status(400).send({error: "Promo code not found"});
-            return;
-          }
-
-          const p = promoSnap.data() || {};
-
-          if (p?.active !== true) {
-            res.status(400).send({error: "Promo code inactive or invalid"});
-            return;
-          }
-
-          const now = Date.now();
-          const fromOk = !p.validFrom ||
-          (new Date(p.validFrom).getTime() <= now);
-          const toOk = !p.validTo || (new Date(p.validTo).getTime() >= now);
-          if (!fromOk || !toOk) {
-            res.status(400).send({error: "Promo code not valid at this time"});
-            return;
-          }
-
-          if (typeof p.minOrderAmount === "number" &&
-            baseAmount < p.minOrderAmount) {
-            res.status(400).send({error: `Minimum order amount is ₹
-              ${p.minOrderAmount} for this promo`});
-            return;
-          }
-
-          // Prefer flat discountAmount; else use percentage (optionally capped)
-          if (typeof p.discountAmount === "number" && p.discountAmount > 0) {
-            discountAmount = Math.min(p.discountAmount, amount);
-            discountPercent = Math.round((discountAmount / baseAmount) * 100);
-          } else if (typeof p.discountPercentage === "number" &&
-            p.discountPercentage > 0) {
-            let raw = Math.floor(baseAmount * (p.discountPercentage / 100));
-            if (typeof p.maxDiscount === "number" && p.maxDiscount > 0) {
-              raw = Math.min(raw, p.maxDiscount);
-            }
-            discountAmount = Math.min(raw, amount);
-            discountPercent = p.discountPercentage;
-          } else {
-            res.status(400).send({error: "Promo code has no valid discount"});
-            return;
-          }
-
-          amount = Math.max(0, amount - discountAmount);
-        }
-
-        const razorpay = new Razorpay({
-          key_id: process.env.RAZORPAY_KEY_ID ?? "",
-          key_secret: process.env.RAZORPAY_KEY_SECRET ?? "",
-        });
-
-        const options = {
-          amount: Math.round(amount * 100), // in paise, integer
-          currency: "INR",
-          receipt: `receipt_order_${Date.now()}`,
-        };
-
-        const order = await razorpay.orders.create(options);
-
-        res.status(200).send({
-          order,
-          promo: promoCode?
-            {
-              promoCode,
-              discountPercent,
-              discountAmount,
-            }:
-            null,
-        });
-      } catch (err) {
-        console.error("Razorpay Order Error:", err);
-        res.status(500).send({error: "Unable to create Razorpay order"});
+      if (!accountSid || accountSid.slice(0, 2) !== "AC" ||
+      !authToken || !fromNumber) {
+        console.error(`"notifyAdminOnOrder:Twilio secrets
+          not configured correctly"`);
+        return null;
       }
-    });
+
+      const client = twilio(accountSid, authToken);
+
+      await Promise.all(
+        ADMIN_RECIPIENTS.map((to) =>
+          client.messages.create({body: smsBody, from: fromNumber, to})
+        )
+      );
+
+      console.log("notifyAdminOnOrder: SMS sent for order " + orderId);
+    } catch (err) {
+      console.error("notifyAdminOnOrder: failed to send SMS", err);
+    }
+
+    return null;
   }
 );
