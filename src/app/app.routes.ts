@@ -25,6 +25,7 @@ export const routes: Routes = [
 {path:'address',loadComponent:()=>import('./userprofiles/address/address.component').then(m=>m.AddressComponent)},
 {path:'checkout',loadComponent:()=>import('./payment/checkout/checkout.component').then(m=>m.CheckoutComponent)},
 {path:'products',loadComponent:()=>import('./products_Page/product-page.component').then(m=>m.ProductPageComponent)},
+{path:'lab-reports',loadComponent:()=>import('./lab-report/lab-reports-page.component').then(m=>m.LabReportsPageComponent)},
 {path:'orders',loadComponent:()=>import('./userprofiles/myorders/myorders.component').then(m=>m.MyOrdersComponent)},
 {path:'offers/gym-offer-1000',loadComponent:()=>import('./gym-coupon-page/cashback-page.component').then(m=>m.CashbackPageComponent)},
 {
