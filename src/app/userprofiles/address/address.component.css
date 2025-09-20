@@ -300,3 +300,153 @@ app-corner-badge {
 .pin-status { margin: 6px 0; font-size: 13px; }
 .chip { margin-left: 8px; padding: 2px 8px; border-radius: 12px; background:#eee; }
 .chip.on { background:#d1f7d6; }
+.funny-loader {
+  text-align: center;
+  padding: 100px 20px;
+  font-size: 20px;
+  color: #333;
+}
+
+.loader-emoji {
+  font-size: 50px;
+  animation: bounce 1s infinite;
+  display: inline-block;
+}
+
+/* ===== Modal Shell ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+/* Card stays compact on mobile, grows a bit on tablet/desktop */
+.modal-card {
+  width: min(92vw, 540px);          /* comfy on phones */
+  max-height: 85vh;                 /* never full screen */
+  overflow: auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.18);
+  animation: pop .15s ease-out;
+}
+
+/* Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  color: #e65100;
+  font-weight: 700;
+}
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: .7;
+}
+.icon-btn:hover { opacity: 1; }
+
+/* ===== Form ===== */
+.form {
+  display: grid;
+  grid-template-columns: 1fr; /* single column by default (mobile) */
+  gap: 14px;
+  padding: 16px 18px 18px;
+}
+
+/* Up to two columns on wider screens */
+@media (min-width: 560px) {
+  .form {
+    grid-template-columns: 1fr 1fr;
+  }
+  .form-field-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Field */
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+.form-field label {
+  font-size: 12px;
+  letter-spacing: .2px;
+  color: #5d4037;
+}
+.form-field input {
+  height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #e5d9c6;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #fffdf8;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-field input:focus {
+  outline: none;
+  border-color: #ffb300;
+  box-shadow: 0 0 0 3px rgba(255,179,0,.18);
+}
+
+/* Serviceability badge area */
+.pin-status {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #444;
+}
+
+/* Actions */
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  border-radius: 10px;
+  height: 42px;
+  padding: 0 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn.primary {
+  background: linear-gradient(135deg, #ffb300, #ff9800);
+  color: #fff;
+}
+.btn.primary:disabled {
+  filter: grayscale(0.4);
+  opacity: .7;
+  cursor: not-allowed;
+}
+.btn.ghost {
+  background: #f4f4f4;
+  color: #333;
+}
+.btn.ghost:hover { background: #ececec; }
+.btn.primary:hover { filter: brightness(0.98); }
+
+/* Nice little entrance */
+@keyframes pop {
+  from { transform: translateY(6px) scale(.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
