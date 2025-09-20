@@ -1,5 +1,9 @@
-<nav class="header-nav">
-  <a routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">My Profile</a>
-  <a routerLink="/orders" routerLinkActive="active">My Orders</a>
-  <a routerLink="/address" routerLinkActive="active">My Addresses</a>
+<nav class="header-nav" role="navigation" aria-label="Profile sections">
+  <div class="nav-scroll">
+    <a routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      My Profile
+    </a>
+    <a routerLink="/orders" routerLinkActive="active">My Orders</a>
+    <a routerLink="/address" routerLinkActive="active">My Addresses</a>
+  </div>
 </nav>

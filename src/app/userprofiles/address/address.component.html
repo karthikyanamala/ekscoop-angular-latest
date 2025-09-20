@@ -27,46 +27,107 @@
   </div>
 
   <!-- Edit Address Modal -->
-  <div class="modal" *ngIf="showEditModal">
-    <div class="modal-content">
-      <h3>{{ selectedAddressId ? 'Edit Address' : 'Add Address' }}</h3>
+ <!-- Edit Address Modal -->
+<div class="modal" *ngIf="showEditModal" role="dialog" aria-modal="true" aria-label="Edit Address">
+  <div class="modal-card">
 
-      <form #f="ngForm" (ngSubmit)="saveAddress(f)">
-        <label>Full Name*</label>
-        <input [(ngModel)]="addressForm.fullName" name="fullName" required />
+    <header class="modal-header">
+      <h3 class="modal-title">
+        {{ selectedAddressId ? 'Edit Address' : 'Add Address' }}
+      </h3>
+      <button class="icon-btn" type="button" (click)="showEditModal=false" aria-label="Close">✕</button>
+    </header>
 
-        <label>Email*</label>
-        <input [(ngModel)]="addressForm.email" name="email" required />
+    <!-- add #f="ngForm" -->
+    <form #f="ngForm" (ngSubmit)="saveAddress(f)" class="form">
+      <!-- Full Name -->
+      <div class="form-field">
+        <label for="fullName">Full Name*</label>
+        <input id="fullName" [(ngModel)]="addressForm.fullName" name="fullName" required />
+      </div>
 
-        <label>Mobile No.*</label>
-        <input [(ngModel)]="addressForm.phoneNumber" name="phoneNumber" required />
+      <!-- Email -->
+      <div class="form-field">
+        <label for="email">Email*</label>
+        <input id="email" type="email" [(ngModel)]="addressForm.email" name="email" required />
+      </div>
 
-        <label>Address*</label>
-        <input [(ngModel)]="addressForm.addressLine" name="addressLine" required />
+      <!-- Phone -->
+      <div class="form-field">
+        <label for="phone">Mobile No.*</label>
+        <input id="phone"
+               type="tel"
+               inputmode="numeric"
+               [(ngModel)]="addressForm.phoneNumber"
+               name="phoneNumber"
+               required
+               minlength="10"
+               maxlength="10"
+               pattern="\d{10}" />
+      </div>
 
-        <div class="address-row">
-          <input placeholder="Locality" [(ngModel)]="addressForm.locality" name="locality" />
-          <input placeholder="Pincode*" [(ngModel)]="addressForm.pincode" name="pincode" required
-                 (ngModelChange)="onPinChange($event)" maxlength="6" />
-        </div>
+      <!-- Address Line -->
+      <div class="form-field form-field-full">
+        <label for="addr">Address*</label>
+        <input id="addr"
+               [(ngModel)]="addressForm.addressLine"
+               name="addressLine"
+               required
+               placeholder="House / Street / Landmark" />
+      </div>
 
-        <div class="address-row">
-          <input placeholder="City*" [(ngModel)]="addressForm.city" name="city" required />
-          <input placeholder="State*" [(ngModel)]="addressForm.state" name="state" required />
-        </div>
+      <!-- Locality -->
+      <div class="form-field">
+        <label for="locality">Locality*</label>
+        <input id="locality"
+               [(ngModel)]="addressForm.locality"
+               name="locality"
+               required
+               placeholder="Area / Locality" />
+      </div>
 
+      <!-- Pincode -->
+      <div class="form-field">
+        <label for="pincode">Pincode*</label>
+        <input id="pincode"
+               [(ngModel)]="addressForm.pincode"
+               name="pincode"
+               required
+               maxlength="6"
+               inputmode="numeric"
+               pattern="\d{6}"
+               (ngModelChange)="onPinChange($event)" />
         <div class="pin-status" *ngIf="addressForm.pincode">
           <span *ngIf="pinStatus==='checking'">Checking serviceability…</span>
           <span *ngIf="pinStatus==='ok'">✅ Serviceable</span>
           <span *ngIf="pinStatus==='not_serviceable'">❌ Not serviceable</span>
           <span *ngIf="pinStatus==='error'">⚠️ Couldn’t verify. Try again.</span>
         </div>
+      </div>
 
-        <button type="submit" [disabled]="!canSave(f.valid)">Save Address</button>
-        <button type="button" class="close" (click)="showEditModal=false">Cancel</button>
-      </form>
-    </div>
+      <!-- City -->
+      <div class="form-field">
+        <label for="city">City*</label>
+        <input id="city" [(ngModel)]="addressForm.city" name="city" required />
+      </div>
+
+      <!-- State -->
+      <div class="form-field">
+        <label for="state">State*</label>
+        <input id="state" [(ngModel)]="addressForm.state" name="state" required />
+      </div>
+
+      <!-- Footer actions -->
+      <div class="actions">
+        <button type="button" class="btn ghost" (click)="showEditModal=false">Cancel</button>
+        <!-- disable until every field is valid -->
+        <button type="submit" class="btn primary" [disabled]="!f.valid">Save Address</button>
+      </div>
+    </form>
   </div>
+</div>
+
+
 
   <!-- Delete Confirmation Modal -->
   <div class="modal" *ngIf="showDeleteModal">
@@ -83,10 +144,13 @@
   <div class="profile-page-container">
     <app-profile-header></app-profile-header>
     <h2>MY ADDRESSES</h2>
-    <div class="loading">Loading…</div>
+    <div class="loader-emoji">Loading...</div>
   </div>
 </ng-template>
 
 <ng-template #loadingTpl>
-  <div class="loading">Loading...</div>
+   <div class="funny-loader">
+      <div class="loader-emoji">🦄</div>
+      <div>Magically loading your addresses...</div>
+    </div>
 </ng-template>

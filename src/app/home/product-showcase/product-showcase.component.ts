@@ -33,7 +33,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
   @HostBinding('class.sidebar') get isSidebar() { return this.variant === 'sidebar'; }
 
   selectedVariant: VariantKey | '' = '';
-  quantity = 1;
+  quantity = 0.5;
   selectedImage = '';
 
   /** render hint so we can avoid showing 0s while SSR hydrating */
@@ -48,9 +48,13 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       price: -1,
       discountedPrice: undefined,
       gallery: [
-        'assets/traditional-webp.webp',
-        'assets/family-mode.webp',
-        'assets/feminine-mode.webp'
+        'assets/trad-assets/Trad-sachet.PNG',
+        'assets/trad-assets/Trad-power ranges.PNG',
+        'assets/trad-assets/Trad-family.PNG',
+        "assets/trad-assets/trad-ingredients.jpg",
+        'assets/trad-assets/trad-certifications.jpg',
+        'assets/trad-assets/Trad-nutritinalvalue.PNG',
+        'assets/modren-assets/Quote.jpg'
       ]
     },
     modern: {
@@ -61,9 +65,13 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       price: -1,
       discountedPrice: undefined,
       gallery: [
-        'assets/modern.webp',
-        'assets/gym-mode.webp',
-        'assets/health-mode.webp',
+        'assets/modren-assets/Chootabheem.PNG',
+        'assets/modren-assets/nutirition value.jpg',
+        'assets/modren-assets/ingredients.jpg',
+        'assets/modren-assets/certified.jpg',
+        "assets/modren-assets/Lab Reports.jpg",
+        'assets/modren-assets/Modren sachet - new.PNG',
+        'assets/modren-assets/Quote.jpg'
       ]
     }
   };
@@ -161,8 +169,20 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  increaseQuantity() { this.quantity++; }
-  decreaseQuantity() { if (this.quantity > 1) this.quantity--; }
+ // start with 1 kg (or 0.5 if you prefer)
+
+// Increase in 0.5 kg steps
+increaseQuantity() {
+  this.quantity = +(this.quantity + 0.5).toFixed(1);
+}
+
+// Decrease in 0.5 kg steps, min 0.5
+decreaseQuantity() {
+  if (this.quantity > 0.5) {
+    this.quantity = +(this.quantity - 0.5).toFixed(1);
+  }
+}
+
 
   async handleBuyNow() {
     if (!this.selectedVariant) return alert('Please select a variant first.');

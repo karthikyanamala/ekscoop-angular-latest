@@ -97,3 +97,15 @@
   font-weight: 600; border: 1px solid #ffa94d; transition: .2s;
 }
 .track-btn:hover { background:#ffe8cc; }
+.funny-loader {
+  text-align: center;
+  padding: 100px 20px;
+  font-size: 20px;
+  color: #333;
+}
+
+.loader-emoji {
+  font-size: 50px;
+  animation: bounce 1s infinite;
+  display: inline-block;
+}

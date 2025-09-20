@@ -22,7 +22,7 @@
                 <ng-container *ngIf="mrpForTile('modern') as mrp; else onlyEffM">
                   <span class="eff">{{ priceForTile('modern') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
                   <span class="mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span></span>
-                  <span class="off" *ngIf="offForTile('modern') as off">({{ off }}% OFF)</span>
+                  <span class="off" *ngIf="offForTile('modern') as off">({{ off }}% OFF + 25% OFF at checkout)</span>
                 </ng-container>
                 <ng-template #onlyEffM>
                   <span class="eff">{{ priceForTile('modern') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
@@ -40,7 +40,7 @@
                 <ng-container *ngIf="mrpForTile('traditional') as mrp; else onlyEffT">
                   <span class="eff">{{ priceForTile('traditional') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
                   <span class="mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span></span>
-                  <span class="off" *ngIf="offForTile('traditional') as off">({{ off }}% OFF)</span>
+                  <span class="off" *ngIf="offForTile('traditional') as off">({{ off }}% OFF + 25% OFF at checkout)</span>
                 </ng-container>
                 <ng-template #onlyEffT>
                   <span class="eff">{{ priceForTile('traditional') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
@@ -125,7 +125,7 @@
         <section class="pricing card" *ngIf="selectedVariantData">
           <div class="rating">
             <span class="stars" aria-hidden="true">★★★★★</span>
-            <span class="reviews muted">4.8/5 (2,500+ reviews)</span>
+            <span class="reviews muted">4.8/5</span>
           </div>
 
           <div class="price-row">
@@ -137,12 +137,14 @@
 
           <div class="deal-row">
             <div class="price">{{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div>
-            <div class="off" *ngIf="discountPercent > 0">({{ discountPercent }}% OFF)</div>
+            <div class="off" *ngIf="discountPercent > 0">({{ discountPercent }}% OFF + 25% OFF at checkout)</div>
           </div>
 
-          <p class="promo-note">
-            🏷️ In Every 2 orders, <strong>One can claim monthly gym membership up to ₹1000 <a href="offers/gym-offer-1000" class="promo-link">More details →</a> </strong>.
-          </p>
+         <p class="promo-note">
+  🎉 New Launch Offer: <strong>Get 25% extra off!!!</strong>
+  Use promo code <strong>GREATLAUNCH</strong> at checkout to grab your discount.
+</p>
+
         </section>
 
         <!-- Quantity -->

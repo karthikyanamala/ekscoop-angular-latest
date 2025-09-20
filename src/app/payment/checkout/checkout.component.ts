@@ -248,30 +248,53 @@ export class CheckoutComponent implements OnInit {
     return now >= from && now <= to;
   }
 
-  /** Prefer flat amount; fall back to % (capped by maxDiscount if provided). */
-  private computeDiscount(total: number, p: PromoDoc): number {
-    if (typeof p.discountAmount === 'number' && p.discountAmount > 0) {
-      return Math.min(p.discountAmount, total);
-    }
-    if (typeof p.discountPercentage === 'number' && p.discountPercentage > 0) {
-      const raw = Math.floor(total * (p.discountPercentage / 100));
-      const capped = (typeof p.maxDiscount === 'number' && p.maxDiscount > 0)
-        ? Math.min(raw, p.maxDiscount)
-        : raw;
-      return Math.min(capped, total);
-    }
-    return 0;
+/** Quantity-aware discount:
+ *  - Flat `discountAmount` is defined for 1kg -> scale by `quantity`
+ *  - Percent promos apply to subtotal (already scales)
+ *  - Never exceed subtotal; optional maxDiscount respected for % promos
+ */
+private computeDiscount(subtotal: number, p: PromoDoc, quantity: number): number {
+  if (typeof p.discountAmount === 'number' && p.discountAmount > 0) {
+    const raw = p.discountAmount * Math.max(0, quantity); // scale flat by qty
+    return Math.min(Math.round(raw), Math.round(subtotal));
   }
 
-  // ===== PROMO (APPLY / REMOVE) =====
-  async applyPromo() {
-    if (!this.isBrowser) return;
+  if (typeof p.discountPercentage === 'number' && p.discountPercentage > 0) {
+    const raw = Math.floor(subtotal * (p.discountPercentage / 100));
+    const capped =
+      typeof p.maxDiscount === 'number' && p.maxDiscount > 0
+        ? Math.min(raw, p.maxDiscount)
+        : raw;
+    return Math.min(capped, Math.round(subtotal));
+  }
 
-    this.promoError = '';
-    this.promoSuccess = '';
+  return 0;
+}
 
+
+
+isApplying = false;
+
+
+recalcTotalsFromBaseline() {
+  // total = baseline - (applied promo, if any)
+  this.totalAmount = Math.max(0, this.originalTotalAmount - (this.promoApplied ? this.promoDiscountAmount : 0));
+}
+
+// ===== PROMO (APPLY / REMOVE) =====
+async applyPromo() {
+  if (!this.isBrowser) return;
+
+  if (this.isApplying) return; // UI lock
+  this.isApplying = true;
+
+  this.promoError = '';
+  this.promoSuccess = '';
+
+  try {
+    // 👇 add this check with error message
     if (this.promoApplied) {
-      this.promoError = 'A promo is already applied. Remove it first to apply another.';
+      this.promoError = 'A promo code is already applied. Remove it before applying another.';
       return;
     }
 
@@ -281,65 +304,65 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    try {
-      const promoRef = doc(this.firestore, `promocodes/${code}`);
-      const promoSnap = await getDoc(promoRef);
+    const promoRef = doc(this.firestore, `promocodes/${code}`);
+    const promoSnap = await getDoc(promoRef);
 
-      if (!promoSnap.exists()) {
-        this.promoError = 'Invalid promo code. Please try again.';
-        return;
-      }
-
-      const promo = (promoSnap.data() as PromoDoc) || {};
-      if (promo.active !== true) {
-        this.promoError = 'This promo code is inactive.';
-        return;
-      }
-
-      if (!this.isWithinWindow(promo)) {
-        this.promoError = 'This promo code is not valid at this time.';
-        return;
-      }
-
-      if (typeof promo.minOrderAmount === 'number' &&
-          this.totalAmount < promo.minOrderAmount) {
-        this.promoError = `Minimum order amount is ₹${promo.minOrderAmount} for this code.`;
-        return;
-      }
-
-      const discount = this.computeDiscount(this.totalAmount, promo);
-      if (discount <= 0) {
-        this.promoError = 'Promo found but no discount applicable.';
-        return;
-      }
-
-      this.promoDiscountAmount = discount;
-      this.promoDiscountPercent = Math.round((discount / this.totalAmount) * 100);
-      this.totalAmount = Math.max(0, this.totalAmount - discount);
-
-      const label = promo.label ? ` (${promo.label})` : '';
-      this.promoSuccess = `Promo applied${label}! You saved ₹${discount}.`;
-      this.promoApplied = true;
-    } catch (error) {
-      console.error('Error applying promo:', error);
-      this.promoError = 'Something went wrong applying promo. Try again.';
-    }
-  }
-
-  removePromo() {
-    if (!this.promoApplied) {
-      this.promoError = 'No promo applied to remove.';
+    if (!promoSnap.exists()) {
+      this.promoError = 'Invalid promo code. Please try again.';
       return;
     }
 
-    this.totalAmount = this.originalTotalAmount;
-    this.promoCode = '';
-    this.promoDiscountPercent = 0;
-    this.promoDiscountAmount = 0;
-    this.promoApplied = false;
-    this.promoSuccess = '';
-    this.promoError = '';
+    const promo = (promoSnap.data() as PromoDoc) || {};
+    if (promo.active !== true) {
+      this.promoError = 'This promo code is inactive.';
+      return;
+    }
+
+    if (!this.isWithinWindow(promo)) {
+      this.promoError = 'This promo code is not valid at this time.';
+      return;
+    }
+
+    const subtotal = this.originalTotalAmount;
+    const discount = this.computeDiscount(subtotal, promo, this.quantity);
+
+    if (discount <= 0) {
+      this.promoError = 'Promo found but no discount applicable.';
+      return;
+    }
+
+    this.promoDiscountAmount = discount;
+    this.promoDiscountPercent = Math.round((discount / subtotal) * 100);
+    this.totalAmount = Math.max(0, subtotal - discount);
+    this.promoApplied = true;
+
+    const label = promo.label ? ` (${promo.label})` : '';
+    this.promoSuccess = `Promo applied${label}! You saved ₹${discount}.`;
+
+  } catch (err) {
+    console.error('Error applying promo:', err);
+    this.promoError = 'Something went wrong applying promo. Try again.';
+  } finally {
+    this.isApplying = false;
   }
+}
+
+
+removePromo() {
+  if (!this.promoApplied) {
+    this.promoError = 'No promo applied to remove.';
+    return;
+  }
+  this.promoApplied = false;
+  this.promoDiscountAmount = 0;
+  this.promoDiscountPercent = 0;
+  this.promoCode = '';
+  this.promoSuccess = '';
+  this.promoError = '';
+  // restore from baseline
+  this.totalAmount = this.originalTotalAmount;
+}
+
 
   // ===== SAVE ADDRESS =====
   async saveAddress() {
@@ -519,7 +542,7 @@ export class CheckoutComponent implements OnInit {
 
           alert('Payment successful & order saved!');
           this.loadingPayment = false;
-          this.router.navigate(['/order-success']);
+          this.router.navigate(['/orders']);
         } catch (error) {
           alert('Payment succeeded, but failed to save order. Contact support.');
           this.loadingPayment = false;
@@ -565,4 +588,6 @@ export class CheckoutComponent implements OnInit {
       document.body.appendChild(script);
     });
   }
+
+  
 }

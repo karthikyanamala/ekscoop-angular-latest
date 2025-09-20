@@ -57,7 +57,7 @@ export class CashbackPageComponent {
 
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'keywords', content: keywords });
-
+    this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
     // Open Graph
     this.meta.updateTag({ property: 'og:title', content: pageTitle });
     this.meta.updateTag({ property: 'og:description', content: description });
