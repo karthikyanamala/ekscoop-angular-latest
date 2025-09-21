@@ -130,7 +130,7 @@
 
           <div class="price-row">
             <div class="mrp" *ngIf="displayMrp as mrp">
-              MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+              MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }} Per Kg</span>
             </div>
             <div class="deal-badge" *ngIf="discountPercent > 0">LIMITED DEAL</div>
           </div>

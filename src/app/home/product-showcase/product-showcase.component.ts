@@ -44,7 +44,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Traditional Design',
       image: 'assets/traditional-webp.webp',
       description: 'Perfect for traditional Indian meals',
-      features: ['Add to roti dough', 'Stir into dal', 'Mix with poha'],
+      features: ['Isolate','Supports Muscle Growth', 'Boost Immunity', 'Enhances Recovery', 'Vegan & Clean', 'Diabetic Friendly'],
       price: -1,
       discountedPrice: undefined,
       gallery: [
@@ -61,7 +61,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Active Lifestyle',
       image: 'assets/modern.webp',
       description: 'Designed for active individuals',
-      features: ['Feel stronger daily', 'Feel active', '16.7g protein'],
+      features: ['Feel stronger daily', 'Feel active', '16.7g protein','Isolate','Supports Muscle Growth', 'Boost Immunity', 'Enhances Recovery', 'Vegan & Clean', 'Diabetic Friendly'],
       price: -1,
       discountedPrice: undefined,
       gallery: [
@@ -206,20 +206,28 @@ decreaseQuantity() {
     this.router.navigate(['/checkout']);
   }
 
-  showLoginPopup() {
-    if (!this.isBrowser) return;
+showLoginPopup() {
+  if (!this.isBrowser) return;
+  this.viewContainerRef.clear();
+
+  const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent, {
+    environmentInjector: this.envInjector,
+  });
+
+  // Subscribe to the close/cancel event
+  componentRef.instance.closed.subscribe(() => {
     this.viewContainerRef.clear();
-    this.viewContainerRef.createComponent(AuthPopupComponent, {
-      environmentInjector: this.envInjector,
-    });
-    const onAuthSuccess = () => {
-      this.viewContainerRef.clear();
-      window.removeEventListener('auth-success', onAuthSuccess);
-      alert('Login successful!');
-      this.handleBuyNow();
-    };
-    window.addEventListener('auth-success', onAuthSuccess);
-  }
+  });
+
+  const onAuthSuccess = () => {
+    this.viewContainerRef.clear();
+    window.removeEventListener('auth-success', onAuthSuccess);
+    alert('Login successful!');
+    this.handleBuyNow();
+  };
+  window.addEventListener('auth-success', onAuthSuccess);
+}
+
 
   selectGalleryImage(img: string) { this.selectedImage = img; }
 }

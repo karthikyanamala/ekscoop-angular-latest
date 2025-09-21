@@ -39,10 +39,14 @@
 .image-box{ border:1px solid #f0f0f0; border-radius:16px; background:#fff; overflow:hidden; }
 .hero-img{ width:100%; max-height:300px; object-fit:contain; display:block; }
 
-.thumbnail-row{
-  margin-top:10px; display:grid; grid-auto-flow:column; grid-auto-columns:max-content;
-  gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch;
+.thumbnail-row {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
 }
+
 .thumbnail-row img{ width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid #eee; cursor:pointer; flex:0 0 auto; }
 .thumbnail-row img.active{ outline:2px solid #ff7a00; }
 
