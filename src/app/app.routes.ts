@@ -27,29 +27,29 @@ export const routes: Routes = [
 {path:'products',loadComponent:()=>import('./products_Page/product-page.component').then(m=>m.ProductPageComponent)},
 {path:'lab-reports',loadComponent:()=>import('./lab-report/lab-reports-page.component').then(m=>m.LabReportsPageComponent)},
 {path:'orders',loadComponent:()=>import('./userprofiles/myorders/myorders.component').then(m=>m.MyOrdersComponent)},
-{path:'offers/gym-offer-1000',loadComponent:()=>import('./gym-coupon-page/cashback-page.component').then(m=>m.CashbackPageComponent)},
+// {path:'offers/gym-offer-1000',loadComponent:()=>import('./gym-coupon-page/cashback-page.component').then(m=>m.CashbackPageComponent)},
 {
     path: 'orders/:orderId',
     loadComponent: () =>
       import('./userprofiles/order-details/order-detail.component')
         .then(m => m.OrderDetailComponent)
   },
-{
-  path: 'blog',
-  loadComponent: () => import('./blog/blog/blog.component').then(m => m.BlogComponent)
-},
-{ path: 'blog/:slug', loadComponent: () => import('./blog/blog-detail/blog-detail.component').then(m => m.BlogDetailComponent), data: { renderMode: 'server' }},
-{ path: 'community', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent),
-   resolve: { topQuestions: TopQuestionsResolver },
-  data: { renderMode: 'server' }
- },
-{
+// {
+//   path: 'blog',
+//   loadComponent: () => import('./blog/blog/blog.component').then(m => m.BlogComponent)
+// },
+// { path: 'blog/:slug', loadComponent: () => import('./blog/blog-detail/blog-detail.component').then(m => m.BlogDetailComponent), data: { renderMode: 'server' }},
+// { path: 'community', loadComponent: () => import('./community/search-results/search-results.component').then(m => m.SearchResultsComponent),
+//    resolve: { topQuestions: TopQuestionsResolver },
+//   data: { renderMode: 'server' }
+//  },
+// {
  
-    path: 'questions/:slug',
-    component: QuestionDetailComponent,
-    resolve: { question: QuestionResolver },
-    data: { renderMode: 'server' }
-  },
+//     path: 'questions/:slug',
+//     component: QuestionDetailComponent,
+//     resolve: { question: QuestionResolver },
+//     data: { renderMode: 'server' }
+//   },
 
   { path: '**', redirectTo: 'home' }
 ];
