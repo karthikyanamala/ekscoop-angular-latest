@@ -21,6 +21,30 @@ type VariantData = {
   gallery: string[];
 };
 
+type CartLine = {
+  productId: VariantKey;
+  name: string;
+  image: string;
+  unitPrice: number;    // effective unit price at time of add
+  qtyKg: number;        // 0.5, 1, 1.5, …
+  mrp?: number | null;
+  discountedPrice?: number | null;
+};
+
+const CART_KEY = 'cartItems';
+
+function readCart(): CartLine[] {
+  try {
+    const raw = localStorage.getItem(CART_KEY);
+    return raw ? (JSON.parse(raw) as CartLine[]) : [];
+  } catch {
+    return [];
+  }
+}
+function writeCart(items: CartLine[]) {
+  localStorage.setItem(CART_KEY, JSON.stringify(items));
+}
+
 @Component({
   selector: 'app-product-showcase',
   standalone: true,
@@ -33,18 +57,18 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
   @HostBinding('class.sidebar') get isSidebar() { return this.variant === 'sidebar'; }
 
   selectedVariant: VariantKey | '' = '';
-  quantity = 0.5;
+  quantity = 0.5; // start at 0.5kg
   selectedImage = '';
 
-  /** render hint so we can avoid showing 0s while SSR hydrating */
   loadingPrices = true;
+  private isBrowser = false;
 
   variants: Record<VariantKey, VariantData> = {
     traditional: {
       name: 'Traditional Design',
       image: 'assets/traditional-webp.webp',
       description: 'Perfect for traditional Indian meals',
-      features: ['Isolate','Supports Muscle Growth', 'Boost Immunity', 'Enhances Recovery', 'Vegan & Clean', 'Diabetic Friendly'],
+      features: ['Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly'],
       price: -1,
       discountedPrice: undefined,
       gallery: [
@@ -61,7 +85,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Active Lifestyle',
       image: 'assets/modern.webp',
       description: 'Designed for active individuals',
-      features: ['Feel stronger daily', 'Feel active', '16.7g protein','Isolate','Supports Muscle Growth', 'Boost Immunity', 'Enhances Recovery', 'Vegan & Clean', 'Diabetic Friendly'],
+      features: ['Feel stronger daily','Feel active','16.7g protein','Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly'],
       price: -1,
       discountedPrice: undefined,
       gallery: [
@@ -76,8 +100,6 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     }
   };
 
-  private isBrowser = false;
-
   constructor(
     private viewContainerRef: ViewContainerRef,
     private authService: AuthService,
@@ -85,14 +107,15 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     private firestore: Firestore,
     @Inject(PLATFORM_ID) platformId: Object,
     private envInjector: EnvironmentInjector
-  ) { this.isBrowser = isPlatformBrowser(platformId); }
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
-    // ✅ Don’t touch AngularFire on the server
     if (this.isBrowser) {
       this.loadPrices().finally(() => (this.loadingPrices = false));
     } else {
-      this.loadingPrices = false; // render skeleton quickly on SSR
+      this.loadingPrices = false;
     }
   }
   ngOnDestroy() {}
@@ -105,9 +128,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       const data = snap.data() as any;
 
       const price = Number(data?.price ?? -1);
-      const discounted = Number(
-        data?.Discounted_Price ?? data?.discountedPrice ?? NaN
-      );
+      const discounted = Number(data?.Discounted_Price ?? data?.discountedPrice ?? NaN);
 
       this.variants[id].price = isFinite(price) ? price : -1;
       this.variants[id].discountedPrice = isFinite(discounted) ? discounted : undefined;
@@ -169,65 +190,85 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     }
   }
 
- // start with 1 kg (or 0.5 if you prefer)
+  increaseQuantity() { this.quantity = +(this.quantity + 0.5).toFixed(1); }
+  decreaseQuantity() { if (this.quantity > 0.5) this.quantity = +(this.quantity - 0.5).toFixed(1); }
 
-// Increase in 0.5 kg steps
-increaseQuantity() {
-  this.quantity = +(this.quantity + 0.5).toFixed(1);
-}
-
-// Decrease in 0.5 kg steps, min 0.5
-decreaseQuantity() {
-  if (this.quantity > 0.5) {
-    this.quantity = +(this.quantity - 0.5).toFixed(1);
-  }
-}
-
-
-  async handleBuyNow() {
-    if (!this.selectedVariant) return alert('Please select a variant first.');
-    const v = this.selectedVariantData; if (!v) return;
+  private buildLine(): CartLine | null {
+    const v = this.selectedVariantData;
+    if (!this.selectedVariant || !v) return null;
     const unit = this.effectivePrice(v);
-    if (unit <= 0) return alert('Price unavailable.');
+    if (unit <= 0) return null;
 
+    return {
+      productId: this.selectedVariant,
+      name: v.name,
+      image: v.image,
+      unitPrice: unit,
+      qtyKg: this.quantity,
+      mrp: v.price,
+      discountedPrice: v.discountedPrice ?? null,
+    };
+  }
+
+  /** Merge by same productId + unitPrice (keeps pricing snapshot intact) */
+  private upsertIntoCart(line: CartLine) {
+    const cart = readCart();
+    const idx = cart.findIndex(
+      it => it.productId === line.productId && it.unitPrice === line.unitPrice
+    );
+    if (idx >= 0) {
+      cart[idx].qtyKg = +(cart[idx].qtyKg + line.qtyKg).toFixed(1);
+    } else {
+      cart.push(line);
+    }
+    writeCart(cart);
+  }
+
+  async addToCart() {
+    if (!this.selectedVariant) return alert('Please select a variant first.');
     const user = await firstValueFrom(this.authService.getCurrentUser());
     if (!user) { this.showLoginPopup(); return; }
 
-    // localStorage is browser-only; this runs after hydration
-    localStorage.setItem('checkoutProduct', JSON.stringify({
-      productId: this.selectedVariant,
-      product: { name: v.name, image: v.image },
-      quantity: this.quantity,
-      unitPrice: unit,
-      mrp: v.price,
-      discountedPrice: v.discountedPrice ?? null
-    }));
+    const line = this.buildLine();
+    if (!line) return alert('Price unavailable.');
+
+    this.upsertIntoCart(line);
+    alert('Added to cart!');
+  }
+
+  /** Buy Now = ensure in cart then go to checkout */
+  async buyNow() {
+    if (!this.selectedVariant) return alert('Please select a variant first.');
+    const user = await firstValueFrom(this.authService.getCurrentUser());
+    if (!user) { this.showLoginPopup(); return; }
+
+    const line = this.buildLine();
+    if (!line) return alert('Price unavailable.');
+    this.upsertIntoCart(line);
 
     this.router.navigate(['/checkout']);
   }
 
-showLoginPopup() {
-  if (!this.isBrowser) return;
-  this.viewContainerRef.clear();
-
-  const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent, {
-    environmentInjector: this.envInjector,
-  });
-
-  // Subscribe to the close/cancel event
-  componentRef.instance.closed.subscribe(() => {
+  showLoginPopup() {
+    if (!this.isBrowser) return;
     this.viewContainerRef.clear();
-  });
 
-  const onAuthSuccess = () => {
-    this.viewContainerRef.clear();
-    window.removeEventListener('auth-success', onAuthSuccess);
-    alert('Login successful!');
-    this.handleBuyNow();
-  };
-  window.addEventListener('auth-success', onAuthSuccess);
-}
+    const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent, {
+      environmentInjector: this.envInjector,
+    });
 
+    componentRef.instance.closed.subscribe(() => {
+      this.viewContainerRef.clear();
+    });
+
+    const onAuthSuccess = () => {
+      this.viewContainerRef.clear();
+      window.removeEventListener('auth-success', onAuthSuccess);
+      alert('Login successful!');
+      this.buyNow();
+    };
+    window.addEventListener('auth-success', onAuthSuccess);
+  }
 
   selectGalleryImage(img: string) { this.selectedImage = img; }
 }

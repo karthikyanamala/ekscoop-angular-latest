@@ -1,55 +1,66 @@
 <header class="header-wrapper" [class.scrolled]="isScrolled">
   <div class="header-container">
+    <!-- Left: Logo -->
     <div class="logo-section">
-      
-      <div class="logo-section">
-  <a href="/">
-    <img src="../../assets/Ekscoop-logo.webp" alt="ekScoop Logo" />
-  </a>
-</div>
-
+      <a href="/">
+        <img src="../../assets/Ekscoop-logo.webp" alt="ekScoop Logo" />
+      </a>
     </div>
 
+    <!-- Center: Nav (desktop only) -->
     <nav class="nav-menu desktop-only">
       <a href="/" class="nav-link">Home</a>
-      <!-- <a href="/community" class="nav-link">Community</a> -->
       <a href="/about-us" class="nav-link">About Us</a>
       <a href="/contact-us" class="nav-link">Contact</a>
     </nav>
-     <div class="nav-actions">
-       <app-profile></app-profile>
-     </div>
-   
 
+    <!-- Right: Actions (always visible) -->
+    <div class="nav-actions">
+      <!-- Cart -->
+      <a href="/checkout" class="cart-btn" aria-label="View Cart / Checkout">
+        <svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 18a2 2 0 1 0 .001 3.999A2 2 0 0 0 7 18zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 18zM6.2 6l.4 2H20a1 1 0 0 1 .97 1.243l-1.6 6A1 1 0 0 1 18.4 16H8a1 1 0 0 1-.98-.804L5.2 6H3a1 1 0 1 1 0-2h3a1 1 0 0 1 .98.804L7.2 6h-.999z"/>
+        </svg>
+        <span class="cart-badge" [class.hidden]="cartCountLabel==='0'">{{ cartCountLabel }}</span>
+        <span class="cart-label">Cart</span>
+      </a>
 
-    <div class="nav-actions desktop-only">
-      <a href="/products"><button class="order-btn">Order Now</button></a>
+      <!-- Profile -->
+      <div class="profile-wrap">
+        <app-profile></app-profile>
+      </div>
+
+      <!-- Desktop: big Order Now -->
+      <a href="/products" class="desktop-only">
+        <button class="order-btn">Order Now</button>
+      </a>
+
+      <!-- Hamburger (mobile only) -->
+      <button class="hamburger mobile-only" (click)="toggleMenu()" aria-label="Open menu">
+        <div></div><div></div><div></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile slide menu -->
+  <div class="mobile-menu" [class.open]="menuOpen" role="dialog" aria-label="Site menu">
+    <div class="mobile-logo-section">
+      <div class="logo-circle"><span class="logo-text">eK</span></div>
+      <a href="/" class="brand-name" (click)="closeMenu()">ekScoop</a>
+      <button class="close-btn" (click)="closeMenu()" aria-label="Close menu">✕</button>
     </div>
 
-    <button class="hamburger mobile-only" (click)="toggleMenu()">
-      <div></div><div></div><div></div>
-    </button>
+    <nav class="mobile-menu-links">
+      <a href="/" (click)="closeMenu()">🏠 Home</a>
+      <a href="/about-us" (click)="closeMenu()">👤 About Us</a>
+      <a href="/contact-us" (click)="closeMenu()">📞 Contact</a>
+    </nav>
+
+    <div class="mobile-order-footer">
+      <a href="/products">
+        <button class="order-btn full-width">🛒 Order Now</button>
+      </a>
+      <p class="quick-order-text">Fast checkout from your cart anytime.</p>
+    </div>
   </div>
-
- <!-- Mobile Slide Menu -->
-<div class="mobile-menu" [class.open]="menuOpen">
-  <!-- Logo Section at Top -->
-  <div class="mobile-logo-section">
-    <div class="logo-circle"><span class="logo-text">eK</span></div>
-    <a href="/" class="brand-name" (click)="closeMenu()">ekScoop</a>
-    <button class="close-btn" (click)="closeMenu()">✕</button>
-  </div>
-
-  <nav class="mobile-menu-links">
-    <a href="/" (click)="closeMenu()">🏠 Home</a>
-    <!-- <a href="/community" (click)="closeMenu()">Community</a> -->
-    <a href="/about-us" (click)="closeMenu()">👤 About Us</a>
-    <a href="/contact-us" (click)="closeMenu()">📞 Contact</a>
-  </nav>
-
- <div class="mobile-order-footer">
-  <a href="/products">
-    <button class="order-btn full-width">🛒 Order Now</button>
-  </a>
-</div>
-</div>
+</header>
