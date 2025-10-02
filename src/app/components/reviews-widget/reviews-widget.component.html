@@ -1,0 +1,50 @@
+<section class="rw">
+  <div class="rw__container">
+    <header class="rw__head">
+      <h2>Customers love our Plant Protein</h2>
+      <div class="rw__meta">
+        <app-star-rating [rating]="avgRounded()" [readonly]="true"></app-star-rating>
+        <span class="rw__avg">{{ rs.averageRating() }}</span>
+        <span class="rw__count">({{ rs.reviews().length }} reviews)</span>
+      </div>
+    </header>
+
+    <div class="rw__railWrap">
+      <!-- edge fades -->
+      <div class="rw__fade rw__fade--left" aria-hidden="true"></div>
+      <div class="rw__fade rw__fade--right" aria-hidden="true"></div>
+
+      <!-- nav buttons -->
+      <button class="rw__btn rw__btn--prev"
+              type="button"
+              [disabled]="!canPrev()"
+              aria-label="Scroll left"
+              (click)="prev()">
+        ‹
+      </button>
+      <button class="rw__btn rw__btn--next"
+              type="button"
+              [disabled]="!canNext()"
+              aria-label="Scroll right"
+              (click)="next()">
+        ›
+      </button>
+
+      <!-- the rail -->
+      <div #rail
+           class="rw__rail"
+           tabindex="0"
+           (keydown)="onKeydown($event)">
+        <app-review-card
+          *ngFor="let r of items()"
+          [review]="r"
+          class="rw__snap">
+        </app-review-card>
+      </div>
+    </div>
+
+    <div class="rw__cta">
+      <a routerLink="/reviews" class="rw__link">Read all reviews →</a>
+    </div>
+  </div>
+</section>
