@@ -1,184 +1,258 @@
-import {onRequest} from "firebase-functions/v2/https";
-import {defineSecret} from "firebase-functions/params";
 import * as admin from "firebase-admin";
-import Razorpay from "razorpay";
-import cors from "cors";
+import {onDocumentWritten} from "firebase-functions/v2/firestore";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
 
 admin.initializeApp();
-const db = admin.firestore();
 
-const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
-const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
+const REGION = "asia-south1";
+const SUCCESS = new Set(["Paid", "Delivered", "Completed"]);
 
-const corsHandler = cors({origin: true});
+/** Firestore shape for review eligibility. */
+interface EligDoc {
+  remaining: number;
+  orders: Record<string, boolean>;
+  updatedAt?:
+    | FirebaseFirestore.FieldValue
+    | FirebaseFirestore.Timestamp;
+}
 
-export const createRazorpayOrder = onRequest(
-  {
-    region: "us-central1",
-    secrets: [razorpayKeyId, razorpayKeySecret],
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        if (req.method !== "POST") {
-          res.status(405).send({error: "Only POST requests allowed"});
-          return;
-        }
+/** Minimal order shape used by the triggers. */
+interface OrderDoc {
+  status?: string;
+  paymentStatus?: string;
+  userId?: string;
+  uid?: string;
+  customer?: { uid?: string; email?: string };
+}
 
-        // NEW: accept an array of items; fallback to
-        // legacy single productId/quantity
-        const {productId, quantity, items} = req.body;
-        const promoCode = req.headers["x-promo-code"] ?
-          String(req.headers["x-promo-code"]).toUpperCase() : null;
+/** Payload for the callable submitReview. */
+interface SubmitReviewRequest {
+  orderId: string;
+  name: string;
+  rating: number;
+  text: string;
+}
 
-        // Normalize to lines[]
-        type Line = { productId: string; qtyKg: number; };
-        let lines: Line[] = [];
+/**
+ * Normalize a raw order status into a canonical value.
+ * Accepts provider-specific values like "paid", "captured",
+ * "delivered", "completed", etc., and returns title-case forms.
+ *
+ * @param {unknown} raw - Raw status from the order (status/paymentStatus).
+ * @return {string} Canonical status: "Paid" | "Delivered" | "Completed" | "".
+ */
+function normalizeStatus(raw: unknown): string {
+  const s = String(raw || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s === "paid" || s === "success" ||
+    s === "succeeded" || s === "captured") {
+    return "Paid";
+  }
+  if (s === "delivered") return "Delivered";
+  if (s === "completed" || s === "complete") return "Completed";
+  return "";
+}
 
-        if (Array.isArray(items) && items.length > 0) {
-          // validate items[]
-          for (const it of items) {
-            if (!it || typeof it.productId !== "string") {
-              res.status(400).send(
-                {error: "Each item must include a valid productId"});
-              return;
-            }
-            const q = Number(it.qtyKg);
-            if (!q || typeof q !== "number" || q <= 0) {
-              res.status(400).send(
-                {error: "Each item must include a positive qtyKg"});
-              return;
-            }
-            lines.push({productId: it.productId, qtyKg: q});
-          }
-        } else {
-          // legacy path (kept intact)
-          if (!productId || typeof productId !== "string") {
-            res.status(400).send({error: "Missing or invalid productId"});
-            return;
-          }
-          if (!quantity || typeof quantity !== "number" || quantity <= 0) {
-            res.status(400).send({error: "Quantity must be a positive number"});
-            return;
-          }
-          lines = [{productId, qtyKg: quantity}];
-        }
+/**
+ * Resolve the Firebase Auth UID for an order.
+ * Tries `userId`, `uid`, `customer.uid`, then falls back to
+ * `customer.email` via Admin Auth lookup.
+ *
+ * @param {OrderDoc} order - The order document to inspect.
+ * @return {Promise<string>} The resolved UID, or empty string if unknown.
+ */
+async function resolveUid(order: OrderDoc): Promise<string> {
+  let uid = order.userId ?? order.uid ?? order?.customer?.uid ?? "";
+  if (!uid && order?.customer?.email) {
+    try {
+      const rec = await admin.auth().getUserByEmail(order.customer.email);
+      uid = rec.uid;
+    } catch {
+      // ignore if not found
+    }
+  }
+  return uid || "";
+}
 
-        // ✅ Price lookup for all lines from Firestore and compute subtotal
-        let baseAmount = 0;// Σ(unit * qtyKg)
-        let totalQty = 0;// Σ(qtyKg)
+/**
+ * Grant one review slot for a successful order.
+ * Updates review_eligibility/{uid} in a transaction.
+ *
+ * @param {string} uid - Owner of the order.
+ * @param {string} orderId - The successful order id.
+ * @param {"Paid"|"Delivered"|"Completed"|string} status - Order status.
+ * @return {Promise<void>}
+ */
+async function grantForOrder(
+  uid: string,
+  orderId: string,
+  status: string
+): Promise<void> {
+  if (!uid || !orderId || !SUCCESS.has(String(status))) {
+    return;
+  }
 
-        for (const line of lines) {
-          const productDoc = await db.collection("products")
-            .doc(line.productId).get();
-          if (!productDoc.exists) {
-            res.status(404).
-              send({error: "Product not found: " + line.productId});
-            return;
-          }
-          const productData = productDoc.data();
-          const unitPrice = productData?.Discounted_Price;
-          if (typeof unitPrice !== "number") {
-            res.status(500).send({
-              error: "Invalid product price in database for "+ line.productId});
-            return;
-          }
-          baseAmount += unitPrice * line.qtyKg;
-          totalQty += line.qtyKg;
-        }
+  const ref = admin.firestore().doc(`review_eligibility/${uid}`);
 
-        // Round rupees to integer (your code used integers everywhere)
-        baseAmount = Math.round(baseAmount);
+  await admin.firestore().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const data: EligDoc = snap.exists ? (snap.data() as EligDoc) :
+      {remaining: 0, orders: {}};
 
-        let amount = baseAmount;
-        let discountPercent = 0;
-        let discountAmount = 0;
+    // Already granted or already consumed → ignore.
+    const was = data.orders?.[orderId];
+    if (was === true || was === false) return;
 
-        // ✅ Validate/apply promo if passed
-        // (flat scales by total kg across cart)
-        if (promoCode) {
-          const promoSnap = await db.collection("promocodes")
-            .doc(promoCode).get();
-          if (!promoSnap.exists) {
-            res.status(400).send({error: "Promo code not found"});
-            return;
-          }
+    const nextOrders = {...(data.orders || {}), [orderId]: true};
+    const nextRemaining = (data.remaining || 0) + 1;
 
-          const p = promoSnap.data() || {};
+    tx.set(
+      ref,
+      {
+        remaining: nextRemaining,
+        orders: nextOrders,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      {merge: true}
+    );
+  });
+}
 
-          // must be active
-          if (p?.active !== true) {
-            res.status(400).send({error: "Promo code inactive or invalid"});
-            return;
-          }
+/**
+ * Firestore trigger: /orders/{orderId}
+ * Grants eligibility when a global order transitions to success.
+ * Accepts either "status" or "paymentStatus".
+ */
+export const grantEligibilityFromGlobalOrders = onDocumentWritten(
+  {document: "orders/{orderId}", region: REGION},
+  async (event) => {
+    const before = event.data?.before?.data() as OrderDoc | undefined;
+    const after = event.data?.after?.data() as OrderDoc | undefined;
+    if (!after) return;
 
-          // optional: validity window (ISO strings)
-          const now = Date.now();
-          const fromOk = !p.validFrom ||
-        (new Date(p.validFrom).getTime() <= now);
-          const toOk = !p.validTo || (new Date(p.validTo).getTime() >= now);
-          if (!fromOk || !toOk) {
-            res.status(400).send({error: "Promo code not valid at this time"});
-            return;
-          }
+    const beforeStatus =
+      normalizeStatus(before?.status ?? before?.paymentStatus);
+    const afterStatus =
+      normalizeStatus(after?.status ?? after?.paymentStatus);
 
-          // optional: minimum order amount (compare against baseAmount)
-          if (typeof p.minOrderAmount === "number" &&
-            baseAmount < p.minOrderAmount) {
-            res.status(400).send({error: "Minimum order amount is ₹" +
-              p.minOrderAmount + " for this promo"});
-            return;
-          }
+    // Only act on a transition to a successful state
+    if (!afterStatus || SUCCESS.has(beforeStatus)) return;
 
-          // compute discount (prefer flat amount;
-          // flat is per 1kg -> scale by totalQty)
-          if (typeof p.discountAmount === "number" && p.discountAmount > 0) {
-            const scaled = p.discountAmount * totalQty;
-            discountAmount = Math.min(Math.round(scaled), amount);
-            discountPercent = Math.round((discountAmount / baseAmount) * 100);
-          } else if (typeof p.discountPercentage === "number" &&
-            p.discountPercentage > 0) {
-            let raw = Math.floor(baseAmount * (p.discountPercentage / 100));
-            if (typeof p.maxDiscount === "number" && p.maxDiscount > 0) {
-              raw = Math.min(raw, p.maxDiscount);
-            }
-            discountAmount = Math.min(raw, amount);
-            discountPercent = p.discountPercentage;
-          } else {
-            res.status(400).send({error: "Promo code has no valid discount"});
-            return;
-          }
+    const uid = await resolveUid(after);
+    if (!uid) return;
 
-          amount = Math.max(0, amount - discountAmount);
-        }
-
-        const razorpay = new Razorpay({
-          key_id: process.env.RAZORPAY_KEY_ID ?? "",
-          key_secret: process.env.RAZORPAY_KEY_SECRET ?? "",
-        });
-
-        const options = {
-          amount: Math.round(amount * 100), // in paise, integer
-          currency: "INR",
-          receipt: "receipt_order_" + Date.now(),
-        };
-
-        const order = await razorpay.orders.create(options);
-
-        res.status(200).send({
-          order,
-          promo: promoCode ?
-            {
-              promoCode,
-              discountPercent,
-              discountAmount,
-            } :
-            null,
-        });
-      } catch (err) {
-        console.error("Razorpay Order Error:", err);
-        res.status(500).send({error: "Unable to create Razorpay order"});
-      }
-    });
+    const orderId = event.params["orderId"];
+    await grantForOrder(uid, orderId, afterStatus);
   }
 );
+
+/**
+ * Firestore trigger: /users/{uid}/orders/{orderId}
+ * Grants eligibility when a per-user order transitions to success.
+ * Accepts either "status" or "paymentStatus".
+ */
+export const grantEligibilityFromUserOrders = onDocumentWritten(
+  {document: "users/{uid}/orders/{orderId}", region: REGION},
+  async (event) => {
+    const before = event.data?.before?.data() as OrderDoc | undefined;
+    const after = event.data?.after?.data() as OrderDoc | undefined;
+    if (!after) return;
+
+    const beforeStatus =
+      normalizeStatus(before?.status ?? before?.paymentStatus);
+    const afterStatus =
+      normalizeStatus(after?.status ?? after?.paymentStatus);
+
+    if (!afterStatus || SUCCESS.has(beforeStatus)) return;
+
+    const uid = event.params["uid"];
+    const orderId = event.params["orderId"];
+    await grantForOrder(uid, orderId, afterStatus);
+  }
+);
+
+/**
+ * Callable: submit a review for a specific order.
+ * - Validates a free slot (orders[orderId] === true)
+ * - Writes reviews/{uid}_{orderId}
+ * - Consumes the slot (orders[orderId] = false, remaining--)
+ *
+ * @param {{ auth?: { uid: string }, data: SubmitReviewRequest }} req
+ * @returns {Promise<{ ok: true }>}
+ */
+export const submitReview = onCall({region: REGION}, async (req) => {
+  if (!req.auth) {
+    throw new HttpsError("unauthenticated", "Sign in required.");
+  }
+
+  const data = req.data as SubmitReviewRequest;
+  const {orderId, name, rating, text} =
+    data || ({} as SubmitReviewRequest);
+
+  if (!orderId || !name || typeof rating !== "number" || !text) {
+    throw new HttpsError(
+      "invalid-argument",
+      "orderId, name, rating, text are required."
+    );
+  }
+  if (rating < 1 || rating > 5) {
+    throw new HttpsError(
+      "invalid-argument",
+      "rating must be an integer 1..5."
+    );
+  }
+
+  const uid = req.auth.uid;
+  const eligRef = admin.firestore().doc(`review_eligibility/${uid}`);
+  const reviewId = `${uid}_${orderId}`;
+  const reviewRef = admin.firestore().doc(`reviews/${reviewId}`);
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const eligSnap = await tx.get(eligRef);
+    const elig = eligSnap.exists ? (eligSnap.data() as EligDoc) : null;
+
+    const allowed = Boolean(elig?.orders?.[orderId] === true);
+    if (!allowed) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Not eligible to review this order."
+      );
+    }
+
+    const already = await tx.get(reviewRef);
+    if (already.exists) {
+      throw new HttpsError(
+        "already-exists",
+        "Review already submitted for this order."
+      );
+    }
+
+    tx.set(reviewRef, {
+      uid,
+      orderId,
+      name,
+      rating,
+      text,
+      status: "approved", // or "pending" for moderation
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const currentRemaining =
+      typeof elig?.remaining === "number" ? elig.remaining : 1;
+    const currentOrders = elig?.orders ?? {};
+    const nextRemaining = Math.max(0, currentRemaining - 1);
+    const nextOrders = {...currentOrders, [orderId]: false};
+
+    tx.set(
+      eligRef,
+      {
+        remaining: nextRemaining,
+        orders: nextOrders,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      {merge: true}
+    );
+  });
+
+  return {ok: true};
+});

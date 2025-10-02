@@ -1,14 +1,16 @@
 import {
   Component, ViewContainerRef, OnInit, OnDestroy,
-  Input, HostBinding, Inject, EnvironmentInjector, PLATFORM_ID
+  Input, HostBinding, Inject, EnvironmentInjector, PLATFORM_ID, computed
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { AuthPopupComponent } from '../../payment/auth-popup/auth-popup.component';
 import { AuthService } from '../../services/auth.service';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { ReviewService } from '../../services/review.service';
+import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
 
 type VariantKey = 'traditional' | 'modern';
 type VariantData = {
@@ -16,8 +18,8 @@ type VariantData = {
   image: string;
   description: string;
   features: string[];
-  price: number;               // MRP
-  discountedPrice?: number;    // Offer price
+  price: number;            // MRP
+  discountedPrice?: number; // Offer price
   gallery: string[];
 };
 
@@ -25,8 +27,8 @@ type CartLine = {
   productId: VariantKey;
   name: string;
   image: string;
-  unitPrice: number;    // effective unit price at time of add
-  qtyKg: number;        // 0.5, 1, 1.5, …
+  unitPrice: number;  // snapshot at add time
+  qtyKg: number;      // 0.5, 1, 1.5, …
   mrp?: number | null;
   discountedPrice?: number | null;
 };
@@ -37,9 +39,7 @@ function readCart(): CartLine[] {
   try {
     const raw = localStorage.getItem(CART_KEY);
     return raw ? (JSON.parse(raw) as CartLine[]) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 function writeCart(items: CartLine[]) {
   localStorage.setItem(CART_KEY, JSON.stringify(items));
@@ -48,7 +48,9 @@ function writeCart(items: CartLine[]) {
 @Component({
   selector: 'app-product-showcase',
   standalone: true,
-  imports: [CommonModule, AuthPopupComponent],
+  // ⬅️ Only standalone components/directives/pipes or NgModules here.
+  //    REMOVE ReviewService from imports (it’s a service, not a component).
+  imports: [CommonModule, StarRatingComponent],
   templateUrl: './product-showcase.component.html',
   styleUrls: ['./product-showcase.component.css'],
 })
@@ -57,11 +59,16 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
   @HostBinding('class.sidebar') get isSidebar() { return this.variant === 'sidebar'; }
 
   selectedVariant: VariantKey | '' = '';
-  quantity = 0.5; // start at 0.5kg
+  quantity = 0.5;
   selectedImage = '';
 
   loadingPrices = true;
   private isBrowser = false;
+
+  // Live public rating (approved-only) via ReviewService
+  avgValue   = computed(() => this.rs.publicAverageRating());
+  avgRounded = computed(() => Math.round(this.rs.publicAverageRating()));
+  reviewCount = computed(() => this.rs.publicCount());
 
   variants: Record<VariantKey, VariantData> = {
     traditional: {
@@ -75,7 +82,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
         'assets/trad-assets/Trad-sachet.PNG',
         'assets/trad-assets/Trad-power ranges.PNG',
         'assets/trad-assets/Trad-family.PNG',
-        "assets/trad-assets/trad-ingredients.jpg",
+        'assets/trad-assets/trad-ingredients.jpg',
         'assets/trad-assets/trad-certifications.jpg',
         'assets/trad-assets/Trad-nutritinalvalue.PNG',
         'assets/modren-assets/Quote.jpg'
@@ -93,7 +100,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
         'assets/modren-assets/nutirition value.jpg',
         'assets/modren-assets/ingredients.jpg',
         'assets/modren-assets/certified.jpg',
-        "assets/modren-assets/Lab Reports.jpg",
+        'assets/modren-assets/Lab Reports.jpg',
         'assets/modren-assets/Modren sachet - new.PNG',
         'assets/modren-assets/Quote.jpg'
       ]
@@ -105,15 +112,21 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private firestore: Firestore,
+    private rs: ReviewService,                     // ✅ inject service (not in imports)
+    @Inject(DOCUMENT) private doc: Document,       // ✅ inject DOCUMENT → fixes this.doc error
     @Inject(PLATFORM_ID) platformId: Object,
     private envInjector: EnvironmentInjector
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if (this.isBrowser) {
-      this.loadPrices().finally(() => (this.loadingPrices = false));
+      await this.loadPrices().finally(() => (this.loadingPrices = false));
+      // ensure reviews loaded once (safe; service is a singleton)
+      if (!this.rs.reviews().length && !this.rs.loading()) {
+        await this.rs.loadReviews();
+      }
     } else {
       this.loadingPrices = false;
     }
@@ -130,10 +143,9 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       const price = Number(data?.price ?? -1);
       const discounted = Number(data?.Discounted_Price ?? data?.discountedPrice ?? NaN);
 
-      this.variants[id].price = isFinite(price) ? price : -1;
-      this.variants[id].discountedPrice = isFinite(discounted) ? discounted : undefined;
+      this.variants[id].price = Number.isFinite(price) ? price : -1;
+      this.variants[id].discountedPrice = Number.isFinite(discounted) ? discounted : undefined;
     };
-
     await Promise.all([read('traditional'), read('modern')]);
   }
 
@@ -208,9 +220,9 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       mrp: v.price,
       discountedPrice: v.discountedPrice ?? null,
     };
-  }
+    }
 
-  /** Merge by same productId + unitPrice (keeps pricing snapshot intact) */
+  /** Merge by same productId + unitPrice */
   private upsertIntoCart(line: CartLine) {
     const cart = readCart();
     const idx = cart.findIndex(
@@ -268,6 +280,19 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       this.buyNow();
     };
     window.addEventListener('auth-success', onAuthSuccess);
+  }
+
+  /** Scroll to reviews (home section id="home-reviews"), or route there */
+  goToReviews() {
+    const anchorId = 'home-reviews';
+    if (this.isBrowser) {
+      const el = this.doc.getElementById(anchorId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+    this.router.navigate(['/'], { fragment: anchorId });
   }
 
   selectGalleryImage(img: string) { this.selectedImage = img; }

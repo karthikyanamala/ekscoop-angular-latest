@@ -117,10 +117,16 @@
         </section>
 
         <section class="pricing card" *ngIf="selectedVariantData">
-          <div class="rating">
-            <span class="stars" aria-hidden="true">★★★★★</span>
-            <span class="reviews muted">4.8/5</span>
-          </div>
+         <!-- Dynamic rating + click-to-scroll -->
+<div class="rating"
+     role="button"
+     tabindex="0"
+     (click)="goToReviews()"
+     (keydown.enter)="goToReviews()"
+     aria-label="See customer reviews">
+  <app-star-rating [rating]="avgRounded()" [readonly]="true"></app-star-rating>
+  <span class="reviews muted">{{ avgValue() }}/5 · {{ reviewCount() }} reviews</span>
+</div>
 
           <div class="price-row">
             <div class="mrp" *ngIf="displayMrp as mrp">
