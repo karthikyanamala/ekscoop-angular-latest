@@ -1,32 +1,43 @@
- <app-corner-badge></app-corner-badge>
+<app-corner-badge></app-corner-badge>
+
 <div class="orders-container" *ngIf="!loadingOrders; else loadingTpl">
-     <app-profile-header></app-profile-header>
+  <app-profile-header></app-profile-header>
 
   <div *ngIf="orders.length === 0" class="empty">No orders found.</div>
+
   <div *ngFor="let order of orders" class="order-card">
     <div class="order-header">
       <div>
         <span class="order-id">Order ID: {{ order.id }}</span>
-        <span class="status" [class.paid]="order.paymentStatus === 'paid'" [class.failed]="order.paymentStatus !== 'paid'">{{ order.paymentStatus | uppercase }}</span>
+        <span class="status"
+              [class.paid]="order.paymentStatus === 'paid'"
+              [class.failed]="order.paymentStatus !== 'paid'">
+          {{ order.paymentStatus | uppercase }}
+        </span>
       </div>
-      <div class="date">{{ order.paidAt?.toDate() | date:'medium' }}</div>
+      <div class="date">{{ (order.paidAt?.toDate ? order.paidAt.toDate() : order.paidAt) | date:'medium' }}</div>
     </div>
-    <!-- Add this anywhere inside each .order-card footer/header -->
-<div class="order-actions">
-  <a class="track-btn" [routerLink]="['/orders', order.id]">Track order</a>
-</div>
+
+    <div class="order-actions">
+      <a class="track-btn" [routerLink]="['/orders', order.id]">Track order</a>
+    </div>
+
     <div class="products">
       <div class="product" *ngFor="let p of order.products">
-        <img [src]="p.image" alt="{{p.name}}">
+        <img [src]="p.image" [alt]="p.name">
         <div>
           <div class="name">{{ p.name }}</div>
-          <div class="qty">Qty: {{ p.quantity }}</div>
-          <div class="price">₹{{ p.unitPrice }}</div>
+          <!-- ✅ show quantity in kg -->
+          <div class="qty">Qty: {{ p.quantityKg }} kg</div>
+          <!-- ✅ show line total -->
+          <div class="price">₹{{ p.lineTotal }}</div>
         </div>
       </div>
     </div>
+
     <div class="summary">
-      <div><strong>Total Paid:</strong> ₹{{ order.amount }}</div>
+      <!-- ✅ use finalAmount, not amount -->
+      <div><strong>Total Paid:</strong> ₹{{ order.finalAmount }}</div>
       <div><strong>Delivery Address:</strong> {{ order.selectedAddress.addressLine }}, {{ order.selectedAddress.city }} - {{ order.selectedAddress.pincode }}</div>
       <div><strong>Payment ID:</strong> {{ order.razorpayPaymentId }}</div>
     </div>
@@ -34,8 +45,8 @@
 </div>
 
 <ng-template #loadingTpl>
-   <div class="funny-loader">
-      <div class="loader-emoji">🦄</div>
-      <div>Magically loading your orders...</div>
-    </div>
+  <div class="funny-loader">
+    <div class="loader-emoji">🦄</div>
+    <div>Magically loading your orders...</div>
+  </div>
 </ng-template>

@@ -14,14 +14,14 @@ import {
   orderBy,
   query
 } from '@angular/fire/firestore';
-import { Router,RouterLink  } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ProfileHeaderComponent } from '../profile-header/profile-header.component';
 import { CornerBadgeComponent } from '../../corner-badge/corner-badge.component';
 
 @Component({
   selector: 'app-my-orders',
   standalone: true,
-  imports: [CommonModule, ProfileHeaderComponent, CornerBadgeComponent,RouterLink],
+  imports: [CommonModule, ProfileHeaderComponent, CornerBadgeComponent, RouterLink],
   templateUrl: './myorders.component.html',
   styleUrls: ['./myorders.component.css'],
 })
@@ -41,7 +41,7 @@ export class MyOrdersComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.isBrowser) return; // ✅ Prevent everything on server
+    if (!this.isBrowser) return;
 
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
@@ -52,16 +52,16 @@ export class MyOrdersComponent implements OnInit {
       this.user = user;
       this.uid = user.uid;
 
-      await this.loadOrders(); // ✅ now safe
+      await this.loadOrders();
     });
   }
 
   async loadOrders() {
-    if (!this.isBrowser) return; // ✅ Extra protection
+    if (!this.isBrowser) return;
 
     try {
       this.loadingOrders = true;
-      console.log('[QuestionDetailComponent111] Fetching answers...');
+
       const ordersCol = collection(this.firestore, `users/${this.uid}/orders`);
       const q = query(ordersCol, orderBy('paidAt', 'desc'));
       const snap = await getDocs(q);

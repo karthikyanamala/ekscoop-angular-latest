@@ -46,6 +46,44 @@
   gap: 10px;
   justify-content: flex-start;
 }
+.btn-add-to-cart {
+  --bg1: #ffedd5;
+  --bg2: #fed7aa;
+  --fg: #0f172a;
+  --accent: #f97316;
+
+  display:inline-flex; align-items:center; gap:10px;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #fecba1;
+  background: linear-gradient(180deg, var(--bg1), var(--bg2));
+  color: var(--fg);
+  font-weight: 800;
+  letter-spacing: .2px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(249,115,22,0.18), inset 0 1px 0 #fff;
+  transition: transform .12s ease, box-shadow .12s ease, filter .2s ease;
+}
+.btn-add-to-cart:disabled { opacity:.6; cursor:not-allowed; }
+.btn-add-to-cart:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(249,115,22,0.25), inset 0 1px 0 #fff;
+  filter: saturate(1.05);
+}
+.btn-add-to-cart:active { transform: translateY(0); }
+
+.btn-add-to-cart .btn-icon {
+  width: 26px; height: 26px; display:inline-flex; align-items:center; justify-content:center;
+  background: #fff; border: 2px solid #fde68a; color: var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* optional mini pulse when just added: add class .added for 800ms */
+.btn-add-to-cart.added { animation: btnPop .8s ease; }
+@keyframes btnPop {
+  0%{ transform:scale(1); } 35%{ transform:scale(1.06); } 100%{ transform:scale(1); }
+}
 
 .thumbnail-row img{ width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid #eee; cursor:pointer; flex:0 0 auto; }
 .thumbnail-row img.active{ outline:2px solid #ff7a00; }
@@ -165,3 +203,61 @@
   transform: scaleX(1);
   transform-origin: left;
 }
+/* Section cards spacing */
+.pricing.card, .qty.card, .features.card { border-radius:14px; }
+
+/* Quantity block */
+.qty.card{
+  padding:14px 16px; margin-top:12px; border:1px solid #eef2f7; background:#fff;
+}
+.qty-label{ font-weight:800; display:block; margin-bottom:10px; }
+.qty-controls{
+  display:inline-flex; align-items:center; gap:12px;
+  border:1px solid #e5e7eb; background:#f9fafb; padding:6px; border-radius:12px;
+}
+.qty-btn{
+  width:36px; height:36px; border-radius:10px; border:none; background:#fff; cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+  font-size:18px; font-weight:800; color:#111827;
+}
+.qty-display{ min-width:40px; text-align:center; font-weight:800; }
+
+/* CTA row (Add to Cart + Buy Now) */
+.cta-row{
+  display:grid; grid-template-columns: 1fr 1fr;
+  gap:12px; margin-top:12px;
+}
+@media (max-width: 640px){
+  .cta-row{ grid-template-columns: 1fr; }
+}
+
+/* Pretty Add to Cart */
+.btn-add-to-cart{
+  --bg1:#fff7ed; --bg2:#ffedd5; --border:#fed7aa; --text:#0f172a; --accent:#f97316;
+  height:44px; display:inline-flex; justify-content:center; align-items:center; gap:10px;
+  padding:0 14px; width:100%;
+  border-radius:12px; border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:var(--text); font-weight:800; letter-spacing:.2px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(249,115,22,.14), inset 0 1px 0 #fff;
+  transition:transform .12s ease, box-shadow .12s ease, filter .2s ease;
+}
+.btn-add-to-cart:disabled{ opacity:.6; cursor:not-allowed; }
+.btn-add-to-cart:not(:disabled):hover{
+  transform: translateY(-1px);
+  box-shadow:0 6px 18px rgba(249,115,22,.22), inset 0 1px 0 #fff;
+  filter:saturate(1.03);
+}
+.btn-add-to-cart .btn-icon{
+  width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;
+  background:#fff; border:2px solid #fde68a; color:var(--accent);
+  border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+
+/* Buy Now button height aligned with Add to Cart */
+.primary-btn{ height:44px; border-radius:12px; font-weight:800; }
+
+/* Make the “promo-note” breathe */
+.promo-note{ margin-top:10px; margin-bottom:0; }
+.card { padding: 14px; }
+@media (min-width: 768px){ .card { padding: 16px; } }
