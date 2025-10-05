@@ -33,26 +33,22 @@
 
       <!-- Right Side -->
       <div class="hero-images">
-        <!-- Desktop/Tablet: unchanged (two images) -->
-        <ng-container *ngIf="!isMobile">
-          <div class="secondary-image">
-            <img src="../../../assets/traditional-webp.webp" alt="Traditional Design" fetchpriority="high" />
-          </div>
-          <div class="main-image">
-            <img src="../../../assets/modern.webp" alt="Modern Design" fetchpriority="high" />
-          </div>
-        </ng-container>
+        <!-- Desktop/Tablet (unchanged: two images) -->
+        <div class="secondary-image desktop-only">
+          <img src="../../../assets/traditional-webp.webp" alt="Traditional Design" fetchpriority="high" />
+        </div>
+        <div class="main-image desktop-only">
+          <img src="../../../assets/modern.webp" alt="Modern Design" fetchpriority="high" />
+        </div>
 
         <!-- Mobile: single image that toggles -->
-        <ng-container *ngIf="isMobile">
-          <div class="main-image fade-image">
-            <img
-              [src]="showModern ? '../../../assets/modern.webp' : '../../../assets/traditional-webp.webp'"
-              [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
-              fetchpriority="high"
-            />
-          </div>
-        </ng-container>
+        <div class="main-image fade-image mobile-only">
+          <img
+            [src]="showModern ? '../../../assets/modern.webp' : '../../../assets/traditional-webp.webp'"
+            [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
+            fetchpriority="high"
+          />
+        </div>
       </div>
     </div>
   </div>
