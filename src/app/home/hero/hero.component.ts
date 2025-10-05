@@ -1,50 +1,43 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
-  imports:[CommonModule],
+  imports: [CommonModule],
   templateUrl: './hero.component.html',
-  styleUrls: ['./hero.component.css']
+  styleUrls: ['./hero.component.css'],
 })
 export class HeroComponent implements OnInit, OnDestroy {
-  isMobile = false;
   showModern = true;
-
   private toggleTimer: any = null;
+  private mql: MediaQueryList | null = null;
 
   ngOnInit(): void {
-    this.updateIsMobile();
-    this.startOrStopMobileToggle();
+    // Start/stop the toggle based on viewport (mobile only)
+    this.mql = window.matchMedia('(max-width: 768px)');
+    const control = () => {
+      if (this.toggleTimer) { clearInterval(this.toggleTimer); this.toggleTimer = null; }
+      if (this.mql!.matches) {
+        this.toggleTimer = setInterval(() => (this.showModern = !this.showModern), 2000);
+      } else {
+        this.showModern = true; // keep modern static on larger screens
+      }
+    };
+
+    // initial
+    control();
+
+    // respond to breakpoint changes
+    this.mql.addEventListener?.('change', control);
+    (this.mql as any).addListener?.(control); // older Safari fallback
   }
 
   ngOnDestroy(): void {
     if (this.toggleTimer) clearInterval(this.toggleTimer);
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    const before = this.isMobile;
-    this.updateIsMobile();
-    if (before !== this.isMobile) this.startOrStopMobileToggle();
-  }
-
-  private updateIsMobile() {
-    this.isMobile = window.innerWidth <= 768;
-  }
-
-  private startOrStopMobileToggle() {
-    // clear existing interval first
-    if (this.toggleTimer) {
-      clearInterval(this.toggleTimer);
-      this.toggleTimer = null;
-    }
-    // Only toggle on MOBILE; desktop/tablet remain unchanged
-    if (this.isMobile) {
-      this.toggleTimer = setInterval(() => (this.showModern = !this.showModern), 2000);
-    } else {
-      this.showModern = true; // keep Modern static on larger screens
+    if (this.mql) {
+      this.mql.removeEventListener?.('change', () => {});
+      (this.mql as any).removeListener?.(() => {});
     }
   }
 
