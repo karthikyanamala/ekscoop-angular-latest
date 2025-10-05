@@ -514,3 +514,29 @@
 }
 .remove-pill:hover{ filter:brightness(1.02); }
 .remove-pill .trash{ font-size:16px; }
+/* Make the right column wrap on small screens */
+@media (max-width: 480px) {
+  .line-right{
+    display:flex;
+    flex-wrap: wrap;            /* allow wrapping */
+    align-items:flex-start;
+    gap:10px;
+    margin-left:auto;
+    max-width: 100%;
+  }
+
+  /* keep qty + total on the first row */
+  .qty-wrap{ order: 1; }
+  .line-total{ order: 2; }
+
+  /* full-width Remove pill below */
+  .remove-pill{
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 2px;
+  }
+}
+
+/* small safety: prevent any child from forcing width */
+.line-right > * { min-width: 0; }

@@ -3,7 +3,7 @@
     <div class="blob blob1"></div>
     <div class="blob blob2"></div>
     <div class="blob blob3"></div>
-    <div class="hero-sun"></div> <!-- NEW central glow -->
+    <div class="hero-sun"></div>
   </div>
 
   <div class="container hero-container">
@@ -15,59 +15,45 @@
           <span class="subheading">Every Hour of the Day</span>
         </h1>
         <p class="description">
-          
-          YOU x 0.8 is an unflavoured, plant-based protein powder that mixes into your daily Indian foods like roti, dal, or poha — adding nutrition without changing taste.
-          
+          YOU x 0.8 is an unflavoured, plant-based protein powder that mixes into your daily Indian foods like
+          roti, dal, or poha — adding nutrition without changing taste.
         </p>
-
-
-
 
         <div class="trust-badges">
           <div class="badge green">✓ Vegan</div>
           <div class="badge blue">✓ Diabetic-Friendly</div>
           <div class="badge orange">✓ 16.7g Protein<span class="per-sachet">/sachet</span></div>
           <div class="badge teal">✓ Clean Protien</div>
-         
         </div>
-
-        
 
         <div class="cta-buttons">
           <button class="btn order-btn" (click)="scrollToProduct()">Order Now</button>
-
-          
-
         </div>
-        
-
       </div>
 
       <!-- Right Side -->
-<!-- Right Side -->
-<div class="hero-images">
-  <!-- Desktop View -->
-  <ng-container *ngIf="!isMobile">
-    <div class="secondary-image">
-      <img src="../../../assets/traditional-webp.webp" alt="Traditional Design"  fetchpriority="high"/>
-    </div>
-    <div class="main-image">
-      <img src="../../../assets/modern.webp" alt="Modern Design" fetchpriority="high"/>
-    </div>
-  </ng-container>
+      <div class="hero-images">
+        <!-- Desktop/Tablet: unchanged (two images) -->
+        <ng-container *ngIf="!isMobile">
+          <div class="secondary-image">
+            <img src="../../../assets/traditional-webp.webp" alt="Traditional Design" fetchpriority="high" />
+          </div>
+          <div class="main-image">
+            <img src="../../../assets/modern.webp" alt="Modern Design" fetchpriority="high" />
+          </div>
+        </ng-container>
 
-  <!-- Mobile View (Toggle Every 2s) -->
-  <ng-container *ngIf="isMobile">
-    <div class="main-image fade-image">
-      <img
-        [src]="showModern ? '../../../assets/modern.webp' : '../../../assets/traditional-webp.webp'"
-        [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
-        [attr.fetchpriority]="showModern ? null : 'high'"
-      />
-    </div>
-  </ng-container>
-</div>
-
+        <!-- Mobile: single image that toggles -->
+        <ng-container *ngIf="isMobile">
+          <div class="main-image fade-image">
+            <img
+              [src]="showModern ? '../../../assets/modern.webp' : '../../../assets/traditional-webp.webp'"
+              [alt]="showModern ? 'Modern Design' : 'Traditional Design'"
+              fetchpriority="high"
+            />
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </section>
