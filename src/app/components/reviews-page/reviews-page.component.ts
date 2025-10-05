@@ -16,7 +16,6 @@ import { ReviewService } from '../../services/review.service';
   template: `
     <app-corner-badge></app-corner-badge>
     <main class="reviews-page-wrap">
-      <!-- prevent child double-loading; we preloaded here -->
       <app-reviews></app-reviews>
     </main>
     <app-footer></app-footer>
@@ -43,75 +42,111 @@ export class ReviewsPageComponent implements OnInit {
   private get isBrowser() { return isPlatformBrowser(this.platformId); }
 
   async ngOnInit(): Promise<void> {
-    // Preload reviews (browser only), then publish SEO.
+    // Browser: load reviews, then publish SEO with real numbers.
     if (this.isBrowser) {
-      await this.rs.loadReviews();
+      try { await this.rs.loadReviews(); } catch {}
       this.publishSeo();
-    } else {
-      // Still set basic title/description on SSR to render something sensible
-      this.title.setTitle('Customer Reviews | ekScoop Plant Protein');
-      this.meta.updateTag({
-        name: 'description',
-        content: 'Real reviews from Indian families using YOU x 0.8—unflavoured plant protein that mixes easily with roti, dal, curd and more.'
-      });
+      return;
     }
+
+    // SSR: publish safe SEO (no 0-counts in title/JSON-LD).
+    this.title.setTitle('Customer Reviews | ekScoop Plant Protein');
+    this.meta.updateTag({
+      name: 'description',
+      content:
+        'Real reviews from Indian families using YOU x 0.8—unflavoured plant protein that mixes easily with roti, dal, curd and more.'
+    });
+    this.basicMetaAndCanonical('https://www.ekscoop.com/reviews',
+      'Customer Reviews | ekScoop Plant Protein',
+      'Real reviews from Indian families using YOU x 0.8—unflavoured plant protein that mixes easily with roti, dal, poha and curd. Great for gym, recovery and daily nutrition. Fast shipping to Bengaluru, Hyderabad, Delhi NCR, Noida, Greater Noida, Mumbai, Vizag and Vijayawada.'
+    );
+
+    // IMPORTANT:
+    // On SSR we do NOT inject aggregateRating with 0 values.
+    // If you want rating stars in Google, fetch rating/count on the server
+    // and call publishSeo() with real numbers. (See my previous message.)
+    this.upsertJsonLd('ld-reviews', {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      '@id': 'https://www.ekscoop.com/#product',
+      name: 'YOU x 0.8 Plant Protein (Unflavoured)',
+      brand: { '@type': 'Brand', name: 'ekScoop' },
+      url: 'https://www.ekscoop.com/reviews'
+    });
   }
 
   private publishSeo(): void {
-    const ratingValue = this.rs.averageRating() || 0;
-    const reviewCount = this.rs.reviews().length || 0;
+    const ratingValue = Number(this.rs?.averageRating?.() ?? 0) || 0;
+    const reviewCount = Number(this.rs?.reviews?.().length ?? 0) || 0;
+    const hasReviews = reviewCount > 0;
 
     const pageUrl = 'https://www.ekscoop.com/reviews';
-    const pageTitle = `Customer Reviews | ekScoop Plant Protein (${ratingValue.toFixed(1)}★, ${reviewCount} reviews)`;
-    const description = 'Real customer reviews for ekScoop plant protein—vegan, unflavoured and easy to mix in Indian foods like roti, dal, poha and curd. Great for gym, recovery and daily nutrition. Fast shipping to Bengaluru, Hyderabad, Delhi NCR, Noida, Greater Noida, Mumbai, Vizag and Vijayawada.';
+    const baseTitle = 'Customer Reviews | ekScoop Plant Protein';
+    const pageTitle = hasReviews
+      ? `${baseTitle} (${ratingValue.toFixed(1)}★, ${reviewCount} reviews)`
+      : baseTitle;
 
-    // Title + description
+    const description =
+      'Real customer reviews for ekScoop plant protein—vegan, unflavoured and easy to mix in Indian foods like roti, dal, poha and curd. Great for gym, recovery and daily nutrition. Fast shipping to Bengaluru, Hyderabad, Delhi NCR, Noida, Greater Noida, Mumbai, Vizag and Vijayawada.';
+
+    // Title + description + canonical + OG/Twitter
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'robots', content: 'index,follow' });
+    this.basicMetaAndCanonical(pageUrl, pageTitle, description);
 
-    // Canonical (update or create)
+    // Build JSON-LD
+    const productJson: any = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      '@id': 'https://www.ekscoop.com/#product', // stable ID reused across pages
+      name: 'YOU x 0.8 Plant Protein (Unflavoured)',
+      brand: { '@type': 'Brand', name: 'ekScoop' },
+      url: pageUrl
+    };
+
+    if (hasReviews) {
+      const items = this.rs.reviews().slice(0, 10).map(r => ({
+        '@type': 'Review',
+        reviewRating: { '@type': 'Rating', ratingValue: String(r.rating) },
+        author: { '@type': 'Person', name: r.name || 'Customer' },
+        reviewBody: r.text,
+        datePublished:
+          (r.createdAt as any)?.toDate?.()?.toISOString?.() ||
+          (r.createdAt as Date)?.toISOString?.() || ''
+      }));
+
+      productJson.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: String(ratingValue),
+        reviewCount: String(reviewCount)
+        // ratingCount: String(reviewCount) // optional
+      };
+      productJson.review = items;
+    }
+
+    this.upsertJsonLd('ld-reviews', productJson);
+  }
+
+  private basicMetaAndCanonical(url: string, title: string, description: string) {
+    // Canonical
     let link = this.doc.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!link) {
       link = this.doc.createElement('link');
       link.rel = 'canonical';
       this.doc.head.appendChild(link);
     }
-    link.href = pageUrl;
+    link.href = url;
 
     // Open Graph / Twitter
-    this.meta.updateTag({ property: 'og:title', content: pageTitle });
+    this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
-    this.meta.updateTag({ property: 'og:url', content: pageUrl });
+    this.meta.updateTag({ property: 'og:url', content: url });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:locale', content: 'en_IN' });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary' });
-    this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });
-
-    // JSON-LD Product + AggregateRating + sample reviews
-    const items = this.rs.reviews().slice(0, 10).map(r => ({
-      '@type': 'Review',
-      reviewRating: { '@type': 'Rating', ratingValue: String(r.rating) },
-      author: { '@type': 'Person', name: r.name || 'Customer' },
-      reviewBody: r.text,
-      datePublished:
-        (r.createdAt as any)?.toDate?.()?.toISOString?.() ||
-        (r.createdAt as Date)?.toISOString?.() || ''
-    }));
-
-    this.upsertJsonLd('ld-reviews', {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: 'YOU x 0.8 Plant Protein (Unflavoured)',
-      brand: { '@type': 'Brand', name: 'ekScoop' },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: String(ratingValue),
-        reviewCount: String(reviewCount)
-      },
-      review: items
-    });
   }
 
   private upsertJsonLd(id: string, json: object): void {
