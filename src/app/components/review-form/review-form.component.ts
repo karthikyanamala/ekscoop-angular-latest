@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReviewService } from '../../services/review.service';
@@ -23,38 +23,48 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
           <h4>Choose Order</h4>
         </div>
 
-        <!-- one order → show as selected pill -->
-        <div *ngIf="eligibleOrderIds().length === 1; else multiOrders">
-          <button type="button" class="order-pill active" [title]="eligibleOrderIds()[0]" (click)="togglePicker()">
+        <!-- Selected summary -->
+        <div class="selected-row" *ngIf="orderId(); else noSelection">
+          <button type="button" class="order-pill active" [title]="orderId()">
             <span class="dot"></span>
-            <span class="id">{{ shortId(eligibleOrderIds()[0]) }}</span>
+            <span class="id">{{ shortId(orderId()!) }}</span>
             <span class="ok">Selected</span>
           </button>
-          <p class="help">We detected your latest completed order. Tap to change if needed.</p>
+
+          <button type="button" class="link" (click)="pickerOpen.set(!pickerOpen())">
+            {{ pickerOpen() ? 'Hide list' : 'Change' }}
+          </button>
         </div>
 
-        <!-- multiple orders → show chips + a11y select -->
-        <ng-template #multiOrders>
-          <div class="order-grid" role="listbox" aria-label="Eligible orders">
-            <button
-              *ngFor="let id of eligibleOrderIds()"
-              type="button"
-              [class.active]="orderId() === id"
-              class="order-pill"
-              (click)="orderId.set(id)"
-              [attr.aria-selected]="orderId() === id"
-              [title]="id"
-            >
-              <span class="dot"></span>
-              <span class="id">{{ shortId(id) }}</span>
-            </button>
+        <ng-template #noSelection>
+          <p class="help">Pick the order you want to review.</p>
+          <button type="button" class="link" (click)="pickerOpen.set(true)">Choose order</button>
+        </ng-template>
+
+        <!-- Picker list (radios) -->
+        <div class="picker" *ngIf="pickerOpen()">
+          <div class="radio-list" role="radiogroup" aria-label="Eligible orders">
+            <label class="radio" *ngFor="let id of eligibleOrderIds()">
+              <input
+                type="radio"
+                name="order"
+                [value]="id"
+                [checked]="orderId() === id"
+                (change)="orderId.set(id)"
+              />
+              <span class="radio-text">
+                <strong>{{ shortId(id) }}</strong>
+                <span class="muted-id">{{ id }}</span>
+              </span>
+            </label>
           </div>
+
           <label class="sr-only" for="orderSelect">Order to review</label>
           <select id="orderSelect" class="a11y-select" [ngModel]="orderId()" (ngModelChange)="orderId.set($event)">
             <option *ngFor="let id of eligibleOrderIds()" [value]="id">{{ id }}</option>
           </select>
-          <p class="help">Pick the order you’re reviewing. You get one review per order.</p>
-        </ng-template>
+          <p class="help">One review per order.</p>
+        </div>
       </div>
 
       <!-- STEP 2: Rating -->
@@ -95,9 +105,10 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
       <!-- Sticky actions -->
       <div class="actions">
         <button
-          class="submit"
-          [disabled]="!canSubmit() || submitting()"
+          class="submit enabled"
+          type="button"
           (click)="submit()"
+          [attr.aria-busy]="submitting()"
         >
           {{ submitting() ? 'Submitting…' : 'Submit Review' }}
         </button>
@@ -107,8 +118,8 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
     <ng-template #locked>
       <div class="locked">
         <p>
-          Reviews unlock automatically when an order is
-          <strong>Paid / Delivered / Completed</strong>. One order one review
+          Reviews unlock automatically once your order is
+          <strong>Completed</strong>. This ensures that every review comes from a genuine customer.
         </p>
         <p class="muted">Place an order and come back — we’d love to hear from you!</p>
       </div>
@@ -136,6 +147,13 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
       background:hsl(var(--primary));color:#fff;font-size:.8rem;font-weight:800
     }
 
+    .selected-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .link{
+      border:none;background:none;color:hsl(16 90% 45%);font-weight:700;cursor:pointer;
+      padding:6px 8px;border-radius:10px;
+    }
+    .link:hover{background:hsla(16,100%,60%,.08)}
+
     .order-grid{display:flex;gap:8px;flex-wrap:wrap}
     .order-pill{
       border:1px solid hsl(var(--border));
@@ -150,6 +168,17 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
     .order-pill .dot{width:8px;height:8px;border-radius:50%;background:hsl(var(--primary))}
     .order-pill .id{font-weight:700}
     .order-pill .ok{font-weight:700;color:hsl(var(--primary))}
+
+    .picker{margin-top:10px}
+    .radio-list{display:flex;flex-direction:column;gap:8px}
+    .radio{
+      display:flex;gap:10px;align-items:flex-start;
+      padding:10px 12px;border:1px solid hsl(var(--border));border-radius:12px;background:#fff;
+    }
+    .radio input{margin-top:2px}
+    .radio-text{display:flex;flex-direction:column}
+    .muted-id{color:hsl(var(--muted-foreground));font-size:.85rem;word-break:break-all}
+
     .a11y-select{position:absolute;left:-9999px}
 
     app-star-rating{display:inline-block}
@@ -163,19 +192,23 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
     .counter{color:hsl(var(--muted-foreground));font-size:.9rem}
 
     .actions{
-       bottom: 0; z-index: 2;
-      padding-top: 12px; margin-top: 10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 38%);
+      bottom:0; z-index:2; padding-top:12px; margin-top:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 38%);
     }
+
+    /* Submit button */
     .submit{
-      width:100%;height:48px;border:none;border-radius:14px;cursor:pointer;
-      background:hsl(var(--primary));color:#fff;font-weight:800;letter-spacing:.01em;
-      box-shadow:0 8px 18px hsla(16,100%,60%,.22);
-      transition:transform .05s, box-shadow .15s, filter .15s;
+      width:100%;height:48px;border:none;border-radius:14px;
+      font-weight:800;letter-spacing:.01em;transition:transform .05s, box-shadow .15s, filter .15s;
+      color:#fff;
     }
-    .submit:hover:not(:disabled){filter:brightness(1.03)}
-    .submit:active:not(:disabled){transform:translateY(1px)}
-    .submit:disabled{opacity:.7;cursor:default;background-color:red;}
+    .submit.enabled{
+      background:#e11d48; /* red */
+      cursor:pointer;
+      box-shadow:0 8px 18px rgba(225,29,72,.22);
+    }
+    .submit.enabled:hover{ filter:brightness(1.03) }
+    .submit.enabled:active{ transform:translateY(1px) }
 
     .locked{padding:8px 2px}
     .muted{color:hsl(var(--muted-foreground))}
@@ -186,6 +219,7 @@ export class ReviewFormComponent implements OnInit {
 
   // state
   orderId = signal<string | null>(null);
+  pickerOpen = signal(false);
   rating = signal(0);
   text = signal('');
   submitting = signal(false);
@@ -196,12 +230,17 @@ export class ReviewFormComponent implements OnInit {
     return Object.keys(orders).filter(id => orders[id] === true);
   });
   charCount = computed(() => this.text().length);
-  canSubmit = computed(() =>
-    Boolean(this.orderId()) && this.rating() > 0 && this.text().trim().length >= 20
-  );
+
+  // react to async eligibility arriving later
+  autoPick = effect(() => {
+    const ids = this.eligibleOrderIds();
+    if (ids.length && !this.orderId()) {
+      this.orderId.set(ids[0]);
+    }
+  });
 
   ngOnInit() {
-    // pick first eligible by default
+    // keep for SSR/early cases; effect covers async updates
     const ids = this.eligibleOrderIds();
     if (ids.length && !this.orderId()) this.orderId.set(ids[0]);
   }
@@ -216,13 +255,26 @@ export class ReviewFormComponent implements OnInit {
     return map[v] || '';
   }
 
-  togglePicker() {
-    // if only one order, keep current behavior—this lets the user re-open the select if you want
-    // For now, do nothing; feel free to open a modal or dropdown here if you have a pattern for it.
-  }
-
   async submit() {
-    if (!this.canSubmit() || !this.orderId()) return;
+    if (this.submitting()) return;
+
+    // safety: if ids exist but orderId missing (async), pick first now
+    if (!this.orderId() && this.eligibleOrderIds().length) {
+      this.orderId.set(this.eligibleOrderIds()[0]);
+    }
+
+    const issues: string[] = [];
+    if (!this.orderId()) issues.push('Please select an order to review.');
+    if (this.rating() <= 0) issues.push('Please tap the stars and give a rating.');
+    if (this.text().trim().length < 20) issues.push('Please write a short review (min 20 characters).');
+
+    if (issues.length) {
+      alert(issues[0]); // replace with your toast/snackbar
+      // if missing order, open picker so user sees choices
+      if (!this.orderId()) this.pickerOpen.set(true);
+      return;
+    }
+
     this.submitting.set(true);
     try {
       await this.rs.submitReviewForOrder(this.orderId()!, {
@@ -230,9 +282,10 @@ export class ReviewFormComponent implements OnInit {
         rating: this.rating(),
         text: this.text().trim(),
       });
-      // reset rating+text but keep order
       this.rating.set(0);
       this.text.set('');
+      this.pickerOpen.set(false);
+      // show toast: “Thanks for your review!”
     } finally {
       this.submitting.set(false);
     }

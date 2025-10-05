@@ -81,6 +81,11 @@ export class CheckoutComponent implements OnInit {
   totalAmount = 0;              // mutable (after promo)
   originalTotalAmount = 0;      // baseline (before promo)
 
+  // === Quantity rules (kg) ===
+  readonly MIN_QTY = 0.5;
+  readonly STEP = 0.5;
+  readonly MAX_QTY = 10;
+
   // promo
   promoApplied = false;
   promoCode: string = '';
@@ -184,6 +189,45 @@ export class CheckoutComponent implements OnInit {
 
   totalQtyKg(): number {
     return this.cartItems.reduce((s, it) => s + it.qtyKg, 0);
+  }
+
+  // ===== Quantity helpers =====
+  private roundToStep(n: number): number {
+    return Math.round(n / this.STEP) * this.STEP;
+  }
+
+  incQty(index: number, delta: number) {
+    const line = this.cartItems[index];
+    if (!line) return;
+    const next = this.roundToStep((line.qtyKg || this.MIN_QTY) + delta);
+    this.updateQty(index, next);
+  }
+
+  onQtyInput(index: number, raw: string) {
+    const val = Number(String(raw).replace(/[^0-9.]/g, ''));
+    const next = isNaN(val) ? this.MIN_QTY : this.roundToStep(val);
+    this.updateQty(index, next);
+  }
+
+  private updateQty(index: number, newQty: number) {
+    newQty = Math.max(this.MIN_QTY, Math.min(this.MAX_QTY, newQty));
+    newQty = Number(newQty.toFixed(1)); // snap
+
+    const line = this.cartItems[index];
+    if (!line) return;
+
+    // treat below min as remove (not used now but safe-guard)
+    if (newQty < this.MIN_QTY) {
+      this.removeLine(index);
+      return;
+    }
+
+    if (line.qtyKg === newQty) return;
+
+    line.qtyKg = newQty;
+    this.writeCart(this.cartItems);
+    this.recomputeTotalsFromCart();
+    this.recomputePromo(); // keep promo consistent
   }
 
   // --- Addresses
@@ -299,24 +343,17 @@ export class CheckoutComponent implements OnInit {
   /** Re-evaluates the current promo against the latest cart. Auto-clears if invalid. */
   private recomputePromo() {
     if (!this.promoApplied || !this.activePromo) {
-      // no promo → just ensure total matches baseline
       this.totalAmount = this.originalTotalAmount;
       return;
     }
-
-    // If promo window or active flag changed server-side, we can't know here; we re-use saved doc.
     const subtotal = this.originalTotalAmount;
     const qtyTotal = this.totalQtyKg();
-
-    // Recompute discount with latest cart
     const newDiscount = this.computeDiscount(subtotal, this.activePromo, qtyTotal);
 
     if (newDiscount <= 0 || subtotal <= 0) {
-      // No longer valid → clear promo
       this.removePromo();
       return;
     }
-
     this.promoDiscountAmount = newDiscount;
     this.promoDiscountPercent = Math.round((newDiscount / Math.max(1, subtotal)) * 100);
     this.totalAmount = Math.max(0, subtotal - newDiscount);
@@ -391,7 +428,6 @@ export class CheckoutComponent implements OnInit {
   removePromo() {
     if (!this.promoApplied) {
       this.promoError = 'No promo applied to remove.';
-      // Even if no promo, make sure totals reflect baseline
       this.totalAmount = this.originalTotalAmount;
       return;
     }
@@ -402,7 +438,6 @@ export class CheckoutComponent implements OnInit {
     this.promoCode = '';
     this.promoSuccess = '';
     this.promoError = '';
-    // Back to baseline
     this.totalAmount = this.originalTotalAmount;
   }
 
@@ -470,14 +505,12 @@ export class CheckoutComponent implements OnInit {
             : {}),
         },
         body: JSON.stringify({
-          // NEW multi-line cart:
           items: this.cartItems.map(it => ({
             productId: it.productId,
             qtyKg: it.qtyKg,
           })),
-          // LEGACY single item fields (server can ignore if using items[]):
-          productId: first.productId,
-          quantity: first.qtyKg,
+          productId: first.productId, // legacy
+          quantity: first.qtyKg,      // legacy
         }),
       });
 
@@ -523,7 +556,6 @@ export class CheckoutComponent implements OnInit {
       name: 'ekScoop',
       description: 'Protein Sachets Order',
       notes: {
-        // High-level info; full cart is saved in Firestore below
         cart_summary: this.cartItems.map(it => `${it.productId}:${it.qtyKg}kg`).join(', '),
         shipping_name: this.fullName,
         shipping_email: this.selectedAddress.email,
@@ -636,19 +668,16 @@ export class CheckoutComponent implements OnInit {
   }
 
   // ===== CART MUTATION =====
-  // Remove a cart line from summary
   removeLine(index: number) {
     this.cartItems.splice(index, 1);
     this.writeCart(this.cartItems);
 
     if (this.cartItems.length === 0) {
-      // Clear promo if cart is empty so it doesn't linger visually
       if (this.promoApplied) this.removePromo();
       this.router.navigate(['/products']);
       return;
     }
 
-    // Recalc baseline, then re-evaluate promo
     this.recomputeTotalsFromCart();
     this.recomputePromo();
   }
