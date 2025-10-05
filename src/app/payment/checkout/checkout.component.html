@@ -91,9 +91,30 @@
               <p class="unit">Unit: ₹{{ line.unitPrice | number:'1.0-0' }}</p>
             </div>
           </div>
+
+          <!-- Right side: qty stepper + total + remove -->
           <div class="line-right">
+            <div class="qty-wrap" aria-label="Quantity selector">
+              <button type="button" class="qty-btn minus"
+                      (click)="incQty(i, -STEP)"
+                      [disabled]="line.qtyKg <= MIN_QTY">−</button>
+
+              <input class="qty-input"
+                     [value]="line.qtyKg | number:'1.1-1'"
+                     inputmode="decimal"
+                     aria-label="Quantity in kilograms"
+                     (change)="onQtyInput(i, $any($event.target).value)" />
+
+              <button type="button" class="qty-btn plus"
+                      (click)="incQty(i, STEP)"
+                      [disabled]="line.qtyKg >= MAX_QTY">+</button>
+            </div>
+
             <div class="line-total">₹{{ (line.unitPrice * line.qtyKg) | number:'1.0-0' }}</div>
-            <button class="link danger small" type="button" (click)="removeLine(i)">Remove</button>
+
+            <button class="remove-pill" type="button" (click)="removeLine(i)" aria-label="Remove item">
+              <span class="trash">🗑️</span><span>Remove</span>
+            </button>
           </div>
         </div>
 
