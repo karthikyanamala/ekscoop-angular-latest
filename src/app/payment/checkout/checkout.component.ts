@@ -39,12 +39,16 @@ type PromoDoc = {
   validTo?: string;
 };
 
+type ProductId = 'modern' | 'traditional' | 'trailpack' | 'fridaydeal';
+
 type CartLine = {
-  productId: 'modern' | 'traditional';
+  productId: ProductId;
   name: string;
   image: string;
   unitPrice: number;
-  qtyKg: number;             // 0.5, 1, ...
+  // For normal items: kilograms (0.5, 1, 1.5…)
+  // For promos (trailpack, fridaydeal): number of packs (1, 2…)
+  qtyKg: number;
   mrp?: number | null;
   discountedPrice?: number | null;
 };
@@ -81,7 +85,7 @@ export class CheckoutComponent implements OnInit {
   totalAmount = 0;              // mutable (after promo)
   originalTotalAmount = 0;      // baseline (before promo)
 
-  // === Quantity rules (kg) ===
+  // === Quantity rules (kg) for NORMAL items ===
   readonly MIN_QTY = 0.5;
   readonly STEP = 0.5;
   readonly MAX_QTY = 10;
@@ -116,6 +120,15 @@ export class CheckoutComponent implements OnInit {
     serviceable: null as boolean | null,
   };
 
+  // Helpers
+  private isPromo = (p: CartLine | ProductId) => {
+    const id = (typeof p === 'string') ? p : p.productId;
+    return id === 'trailpack' || id === 'fridaydeal';
+  };
+
+  /** Items where promo codes are NOT allowed */
+  private promoNotAllowed = ['trailpack', 'fridaydeal'];
+
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -131,7 +144,7 @@ export class CheckoutComponent implements OnInit {
         if (o?.productId && o?.product?.name && o?.unitPrice && o?.quantity) {
           const existing = this.readCart();
           existing.push({
-            productId: o.productId,
+            productId: o.productId as ProductId,
             name: o.product.name,
             image: o.product.image,
             unitPrice: Number(o.unitPrice),
@@ -146,12 +159,13 @@ export class CheckoutComponent implements OnInit {
     }
 
     // Load cart
-    this.cartItems = this.readCart().filter(it => it && it.unitPrice > 0 && it.qtyKg > 0);
+    this.cartItems = this.readCart().filter(it => it && it.unitPrice >= 0 && it.qtyKg > 0);
     if (this.cartItems.length === 0) {
       this.router.navigate(['/products']);
       return;
     }
     this.recomputeTotalsFromCart();   // sets originalTotalAmount + totalAmount (no promo yet)
+    this.recomputePromo();            // ensure promo gets cleared if restricted items are present
 
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
@@ -182,16 +196,24 @@ export class CheckoutComponent implements OnInit {
 
   /** Baseline totals (doesn't decide promo by itself). Call recomputePromo() after this if a promo is active. */
   private recomputeTotalsFromCart() {
-    this.subtotal = this.cartItems.reduce((s, it) => s + it.unitPrice * it.qtyKg, 0);
+    // Subtotal is always unitPrice * qty (for promos, qty means packs, which is correct for price math)
+    this.subtotal = this.cartItems.reduce((s, it) => {
+  const price = it.productId === 'fridaydeal' ? 49 : it.unitPrice;
+  return s + price * it.qtyKg;
+}, 0);
+
     this.originalTotalAmount = Math.round(this.subtotal);
     this.totalAmount = this.originalTotalAmount;
   }
 
+  /** Total kilograms across NORMAL items only (used by some per-kg promos). */
   totalQtyKg(): number {
-    return this.cartItems.reduce((s, it) => s + it.qtyKg, 0);
+    return this.cartItems
+      .filter(it => !this.isPromo(it))
+      .reduce((s, it) => s + it.qtyKg, 0);
   }
 
-  // ===== Quantity helpers =====
+  // ===== Quantity helpers for NORMAL items only =====
   private roundToStep(n: number): number {
     return Math.round(n / this.STEP) * this.STEP;
   }
@@ -199,11 +221,17 @@ export class CheckoutComponent implements OnInit {
   incQty(index: number, delta: number) {
     const line = this.cartItems[index];
     if (!line) return;
+    if (this.isPromo(line)) return; // 🔒 do not change qty for promo items
+
     const next = this.roundToStep((line.qtyKg || this.MIN_QTY) + delta);
     this.updateQty(index, next);
   }
 
   onQtyInput(index: number, raw: string) {
+    const line = this.cartItems[index];
+    if (!line) return;
+    if (this.isPromo(line)) return; // 🔒 block manual edits for promo lines
+
     const val = Number(String(raw).replace(/[^0-9.]/g, ''));
     const next = isNaN(val) ? this.MIN_QTY : this.roundToStep(val);
     this.updateQty(index, next);
@@ -215,6 +243,8 @@ export class CheckoutComponent implements OnInit {
 
     const line = this.cartItems[index];
     if (!line) return;
+
+    if (this.isPromo(line)) return; // safety
 
     // treat below min as remove (not used now but safe-guard)
     if (newQty < this.MIN_QTY) {
@@ -325,7 +355,7 @@ export class CheckoutComponent implements OnInit {
     if (p.minOrderAmount && subtotal < p.minOrderAmount) return 0;
 
     if (typeof p.discountAmount === 'number' && p.discountAmount > 0) {
-      const raw = p.discountAmount * Math.max(0, totalQtyKg); // scale by total kg across cart
+      const raw = p.discountAmount * Math.max(0, totalQtyKg); // scale by total non-promo kg
       return Math.min(Math.round(raw), Math.round(subtotal));
     }
 
@@ -342,12 +372,21 @@ export class CheckoutComponent implements OnInit {
 
   /** Re-evaluates the current promo against the latest cart. Auto-clears if invalid. */
   private recomputePromo() {
+    // 🚫 If cart contains restricted items, do not apply promo
+    if (this.cartItems.some(it => this.promoNotAllowed.includes(it.productId))) {
+      this.totalAmount = this.originalTotalAmount;
+      this.promoApplied = false;
+      this.promoDiscountAmount = 0;
+      this.promoDiscountPercent = 0;
+      return;
+    }
+
     if (!this.promoApplied || !this.activePromo) {
       this.totalAmount = this.originalTotalAmount;
       return;
     }
     const subtotal = this.originalTotalAmount;
-    const qtyTotal = this.totalQtyKg();
+    const qtyTotal = this.totalQtyKg(); // 🔎 only normal kg
     const newDiscount = this.computeDiscount(subtotal, this.activePromo, qtyTotal);
 
     if (newDiscount <= 0 || subtotal <= 0) {
@@ -368,6 +407,13 @@ export class CheckoutComponent implements OnInit {
     this.promoSuccess = '';
 
     try {
+      // 🚫 Block promo if restricted items present
+      if (this.cartItems.some(it => this.promoNotAllowed.includes(it.productId))) {
+        this.promoError = 'Promo codes cannot be applied for Trial Pack or Friday Deal.';
+        this.promoApplied = false;
+        return;
+      }
+
       if (this.promoApplied) {
         this.promoError = 'A promo code is already applied. Remove it before applying another.';
         return;
@@ -399,7 +445,7 @@ export class CheckoutComponent implements OnInit {
       }
 
       const subtotal = this.originalTotalAmount;
-      const qtyTotal = this.totalQtyKg();
+      const qtyTotal = this.totalQtyKg(); // only normal kg
       const discount = this.computeDiscount(subtotal, promo, qtyTotal);
 
       if (discount <= 0) {
@@ -496,6 +542,7 @@ export class CheckoutComponent implements OnInit {
     try {
       // Backward compatible payload: send both items[] and legacy single fields (first line)
       const first = this.cartItems[0];
+
       const response = await fetch('https://us-central1-ekscoop-website.cloudfunctions.net/createRazorpayOrder', {
         method: 'POST',
         headers: {
@@ -507,10 +554,11 @@ export class CheckoutComponent implements OnInit {
         body: JSON.stringify({
           items: this.cartItems.map(it => ({
             productId: it.productId,
+            // qtyKg is "kg" for normal, "packs" for promo: backend branches by productId
             qtyKg: it.qtyKg,
           })),
           productId: first.productId, // legacy
-          quantity: first.qtyKg,      // legacy
+          quantity: first.qtyKg,      // legacy (meaning depends on product type)
         }),
       });
 
@@ -542,6 +590,13 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  private formatCartSummaryNote(it: CartLine): string {
+    if (this.isPromo(it)) {
+      return `${it.productId}:${it.qtyKg}pack(s)`; // avoid the misleading "kg"
+    }
+    return `${it.productId}:${it.qtyKg}kg`;
+  }
+
   async openRazorpay(order: any) {
     if (typeof Razorpay === 'undefined') {
       alert('Payment gateway failed to load. Please refresh the page or check your internet connection.');
@@ -556,11 +611,12 @@ export class CheckoutComponent implements OnInit {
       name: 'ekScoop',
       description: 'Protein Sachets Order',
       notes: {
-        cart_summary: this.cartItems.map(it => `${it.productId}:${it.qtyKg}kg`).join(', '),
+        cart_summary: this.cartItems.map(it => this.formatCartSummaryNote(it)).join(', '),
         shipping_name: this.fullName,
         shipping_email: this.selectedAddress.email,
         shipping_phone: this.selectedAddress.phoneNumber,
         shipping_address: `${this.selectedAddress.addressLine},${this.selectedAddress.locality}, ${this.selectedAddress.city},  ${this.selectedAddress.state}, ${this.selectedAddress.pincode}`,
+        promo_code_used: this.promoApplied ? (this.promoCode || 'N/A') : 'N/A', // ✅ added
       },
       image: 'https://ekscoop.com/assets/favicon/android-chrome-192x192.png',
       order_id: order.id,
@@ -587,7 +643,10 @@ export class CheckoutComponent implements OnInit {
           products: this.cartItems.map(it => ({
             name: it.name,
             image: it.image,
-            quantityKg: it.qtyKg,
+            // store clearly what qty means:
+            quantityDisplay: this.isPromo(it) ? `${it.qtyKg} pack(s)` : `${it.qtyKg} kg`,
+            quantityKg: this.isPromo(it) ? 0 : it.qtyKg,
+            quantityPacks: this.isPromo(it) ? it.qtyKg : 0,
             unitPrice: it.unitPrice,
             lineTotal: Math.round(it.unitPrice * it.qtyKg),
             productId: it.productId,
@@ -681,4 +740,21 @@ export class CheckoutComponent implements OnInit {
     this.recomputeTotalsFromCart();
     this.recomputePromo();
   }
+
+  /** True if cart contains any promo-restricted items (trailpack/fridaydeal) */
+  hasPromoRestrictedItems(): boolean {
+    return this.cartItems.some(
+      it => it.productId === 'trailpack' || it.productId === 'fridaydeal'
+    );
+  }
+  hasFridayDeal(): boolean {
+  return this.cartItems.some(it => it.productId === 'fridaydeal');
+}
+get deliveryFeeTotal(): number {
+  // if you want it dynamic from backend price, keep 49 in Firestore “delivery”
+  return this.cartItems
+    .filter(it => it.productId === 'fridaydeal')
+    .reduce((s, it) => s + 49 * it.qtyKg, 0);
+}
+
 }
