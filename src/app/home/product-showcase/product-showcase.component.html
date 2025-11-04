@@ -168,8 +168,10 @@
           <div class="deal-row"><div class="price">{{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div></div>
 
           <p class="promo-note" *ngIf="selectedVariant==='fridaydeal'">
-            ✅ <strong>Friday Deal only.</strong><strong> 3 Free sachets</strong>
-          </p>
+  ✅ <strong>Friday Deal only.</strong> 🎁 Get <strong>3 free sachets</strong>  
+  ⚠️ <strong>Note:</strong> Please place only <strong>one trial order per user/every friday</strong>. Multiple free sachet orders will not be processed, and refunds will not be provided.
+</p>
+
           <p class="promo-note" *ngIf="selectedVariant==='trailpack'">
             ✅ Flat <strong>₹180</strong> for 3 sachets. You’ll get <strong>₹180 credit on your next 1 kg order</strong>.
           </p>
