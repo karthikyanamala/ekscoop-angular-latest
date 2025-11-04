@@ -107,7 +107,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Friday Deal – Free 3 Sachets',
       image: 'assets/traditional-webp.webp',
       description: 'Pay delivery fee only on Fridays; receive 3 sachets free.',
-      features: ['3 sachets included', 'Delivery fee only', 'Friday only', 'No quantity selection'],
+      features: ['3 sachets included','Feel stronger daily','Feel active','16.7g protein','Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly', 'Friday only', 'No quantity selection'],
       price: 0,                  // ← show ₹0 on product page
       delivery: 49,              // ← what we actually charge at checkout
       gallery: ['assets/trad-assets/Trad-sachet.PNG',
@@ -122,7 +122,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Trial Pack – 3 Sachets',
       image: 'assets/modern.webp',
       description: 'Flat ₹180. Claim back ₹180 on your next 1 kg order.',
-      features: ['3 sachets included', 'Flat ₹180', '₹180 credit on next 1 kg order', 'No quantity selection'],
+      features: ['3 sachets included', 'Flat ₹180', '₹180 credit on next 1 kg order', 'No quantity selection','Feel stronger daily','Feel active','16.7g protein','Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly'],
       price: 180,
       gallery: ['assets/modren-assets/Chootabheem.PNG',
         'assets/modren-assets/nutirition value.jpg',
