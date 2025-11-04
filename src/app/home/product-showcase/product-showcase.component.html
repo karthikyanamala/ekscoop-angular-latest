@@ -8,9 +8,9 @@
     <div class="showcase-grid">
       <!-- LEFT -->
       <div class="image-col">
-
         <!-- Preselect tiles -->
         <div class="preselect-tiles card" *ngIf="!selectedVariant">
+          <!-- Modern -->
           <button class="tile" type="button" (click)="selectVariant('modern')">
             <img src="assets/modern.webp" alt="Active Lifestyle" />
             <div class="tile-meta">
@@ -29,6 +29,7 @@
             </div>
           </button>
 
+          <!-- Traditional -->
           <button class="tile" type="button" (click)="selectVariant('traditional')">
             <img src="assets/traditional-webp.webp" alt="Traditional Design" />
             <div class="tile-meta">
@@ -46,18 +47,42 @@
               </div>
             </div>
           </button>
+
+          <!-- Friday Deal (price shown as ₹0) -->
+          <button class="tile" type="button"
+                  [disabled]="!isFridayEnabled"
+                  (click)="selectVariant('fridaydeal')">
+            <img src="assets/traditional-webp.webp" alt="Friday Deal – Free 3 Sachets" />
+            <div class="tile-meta">
+              <div class="tile-title">Friday Deal – Free 3 Sachets <span class="badge">FRIDAY ONLY</span></div>
+              <div class="tile-price">
+                <span class="eff">{{ 0 | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+                <span class="mrp" *ngIf="!isFridayEnabled"><span class="strike">Enabled on Fridays</span></span>
+              </div>
+            </div>
+          </button>
+
+          <!-- Trial Pack -->
+          <button class="tile" type="button" (click)="selectVariant('trailpack')">
+            <img src="assets/modern.webp" alt="Trial Pack – 3 Sachets" />
+            <div class="tile-meta">
+              <div class="tile-title">Trial Pack – 3 Sachets <span class="badge">POPULAR</span></div>
+              <div class="tile-sub">Flat ₹180 · claim back ₹180 on your next 1 kg order</div>
+              <div class="tile-price">
+                <span class="eff">{{ priceForTile('trailpack') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
+              </div>
+            </div>
+          </button>
         </div>
 
         <!-- After selection -->
         <ng-container *ngIf="selectedVariantData">
           <div class="image-box">
-            <img
-              class="hero-img"
-              [src]="selectedImage || selectedVariantData.image"
-              [alt]="selectedVariantData.name"
-              decoding="async"
-              loading="eager"
-            />
+            <img class="hero-img"
+                 [src]="selectedImage || selectedVariantData.image"
+                 [alt]="selectedVariantData.name"
+                 decoding="async"
+                 loading="eager" />
           </div>
 
           <div class="thumbnail-row" *ngIf="selectedVariantData" role="list">
@@ -77,61 +102,47 @@
         <section class="variant-selector card" aria-label="Variant selection">
           <h3>Select Variant*</h3>
           <div class="variant-options">
-            <button type="button"
-                    class="variant-card"
-                    [class.active]="selectedVariant==='modern'"
-                    (click)="selectVariant('modern')">
+            <button type="button" class="variant-card" [class.active]="selectedVariant==='modern'" (click)="selectVariant('modern')">
               <div class="variant-name">Active Lifestyle</div>
               <div class="variant-description">Designed for active individuals</div>
             </button>
-
-            <button type="button"
-                    class="variant-card"
-                    [class.active]="selectedVariant==='traditional'"
-                    (click)="selectVariant('traditional')">
+            <button type="button" class="variant-card" [class.active]="selectedVariant==='traditional'" (click)="selectVariant('traditional')">
               <div class="variant-name">Traditional Design</div>
               <div class="variant-description">Perfect for traditional Indian meals</div>
+            </button>
+            <button type="button" class="variant-card" [class.active]="selectedVariant==='fridaydeal'" (click)="selectVariant('fridaydeal')">
+              <div class="variant-name">Friday Deal – Free 3 Sachets</div>
+              
+            </button>
+            <button type="button" class="variant-card" [class.active]="selectedVariant==='trailpack'" (click)="selectVariant('trailpack')">
+              <div class="variant-name">Trial Pack – 3 Sachets</div>
+              <div class="variant-description">Flat ₹180 · claim back ₹180</div>
             </button>
           </div>
         </section>
 
         <section class="features card" *ngIf="selectedVariantData">
           <h4>Key Benefits</h4>
-          <ul>
-            <li *ngFor="let feature of selectedVariantData.features">✔ {{ feature }}</li>
-          </ul>
+          <ul><li *ngFor="let feature of selectedVariantData.features">✔ {{ feature }}</li></ul>
         </section>
 
         <section class="nutrition card">
           <h4>Nutrition Facts <span class="muted">/ per sachet</span></h4>
           <div class="nutrition-grid">
-            <div>
-              <div class="value orange">16.7g</div>
-              <div class="label">Protein</div>
-            </div>
-            <div>
-              <div class="value green">20g</div>
-              <div class="label">Net Weight</div>
-            </div>
+            <div><div class="value orange">16.7g</div><div class="label">Protein</div></div>
+            <div><div class="value green">20g</div><div class="label">Net Weight</div></div>
           </div>
         </section>
 
-        <section class="pricing card" *ngIf="selectedVariantData">
-         <!-- Dynamic rating + click-to-scroll -->
-<div class="rating"
-     role="button"
-     tabindex="0"
-     (click)="goToReviews()"
-     (keydown.enter)="goToReviews()"
-     aria-label="See customer reviews">
-  <app-star-rating [rating]="avgRounded()" [readonly]="true"></app-star-rating>
-  <span class="reviews muted">{{ avgValue() }}/5 · {{ reviewCount() }} reviews</span>
-</div>
+        <!-- Pricing: normal -->
+        <section class="pricing card" *ngIf="selectedVariantData && !isPromoSelected">
+          <div class="rating" role="button" tabindex="0" (click)="goToReviews()" (keydown.enter)="goToReviews()" aria-label="See customer reviews">
+            <app-star-rating [rating]="avgRounded()" [readonly]="true"></app-star-rating>
+            <span class="reviews muted">{{ avgValue() }}/5 · {{ reviewCount() }} reviews</span>
+          </div>
 
           <div class="price-row">
-            <div class="mrp" *ngIf="displayMrp as mrp">
-              MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }} Per Kg</span>
-            </div>
+            <div class="mrp" *ngIf="displayMrp as mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }} Per Kg</span></div>
             <div class="deal-badge" *ngIf="discountPercent > 0">LIMITED DEAL</div>
           </div>
 
@@ -146,39 +157,85 @@
           </p>
         </section>
 
-   <section class="qty card" *ngIf="selectedVariantData" aria-label="Quantity">
-  <label class="qty-label">
-    Quantity (kg) <span class="muted">/ {{ quantity * 50 }} sachets</span>
-  </label>
-  <div class="qty-controls" role="group" aria-label="Quantity controls">
-    <button class="qty-btn" type="button" (click)="decreaseQuantity()" aria-label="Decrease">−</button>
-    <span class="qty-display" aria-live="polite">{{ quantity }}</span>
-    <button class="qty-btn" type="button" (click)="increaseQuantity()" aria-label="Increase">+</button>
-  </div>
-</section>
+        <!-- Pricing: promos -->
+        <section class="pricing card" *ngIf="selectedVariantData && isPromoSelected">
+          <div class="rating" role="button" tabindex="0" (click)="goToReviews()" (keydown.enter)="goToReviews()" aria-label="See customer reviews">
+            <app-star-rating [rating]="avgRounded()" [readonly]="true"></app-star-rating>
+            <span class="reviews muted">{{ avgValue() }}/5 · {{ reviewCount() }} reviews</span>
+          </div>
 
-<!-- New CTA row -->
-<div class="cta-row" *ngIf="selectedVariantData">
-  <button class="btn-add-to-cart" type="button"
-          [disabled]="displayUnitPrice<=0"
-          (click)="addToCart()">
-    <span class="btn-icon">🛒</span>
-    <span>Add to Cart</span>
-  </button>
+          <div class="price-row"><div class="deal-badge">SPECIAL PACK</div></div>
+          <div class="deal-row"><div class="price">{{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div></div>
 
-  <button class="primary-btn" type="button"
-          [disabled]="displayUnitPrice<=0"
-          (click)="buyNow()">
-    Buy Now – {{ calculatedPrice | currency:'INR':'symbol-narrow':'1.0-0' }}
-  </button>
-</div>
+          <p class="promo-note" *ngIf="selectedVariant==='fridaydeal'">
+            ✅ <strong>Friday Deal only.</strong><strong> 3 Free sachets</strong>
+          </p>
+          <p class="promo-note" *ngIf="selectedVariant==='trailpack'">
+            ✅ Flat <strong>₹180</strong> for 3 sachets. You’ll get <strong>₹180 credit on your next 1 kg order</strong>.
+          </p>
+        </section>
+
+        <!-- Quantity (normal only) -->
+        <section class="qty card" *ngIf="selectedVariantData && !isPromoSelected" aria-label="Quantity">
+          <label class="qty-label">Quantity (kg) <span class="muted">/ {{ quantity * 50 }} sachets</span></label>
+          <div class="qty-controls" role="group" aria-label="Quantity controls">
+            <button class="qty-btn" type="button" (click)="decreaseQuantity()" aria-label="Decrease">−</button>
+            <span class="qty-display" aria-live="polite">{{ quantity }}</span>
+            <button class="qty-btn" type="button" (click)="increaseQuantity()" aria-label="Increase">+</button>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <div class="cta-row" *ngIf="selectedVariantData">
+          <!-- Hide Add to Cart for Friday Deal -->
+          <button
+            class="btn-add-to-cart"
+            type="button"
+            *ngIf="selectedVariant !== 'fridaydeal'"
+            [disabled]="displayUnitPrice<=0"
+            (click)="addToCart()">
+            <span class="btn-icon">🛒</span>
+            <span>Add to Cart</span>
+          </button>
+
+          <!-- Buy Now for normal & trial pack -->
+          <button
+            class="primary-btn"
+            type="button"
+            *ngIf="selectedVariant !== 'fridaydeal'"
+            [disabled]="displayUnitPrice<=0"
+            (click)="buyNow()">
+            Buy Now – {{ calculatedPrice | currency:'INR':'symbol-narrow':'1.0-0' }}
+          </button>
+
+          <!-- Friday Deal: Buy Now only on Fridays -->
+          <ng-container *ngIf="selectedVariant === 'fridaydeal'">
+            <button
+              *ngIf="isFridayEnabled; else fridayLocked"
+              class="primary-btn"
+              type="button"
+              [disabled]="displayUnitPrice<0"
+              (click)="buyNow()">
+              Buy Now – {{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}
+            </button>
+            <ng-template #fridayLocked>
+              <div class="note muted small">Available only on Fridays.</div>
+            </ng-template>
+          </ng-container>
+        </div>
 
       </div>
     </div>
   </div>
 
-  <!-- Sticky mobile buy bar -->
-  <div class="sticky-buy" *ngIf="selectedVariantData && displayUnitPrice>0">
+  <!-- Sticky buy: hidden for Friday Deal when not Friday -->
+  <div
+    class="sticky-buy"
+    *ngIf="
+      selectedVariantData &&
+      displayUnitPrice>=0 &&
+      !(selectedVariant==='fridaydeal' && !isFridayEnabled)
+    ">
     <div class="sticky-price">{{ calculatedPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div>
     <button class="sticky-btn" type="button" (click)="buyNow()">Buy Now</button>
   </div>

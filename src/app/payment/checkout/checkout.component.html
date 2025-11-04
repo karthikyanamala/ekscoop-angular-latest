@@ -81,20 +81,49 @@
         <!-- Lines -->
         <div class="product-line" *ngFor="let line of cartItems; let i = index">
           <div class="product-info">
-            <img [src]="line.image" [alt]="line.name || 'Product image'" />
-            <div>
-              <p class="product-name">{{ line.name }}</p>
-              <p class="product-qty">
-                Qty: {{ line.qtyKg }} kg
-                <span class="muted">({{ line.qtyKg * 50 }} sachets)</span>
-              </p>
-              <p class="unit">Unit: ₹{{ line.unitPrice | number:'1.0-0' }}</p>
-            </div>
-          </div>
+  <img [src]="line.image" [alt]="line.name || 'Product image'" />
+  <div>
+    <p class="product-name">{{ line.name }}</p>
+
+    <!-- Qty display: promo vs normal -->
+    <ng-container *ngIf="line.productId === 'trailpack' || line.productId === 'fridaydeal'; else normalQty">
+      <p class="product-qty">
+        Qty: {{ line.qtyKg }} pack(s)
+        <span class="muted" *ngIf="line.productId === 'trailpack'">
+          ({{ line.qtyKg * 3 }} sachets)
+        </span>
+        <span class="muted" *ngIf="line.productId === 'fridaydeal'">
+          (Delivery fee)
+        </span>
+      </p>
+
+      <!-- Friday Deal shows Unit ₹0 + Delivery ₹(unitPrice) -->
+      <p class="unit" *ngIf="line.productId === 'fridaydeal'">
+        Unit: ₹0 &nbsp;•&nbsp; Delivery: ₹{{ line.unitPrice | number:'1.0-0' }}
+      </p>
+
+      <!-- Trial Pack keeps normal unit -->
+      <p class="unit" *ngIf="line.productId === 'trailpack'">
+        Unit: ₹{{ line.unitPrice | number:'1.0-0' }}
+      </p>
+    </ng-container>
+
+    <ng-template #normalQty>
+      <p class="product-qty">
+        Qty: {{ line.qtyKg }} kg
+        <span class="muted">({{ line.qtyKg * 50 }} sachets)</span>
+      </p>
+      <p class="unit">Unit: ₹{{ line.unitPrice | number:'1.0-0' }}</p>
+    </ng-template>
+  </div>
+</div>
+
 
           <!-- Right side: qty stepper + total + remove -->
           <div class="line-right">
-            <div class="qty-wrap" aria-label="Quantity selector">
+            <!-- NORMAL items: stepper -->
+            <div class="qty-wrap" aria-label="Quantity selector"
+                 *ngIf="!(line.productId === 'trailpack' || line.productId === 'fridaydeal'); else promoQty">
               <button type="button" class="qty-btn minus"
                       (click)="incQty(i, -STEP)"
                       [disabled]="line.qtyKg <= MIN_QTY">−</button>
@@ -110,7 +139,21 @@
                       [disabled]="line.qtyKg >= MAX_QTY">+</button>
             </div>
 
-            <div class="line-total">₹{{ (line.unitPrice * line.qtyKg) | number:'1.0-0' }}</div>
+            <!-- PROMO items: fixed -->
+            <ng-template #promoQty>
+              <div class="muted small">Fixed pack (no quantity change)</div>
+            </ng-template>
+
+            <div class="line-total">
+  ₹{{
+    (
+      line.productId === 'fridaydeal'
+        ? 49
+        : line.unitPrice
+    ) * line.qtyKg | number:'1.0-0'
+  }}
+</div>
+
 
             <button class="remove-pill" type="button" (click)="removeLine(i)" aria-label="Remove item">
               <span class="trash">🗑️</span><span>Remove</span>
@@ -120,27 +163,41 @@
 
         <hr />
 
-        <div class="summary-item"><span>Subtotal</span>
-          <span>₹{{ originalTotalAmount }}</span>
-        </div>
+<!-- Totals block -->
+<div class="summary-item"><span>Subtotal</span>
+  <span>₹{{ originalTotalAmount }}</span>
+</div>
 
-        <div *ngIf="promoDiscountPercent > 0" class="summary-item discount">
-          <span>Promo Discount ({{ promoDiscountPercent }}% off)</span>
-          <span>- ₹{{ promoDiscountAmount | number: '1.0-0' }}</span>
-        </div>
+<!-- NEW: show Delivery ₹xx if Friday Deal is in the cart; otherwise Free -->
+<div class="summary-item">
+  <span>{{ hasFridayDeal() ? 'Delivery' : 'Shipping' }}</span>
+  <span [class.free]="!hasFridayDeal()">
+    {{ hasFridayDeal() ? ('₹' + deliveryFeeTotal) : 'Free' }}
+  </span>
+</div>
 
-        <div class="summary-item"><span>Shipping</span><span class="free">Free</span></div>
-        <div class="summary-item total"><span>Total</span><span>₹{{ totalAmount }}</span></div>
+<div class="summary-item total"><span>Total</span><span>₹{{ totalAmount }}</span></div>
 
-        <!-- Promo Code -->
+
+        <!-- Promo Code: show but disable when restricted items present -->
         <div class="promo-section">
           <label for="promo-input">🎁 Have a Promo Code?</label>
           <div class="promo-row">
-            <input id="promo-input" [(ngModel)]="promoCode" placeholder="Enter promo code" />
-            <button class="apply-btn" (click)="applyPromo()" [disabled]="isApplying">
+            <input id="promo-input"
+                   [(ngModel)]="promoCode"
+                   placeholder="Enter promo code"
+                   [disabled]="isApplying || hasPromoRestrictedItems()" />
+            <button class="apply-btn"
+                    (click)="applyPromo()"
+                    [disabled]="isApplying || hasPromoRestrictedItems()">
               {{ isApplying ? 'Applying…' : 'Apply' }}
             </button>
           </div>
+
+          <p class="muted small" *ngIf="hasPromoRestrictedItems()">
+            Promo codes are not applicable for <strong>Trial Pack</strong> or <strong>Friday Deal</strong>.
+          </p>
+
           <p *ngIf="promoError" class="promo-error">{{ promoError }}</p>
           <p *ngIf="promoSuccess" class="promo-success">{{ promoSuccess }}</p>
           <div class="promo-actions" *ngIf="promoApplied">
