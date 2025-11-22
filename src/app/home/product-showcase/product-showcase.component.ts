@@ -39,12 +39,29 @@ type CartLine = {
 const CART_KEY = 'cartItems';
 
 function readCart(): CartLine[] {
-  try { const raw = localStorage.getItem(CART_KEY); return raw ? JSON.parse(raw) as CartLine[] : []; }
-  catch { return []; }
+  try {
+    const raw = localStorage.getItem(CART_KEY);
+    return raw ? (JSON.parse(raw) as CartLine[]) : [];
+  } catch {
+    return [];
+  }
 }
-function writeCart(items: CartLine[]) { localStorage.setItem(CART_KEY, JSON.stringify(items)); }
 
-const isTodayFriday = () => new Date().getDay() === 5;
+function writeCart(items: CartLine[]) {
+  localStorage.setItem(CART_KEY, JSON.stringify(items));
+}
+
+// Enable offer only from Dec 30 to Jan 2 (every year)
+const isInFreeSachetWindow = () => {
+  const now = new Date();
+  const month = now.getMonth(); // 0 = Jan, 11 = Dec
+  const day = now.getDate();
+
+  const isDecWindow = month === 11 && day >= 30; // Dec 30–31
+  const isJanWindow = month === 0 && day <= 2;   // Jan 1–2
+
+  return isDecWindow || isJanWindow;
+};
 
 @Component({
   selector: 'app-product-showcase',
@@ -73,7 +90,14 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Traditional Design',
       image: 'assets/traditional-webp.webp',
       description: 'Perfect for traditional Indian meals',
-      features: ['Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly'],
+      features: [
+        'Isolate',
+        'Supports Muscle Growth',
+        'Boost Immunity',
+        'Enhances Recovery',
+        'Vegan & Clean',
+        'Diabetic Friendly'
+      ],
       price: -1,
       gallery: [
         'assets/trad-assets/Trad-sachet.PNG',
@@ -89,7 +113,17 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
       name: 'Active Lifestyle',
       image: 'assets/modern.webp',
       description: 'Designed for active individuals',
-      features: ['Feel stronger daily','Feel active','16.7g protein','Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly'],
+      features: [
+        'Feel stronger daily',
+        'Feel active',
+        '16.7g protein',
+        'Isolate',
+        'Supports Muscle Growth',
+        'Boost Immunity',
+        'Enhances Recovery',
+        'Vegan & Clean',
+        'Diabetic Friendly'
+      ],
       price: -1,
       gallery: [
         'assets/modren-assets/Chootabheem.PNG',
@@ -106,36 +140,73 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     fridaydeal: {
       name: 'Friday Deal – Free 3 Sachets',
       image: 'assets/traditional-webp.webp',
-      description: 'Pay delivery fee only on Fridays; receive 3 sachets free.',
-      features: ['3 sachets included','Feel stronger daily','Feel active','16.7g protein','Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly', 'Friday only', 'No quantity selection'],
+      description: 'Pay delivery fee only between 30 Dec and 2 Jan; receive 3 sachets free.',
+      features: [
+        '3 sachets included',
+        'Feel stronger daily',
+        'Feel active',
+        '16.7g protein',
+        'Isolate',
+        'Supports Muscle Growth',
+        'Boost Immunity',
+        'Enhances Recovery',
+        'Vegan & Clean',
+        'Diabetic Friendly',
+        'Available only from 30 Dec to 2 Jan',
+        'No quantity selection'
+      ],
       price: 0,                  // ← show ₹0 on product page
       delivery: 49,              // ← what we actually charge at checkout
-      gallery: ['assets/trad-assets/Trad-sachet.PNG',
+      gallery: [
+        'assets/trad-assets/Trad-sachet.PNG',
         'assets/trad-assets/Trad-power ranges.PNG',
         'assets/trad-assets/Trad-family.PNG',
         'assets/trad-assets/trad-ingredients.jpg',
         'assets/trad-assets/trad-certifications.jpg',
         'assets/trad-assets/Trad-nutritinalvalue.PNG',
-        'assets/modren-assets/Quote.jpg']
+        'assets/modren-assets/Quote.jpg'
+      ]
     },
     trailpack: {
       name: 'Trial Pack – 3 Sachets',
       image: 'assets/modern.webp',
       description: 'Flat ₹180. Claim back ₹180 on your next 1 kg order.',
-      features: ['3 sachets included', 'Flat ₹180', '₹180 credit on next 1 kg order', 'No quantity selection','Feel stronger daily','Feel active','16.7g protein','Isolate','Supports Muscle Growth','Boost Immunity','Enhances Recovery','Vegan & Clean','Diabetic Friendly'],
+      features: [
+        '3 sachets included',
+        'Flat ₹180',
+        '₹180 credit on next 1 kg order',
+        'No quantity selection',
+        'Feel stronger daily',
+        'Feel active',
+        '16.7g protein',
+        'Isolate',
+        'Supports Muscle Growth',
+        'Boost Immunity',
+        'Enhances Recovery',
+        'Vegan & Clean',
+        'Diabetic Friendly'
+      ],
       price: 180,
-      gallery: ['assets/modren-assets/Chootabheem.PNG',
+      gallery: [
+        'assets/modren-assets/Chootabheem.PNG',
         'assets/modren-assets/nutirition value.jpg',
         'assets/modren-assets/ingredients.jpg',
         'assets/modren-assets/certified.jpg',
         'assets/modren-assets/Lab Reports.jpg',
         'assets/modren-assets/Modren sachet - new.PNG',
-        'assets/modren-assets/Quote.jpg']
+        'assets/modren-assets/Quote.jpg'
+      ]
     }
   };
 
-  get isPromoSelected() { return this.selectedVariant === 'fridaydeal' || this.selectedVariant === 'trailpack'; }
-  get isFridayEnabled() { return isTodayFriday(); }
+  get isPromoSelected() {
+    return this.selectedVariant === 'fridaydeal' || this.selectedVariant === 'trailpack';
+  }
+
+  // Now tied to the Dec 30 – Jan 2 window instead of Friday
+  get isFridayEnabled() {
+    return isInFreeSachetWindow();
+  }
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -146,14 +217,21 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private doc: Document,
     @Inject(PLATFORM_ID) platformId: Object,
     private envInjector: EnvironmentInjector
-  ) { this.isBrowser = isPlatformBrowser(platformId); }
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   async ngOnInit(): Promise<void> {
     if (this.isBrowser) {
       await this.loadPrices().finally(() => (this.loadingPrices = false));
-      if (!this.rs.reviews().length && !this.rs.loading()) await this.rs.loadReviews();
-    } else { this.loadingPrices = false; }
+      if (!this.rs.reviews().length && !this.rs.loading()) {
+        await this.rs.loadReviews();
+      }
+    } else {
+      this.loadingPrices = false;
+    }
   }
+
   ngOnDestroy() {}
 
   private async loadPrices() {
@@ -176,24 +254,35 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     return v.price > 0 ? v.price : 0;
   }
 
-  get selectedVariantData() { return this.selectedVariant ? this.variants[this.selectedVariant] : null; }
+  get selectedVariantData() {
+    return this.selectedVariant ? this.variants[this.selectedVariant] : null;
+  }
+
   get displayUnitPrice(): number {
     // Show ₹0 for fridaydeal on the product page
     if (this.selectedVariant === 'fridaydeal') return 0;
-    const v = this.selectedVariantData; return v ? this.effectivePrice(v) : 0;
+    const v = this.selectedVariantData;
+    return v ? this.effectivePrice(v) : 0;
   }
+
   get displayMrp(): number | null {
     if (this.isPromoSelected) return null;
-    const v = this.selectedVariantData; if (!v) return null;
+    const v = this.selectedVariantData;
+    if (!v) return null;
     const eff = this.effectivePrice(v);
     return v.price > eff && v.price > 0 ? v.price : null;
   }
+
   get discountPercent(): number {
     if (this.isPromoSelected) return 0;
-    const v = this.selectedVariantData; if (!v) return 0;
+    const v = this.selectedVariantData;
+    if (!v) return 0;
     const eff = this.effectivePrice(v);
-    return (v.price > eff && v.price > 0) ? Math.round(((v.price - eff) / v.price) * 100) : 0;
+    return v.price > eff && v.price > 0
+      ? Math.round(((v.price - eff) / v.price) * 100)
+      : 0;
   }
+
   get calculatedPrice(): number {
     if (this.isPromoSelected) return this.displayUnitPrice; // fridaydeal shows 0 here
     const unit = this.displayUnitPrice;
@@ -205,15 +294,21 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     if (key === 'fridaydeal') return 0;
     return this.effectivePrice(this.variants[key]);
   }
+
   mrpForTile(key: VariantKey): number | null {
     if (key === 'fridaydeal' || key === 'trailpack') return null;
-    const v = this.variants[key]; const eff = this.effectivePrice(v);
+    const v = this.variants[key];
+    const eff = this.effectivePrice(v);
     return v.price > eff && v.price > 0 ? v.price : null;
   }
+
   offForTile(key: VariantKey): number {
     if (key === 'fridaydeal' || key === 'trailpack') return 0;
-    const v = this.variants[key]; const eff = this.effectivePrice(v);
-    return v.price > eff && v.price > 0 ? Math.round(((v.price - eff) / v.price) * 100) : 0;
+    const v = this.variants[key];
+    const eff = this.effectivePrice(v);
+    return v.price > eff && v.price > 0
+      ? Math.round(((v.price - eff) / v.price) * 100)
+      : 0;
   }
 
   selectVariant(key: string) {
@@ -225,8 +320,17 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  increaseQuantity() { if (!this.isPromoSelected) this.quantity = +(this.quantity + 0.5).toFixed(1); }
-  decreaseQuantity() { if (!this.isPromoSelected && this.quantity > 0.5) this.quantity = +(this.quantity - 0.5).toFixed(1); }
+  increaseQuantity() {
+    if (!this.isPromoSelected) {
+      this.quantity = +(this.quantity + 0.5).toFixed(1);
+    }
+  }
+
+  decreaseQuantity() {
+    if (!this.isPromoSelected && this.quantity > 0.5) {
+      this.quantity = +(this.quantity - 0.5).toFixed(1);
+    }
+  }
 
   private buildLine(): CartLine | null {
     const v = this.selectedVariantData;
@@ -255,9 +359,14 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
 
   private upsertIntoCart(line: CartLine) {
     const cart = readCart();
-    const idx = cart.findIndex(it => it.productId === line.productId && it.unitPrice === line.unitPrice);
-    if (idx >= 0) cart[idx].qtyKg = +(cart[idx].qtyKg + line.qtyKg).toFixed(1);
-    else cart.push(line);
+    const idx = cart.findIndex(
+      it => it.productId === line.productId && it.unitPrice === line.unitPrice
+    );
+    if (idx >= 0) {
+      cart[idx].qtyKg = +(cart[idx].qtyKg + line.qtyKg).toFixed(1);
+    } else {
+      cart.push(line);
+    }
     writeCart(cart);
   }
 
@@ -267,7 +376,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     if (!user) { this.showLoginPopup(); return; }
 
     if (this.selectedVariant === 'fridaydeal' && !this.isFridayEnabled) {
-      alert('Friday Deal is available only on Fridays.');
+      alert('This free sachet offer is only available from 30 Dec to 2 Jan.');
       return;
     }
 
@@ -283,7 +392,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     if (!user) { this.showLoginPopup(); return; }
 
     if (this.selectedVariant === 'fridaydeal' && !this.isFridayEnabled) {
-      alert('Friday Deal is available only on Fridays.');
+      alert('This free sachet offer is only available from 30 Dec to 2 Jan.');
       return;
     }
 
@@ -300,7 +409,9 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     const componentRef = this.viewContainerRef.createComponent(AuthPopupComponent, {
       environmentInjector: this.envInjector,
     });
-    componentRef.instance.closed.subscribe(() => { this.viewContainerRef.clear(); });
+    componentRef.instance.closed.subscribe(() => {
+      this.viewContainerRef.clear();
+    });
 
     const onAuthSuccess = () => {
       this.viewContainerRef.clear();
@@ -315,10 +426,15 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     const anchorId = 'home-reviews';
     if (this.isBrowser) {
       const el = this.doc.getElementById(anchorId);
-      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
     }
     this.router.navigate(['/'], { fragment: anchorId });
   }
 
-  selectGalleryImage(img: string) { this.selectedImage = img; }
+  selectGalleryImage(img: string) {
+    this.selectedImage = img;
+  }
 }

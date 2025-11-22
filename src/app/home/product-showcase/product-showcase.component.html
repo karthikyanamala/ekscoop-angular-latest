@@ -48,17 +48,23 @@
             </div>
           </button>
 
-          <!-- Friday Deal (price shown as ₹0) -->
+          <!-- Friday Deal (price shown as ₹0, enabled only during 30 Dec – 2 Jan) -->
           <button class="tile" type="button"
                   [disabled]="!isFridayEnabled"
                   (click)="selectVariant('fridaydeal')">
-            <img src="assets/traditional-webp.webp" alt="Friday Deal – Free 3 Sachets" />
+            <img src="assets/traditional-webp.webp" alt="Free 3 Sachets – Special Offer Window" />
             <div class="tile-meta">
-              <div class="tile-title">Friday Deal – Free 3 Sachets <span class="badge">FRIDAY ONLY</span></div>
+              <div class="tile-title">
+                Free 3 Sachets – Special Launch Window
+                <span class="badge">30 Dec – 2 Jan</span>
+              </div>
               <div class="tile-price">
                 <span class="eff">{{ 0 | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
-                <!-- <span class="mrp" *ngIf="!isFridayEnabled"><span class="strike">Enabled on Fridays</span></span> -->
-                 <span class="mrp">Try now</span>
+                <span class="mrp">
+                  Thanks for choosing us!<br/>
+                  Free sachets will now be available only from
+                  <strong>30 Dec to 2 Jan</strong>. 🙌
+                </span>
               </div>
             </div>
           </button>
@@ -112,8 +118,7 @@
               <div class="variant-description">Perfect for traditional Indian meals</div>
             </button>
             <button type="button" class="variant-card" [class.active]="selectedVariant==='fridaydeal'" (click)="selectVariant('fridaydeal')">
-              <div class="variant-name">Friday Deal – Free 3 Sachets</div>
-              
+              <div class="variant-name">Free 3 Sachets – 30 Dec to 2 Jan</div>
             </button>
             <button type="button" class="variant-card" [class.active]="selectedVariant==='trailpack'" (click)="selectVariant('trailpack')">
               <div class="variant-name">Trial Pack – 3 Sachets</div>
@@ -169,9 +174,11 @@
           <div class="deal-row"><div class="price">{{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div></div>
 
           <p class="promo-note" *ngIf="selectedVariant==='fridaydeal'">
-  ✅ <strong>Friday Deal only.</strong> 🎁 Get <strong>3 free sachets</strong>  
-  ⚠️ <strong>Note:</strong> Please place only <strong>one trial order per user/every friday</strong>. Multiple free sachet orders will not be processed, and refunds will not be provided.
-</p>
+            ✅ <strong>Special launch window.</strong> 🎁 Get <strong>3 free sachets</strong> between
+            <strong>30 Dec and 2 Jan</strong>.<br/>
+            ⚠️ <strong>Note:</strong> Please place only <strong>one free sachet order per user during this period</strong>.
+            Multiple free sachet orders will not be processed, and refunds will not be provided.
+          </p>
 
           <p class="promo-note" *ngIf="selectedVariant==='trailpack'">
             ✅ Flat <strong>₹180</strong> for 3 sachets. You’ll get <strong>₹180 credit on your next 1 kg order</strong>.
@@ -211,7 +218,7 @@
             Buy Now – {{ calculatedPrice | currency:'INR':'symbol-narrow':'1.0-0' }}
           </button>
 
-          <!-- Friday Deal: Buy Now only on Fridays -->
+          <!-- Friday Deal: Buy Now only during offer window (30 Dec – 2 Jan) -->
           <ng-container *ngIf="selectedVariant === 'fridaydeal'">
             <button
               *ngIf="isFridayEnabled; else fridayLocked"
@@ -222,7 +229,7 @@
               Buy Now – {{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}
             </button>
             <ng-template #fridayLocked>
-              <div class="note muted small">Available only on Fridays.</div>
+              <div class="note muted small">Next deal on 30 Dec to 2 Jan.</div>
             </ng-template>
           </ng-container>
         </div>
@@ -231,7 +238,7 @@
     </div>
   </div>
 
-  <!-- Sticky buy: hidden for Friday Deal when not Friday -->
+  <!-- Sticky buy: hidden for Friday Deal when offer window is closed -->
   <div
     class="sticky-buy"
     *ngIf="
