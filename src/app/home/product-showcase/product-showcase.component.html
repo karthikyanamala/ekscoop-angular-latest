@@ -20,7 +20,7 @@
                 <ng-container *ngIf="mrpForTile('modern') as mrp; else onlyEffM">
                   <span class="eff">{{ priceForTile('modern') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
                   <span class="mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span></span>
-                  <span class="off" *ngIf="offForTile('modern') as off">({{ off }}% OFF + 25% OFF at checkout)</span>
+                  <span class="off" *ngIf="offForTile('modern') as off">{{ off }}% OFF</span>
                 </ng-container>
                 <ng-template #onlyEffM>
                   <span class="eff">{{ priceForTile('modern') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
@@ -39,7 +39,7 @@
                 <ng-container *ngIf="mrpForTile('traditional') as mrp; else onlyEffT">
                   <span class="eff">{{ priceForTile('traditional') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
                   <span class="mrp">MRP <span class="strike">{{ mrp | currency:'INR':'symbol-narrow':'1.0-0' }}</span></span>
-                  <span class="off" *ngIf="offForTile('traditional') as off">({{ off }}% OFF + 25% OFF at checkout)</span>
+                  <span class="off" *ngIf="offForTile('traditional') as off">{{ off }}% OFF</span>
                 </ng-container>
                 <ng-template #onlyEffT>
                   <span class="eff">{{ priceForTile('traditional') | currency:'INR':'symbol-narrow':'1.0-0' }}</span>
@@ -154,12 +154,12 @@
 
           <div class="deal-row">
             <div class="price">{{ displayUnitPrice | currency:'INR':'symbol-narrow':'1.0-0' }}</div>
-            <div class="off" *ngIf="discountPercent > 0">({{ discountPercent }}% OFF + 25% OFF at checkout)</div>
+            <div class="off" *ngIf="discountPercent > 0">{{ discountPercent }}% OFF</div>
           </div>
 
           <p class="promo-note">
-            🎉 New Launch Offer: <strong>Get 25% extra off!!!</strong>
-            Use promo code <strong>GREATLAUNCH</strong> at checkout to grab your discount.
+            🎉 Year End Sale: <strong>Get 50% off!!! No PROMO CODE NEEDED</strong>
+            <!-- Use promo code <strong>GREATLAUNCH</strong> at checkout to grab your discount. -->
           </p>
         </section>
 

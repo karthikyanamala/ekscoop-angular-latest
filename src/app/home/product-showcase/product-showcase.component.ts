@@ -376,7 +376,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     if (!user) { this.showLoginPopup(); return; }
 
     if (this.selectedVariant === 'fridaydeal' && !this.isFridayEnabled) {
-      alert('This free sachet offer is only available from 30 Dec to 2 Jan.');
+      alert('This free sachet offer is now available from 30 Dec to 2 Jan.');
       return;
     }
 
@@ -392,7 +392,7 @@ export class ProductShowcaseComponent implements OnInit, OnDestroy {
     if (!user) { this.showLoginPopup(); return; }
 
     if (this.selectedVariant === 'fridaydeal' && !this.isFridayEnabled) {
-      alert('This free sachet offer is only available from 30 Dec to 2 Jan.');
+      alert('This free sachet offer is now available from 30 Dec to 2 Jan.');
       return;
     }
 
