@@ -1,187 +1,214 @@
+// functions/src/delhivery.ts
 import {onRequest} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
-import * as admin from "firebase-admin";
-import Razorpay from "razorpay";
-import cors from "cors";
+import * as logger from "firebase-functions/logger";
 
-admin.initializeApp();
-const db = admin.firestore();
+/** Region must match your deployed region (e.g., us-central1) */
+const REGION = "us-central1";
 
-const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
-const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
+/** Secret: set with `firebase functions:secrets:set DELHIVERY_TOKEN` */
+const DELHIVERY_TOKEN = defineSecret("DELHIVERY_TOKEN");
 
-const corsHandler = cors({origin: true});
+/** Choose Delhivery base according to your env */
+const DELHIVERY_BASE =
+  process.env.DELHIVERY_ENV === "staging"? "https://staging-express.delhivery.com": "https://track.delhivery.com";
 
-export const createRazorpayOrder = onRequest(
+/** A minimal shape for a single pincode entry returned by Delhivery */
+type DeliveryCodesEntry = {
+  postal_code?: {
+    district?: string;
+    city?: string;
+    state?: string;
+    pin?: string | number;
+  };
+  city?: string;
+  state?: string;
+  pin?: string | number;
+
+  // prepaid flags (vendors/accounts vary)
+  pre_paid?: "Y" | "N" | boolean;
+  prepaid?: "Y" | "N" | boolean;
+  is_prepaid_serviceable?: boolean;
+
+  [k: string]: unknown;
+};
+
+type PincodeResult =
+  | { ok: true; pin: string; city: string; state: string; serviceable: boolean }
+  | { ok: false; error: string };
+
+/**
+ * Type guard to check if a value is
+ *  a non-null object (Record<string, unknown>).
+ * @param {unknown} x Any value to check.
+ * @return {boolean} True if `x` is an object.
+ */
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return typeof x === "object" && x !== null;
+}
+
+
+/**
+ * Safely coerce an unknown value into
+ *  a DeliveryCodesEntry when it is object-like.
+ * @param {unknown} x - Any value.
+ * @return {DeliveryCodesEntry|null} The entry or null when coercion is unsafe.
+ */
+function toEntry(x: unknown): DeliveryCodesEntry | null {
+  return isRecord(x) ? (x as DeliveryCodesEntry) : null;
+}
+
+/**
+ * Extracts the first useful entry from possible Delhivery response shapes:
+ * (1) { delivery_codes: [...] }, (2) [...], or (3) single object.
+ * @param {unknown} data - Parsed JSON from Delhivery API.
+ * @return {DeliveryCodesEntry|null} The first entry or null if none.
+ */
+function extractFirstEntry(data: unknown): DeliveryCodesEntry | null {
+  // Case 1: { delivery_codes: [...] }
+  if (isRecord(data) && "delivery_codes" in data) {
+    const dc = (data as { delivery_codes?: unknown }).delivery_codes;
+    if (Array.isArray(dc) && dc.length > 0) {
+      const first = toEntry(dc[0]);
+      if (first) return first;
+    }
+  }
+  // Case 2: top-level array
+  if (Array.isArray(data) && data.length > 0) {
+    const first = toEntry(data[0]);
+    if (first) return first;
+  }
+  // Case 3: single object
+  const single = toEntry(data);
+  return single ?? null;
+}
+
+/**
+ * Convert unknown to string safely (numbers allowed).
+ * @param {unknown} v - A possibly string/number value.
+ * @return {string} Stringified value or empty string.
+ */
+function asText(v: unknown): string {
+  if (typeof v === "string") return v;
+  if (typeof v === "number") return String(v);
+  return "";
+}
+
+/**
+ * Compute prepaid serviceability from various flags Delhivery may send.
+ * @param {DeliveryCodesEntry} entry - A normalized entry.
+ * @return {boolean} True if prepaid is serviceable.
+ */
+function isPrepaidServiceable(entry: DeliveryCodesEntry): boolean {
+  const yes = (val: unknown) =>
+    val === true || String(val).toUpperCase() === "Y";
+  return (
+    yes(entry.pre_paid) ||
+    yes(entry.prepaid) ||
+    entry.is_prepaid_serviceable === true
+  );
+}
+
+export const pincodeLookup = onRequest(
   {
-    region: "us-central1",
-    secrets: [razorpayKeyId, razorpayKeySecret],
+    region: REGION,
+    cors: true,
+    secrets: [DELHIVERY_TOKEN],
+    timeoutSeconds: 10,
   },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        if (req.method !== "POST") {
-          res.status(405).send({error: "Only POST requests allowed"});
-          return;
-        }
-
-        // NEW: accept an array of items; fallback to
-        // legacy single productId/quantity
-        const {productId, quantity, items} = req.body;
-        const promoCode = req.headers["x-promo-code"] ?
-          String(req.headers["x-promo-code"]).toUpperCase() : null;
-
-        // Normalize to lines[]
-        type Line = { productId: string; qtyKg: number; };
-        let lines: Line[] = [];
-
-        if (Array.isArray(items) && items.length > 0) {
-          // validate items[]
-          for (const it of items) {
-            if (!it || typeof it.productId !== "string") {
-              res.status(400).send(
-                {error: "Each item must include a valid productId"});
-              return;
-            }
-            const q = Number(it.qtyKg);
-            if (!q || typeof q !== "number" || q <= 0) {
-              res.status(400).send(
-                {error: "Each item must include a positive qtyKg"});
-              return;
-            }
-            lines.push({productId: it.productId, qtyKg: q});
-          }
-        } else {
-          // legacy path (kept intact)
-          if (!productId || typeof productId !== "string") {
-            res.status(400).send({error: "Missing or invalid productId"});
-            return;
-          }
-          if (!quantity || typeof quantity !== "number" || quantity <= 0) {
-            res.status(400).send({error: "Quantity must be a positive number"});
-            return;
-          }
-          lines = [{productId, qtyKg: quantity}];
-        }
-
-        // ✅ Price lookup for all lines from Firestore and compute subtotal
-        let baseAmount = 0;// Σ(unit * qtyKg)
-        let totalQty = 0;// Σ(qtyKg)
-
-        for (const line of lines) {
-          const productDoc = await db.collection("products")
-            .doc(line.productId).get();
-          if (!productDoc.exists) {
-            res.status(404).
-              send({error: "Product not found: " + line.productId});
-            return;
-          }
-          const productData = productDoc.data();
-          const unitPrice = line.productId === "fridaydeal"?
-            (typeof productData?.delivery === "number"?productData.delivery:49):
-            productData?.Discounted_Price;
-          if (typeof unitPrice !== "number") {
-            res.status(500).send({
-              error: "Invalid product price in database for "+ line.productId});
-            return;
-          }
-          baseAmount += unitPrice * line.qtyKg;
-          totalQty += line.qtyKg;
-        }
-
-
-        // Round rupees to integer (your code used integers everywhere)
-        baseAmount = Math.round(baseAmount);
-
-        let amount = baseAmount;
-        let discountPercent = 0;
-        let discountAmount = 0;
-
-        // ✅ Validate/apply promo if passed
-        // (flat scales by total kg across cart)
-        if (promoCode) {
-          const promoSnap = await db.collection("promocodes")
-            .doc(promoCode).get();
-          if (!promoSnap.exists) {
-            res.status(400).send({error: "Promo code not found"});
-            return;
-          }
-
-          const p = promoSnap.data() || {};
-
-          // must be active
-          if (p?.active !== true) {
-            res.status(400).send({error: "Promo code inactive or invalid"});
-            return;
-          }
-
-          // optional: validity window (ISO strings)
-          const now = Date.now();
-          const fromOk = !p.validFrom ||
-        (new Date(p.validFrom).getTime() <= now);
-          const toOk = !p.validTo || (new Date(p.validTo).getTime() >= now);
-          if (!fromOk || !toOk) {
-            res.status(400).send({error: "Promo code not valid at this time"});
-            return;
-          }
-
-          // optional: minimum order amount (compare against baseAmount)
-          if (typeof p.minOrderAmount === "number" &&
-            baseAmount < p.minOrderAmount) {
-            res.status(400).send({error: "Minimum order amount is ₹" +
-              p.minOrderAmount + " for this promo"});
-            return;
-          }
-
-          // compute discount (prefer flat amount;
-          // flat is per 1kg -> scale by totalQty)
-          if (typeof p.discountAmount === "number" && p.discountAmount > 0) {
-            const scaled = p.discountAmount * totalQty;
-            discountAmount = Math.min(Math.round(scaled), amount);
-            discountPercent = Math.round((discountAmount / baseAmount) * 100);
-          } else if (typeof p.discountPercentage === "number" &&
-            p.discountPercentage > 0) {
-            let raw = Math.floor(baseAmount * (p.discountPercentage / 100));
-            if (typeof p.maxDiscount === "number" && p.maxDiscount > 0) {
-              raw = Math.min(raw, p.maxDiscount);
-            }
-            discountAmount = Math.min(raw, amount);
-            discountPercent = p.discountPercentage;
-          } else {
-            res.status(400).send({error: "Promo code has no valid discount"});
-            return;
-          }
-
-          amount = Math.max(0, amount - discountAmount);
-        }
-
-        const razorpay = new Razorpay({
-          key_id: process.env.RAZORPAY_KEY_ID ?? "",
-          key_secret: process.env.RAZORPAY_KEY_SECRET ?? "",
-        });
-
-        const options = {
-          amount: Math.round(amount * 100), // in paise, integer
-          currency: "INR",
-          receipt: "receipt_order_" + Date.now(),
-        };
-
-        const order = await razorpay.orders.create(options);
-
-        res.status(200).send({
-          order,
-          promo: promoCode ?
-            {
-              promoCode,
-              discountPercent,
-              discountAmount,
-            } :
-            null,
-        });
-      } catch (err) {
-        console.error("Razorpay Order Error:", err);
-        res.status(500).send({error: "Unable to create Razorpay order"});
+  async (req, res) => {
+    try {
+      // 1) Input validation
+      const pin = String(req.query.pin ?? "").trim();
+      if (!/^\d{6}$/.test(pin)) {
+        const out: PincodeResult = {ok: false, error: "pin must be 6 digits"};
+        res.status(400).json(out);
+        return;
       }
-    });
+
+      // 2) Secret (v2 style)
+      const token = DELHIVERY_TOKEN.value();
+      if (!token) {
+        logger.error("DELHIVERY_TOKEN missing at runtime");
+        const out: PincodeResult = {ok: false, error: "token missing"};
+        res.status(500).json(out);
+        return;
+      }
+
+      // 3) Upstream call
+      const url =
+        `${DELHIVERY_BASE}/c/api/pin-codes/json/` +
+        `?token=${encodeURIComponent(token)}
+        &filter_codes=${encodeURIComponent(pin)}`;
+      const safeUrl = url.replace(/\s/g, "");
+      // FIX 1: strip whitespace/newlines from template literal
+
+      const r = await fetch(safeUrl, {headers: {Accept: "application/json"}});
+      if (!r.ok) {
+        logger.error("Delhivery upstream error", {status: r.status, pin});
+        const out: PincodeResult = {ok: false, error: "upstream error"};
+        res.status(502).json(out);
+        return;
+      }
+
+      // 4) Parse + normalize without `any`
+      const data: unknown = await r.json();
+      const rec = extractFirstEntry(data);
+
+      const city =
+        asText(rec?.postal_code?.district) ||
+        asText(rec?.postal_code?.city) ||
+        asText(rec?.city);
+
+      const state =
+         asText(rec?.postal_code?.state) ||
+         asText(rec?.state) ||
+         asText((rec as Record<string, unknown>)["state_code"]) ||
+         asText((rec as Record<string, unknown>)["circle"]) ||
+         "";
+
+      const pinCode =
+        asText(rec?.postal_code?.pin) ||
+        asText(rec?.pin) ||
+        pin;
+
+      // FIX 2: also check flags nested under
+      //  postal_code (many accounts put them there)
+      const pc = (rec && (
+        rec as
+        Record<string, unknown>)["postal_code"]) as Record<string, unknown>
+        | undefined;
+      const yes = (v: unknown) => v === true ||
+      (typeof v === "string" && v.toUpperCase() === "Y");
+      const serviceable =
+        !!(rec && (
+          isPrepaidServiceable(rec) ||
+          (pc && (yes(pc["pre_paid"] || yes(pc["prepaid"])||
+          pc["is_prepaid_serviceable"] === true))
+          )
+        ));
+
+      const out: PincodeResult = {
+        ok: true,
+        pin: pinCode,
+        city: city.toUpperCase(),
+        state: state.toUpperCase(),
+        serviceable,
+      };
+
+      // 5) Cache headers are safe for pin lookups
+      res.set("Cache-Control", "private, max-age=300"); // 5 minutes
+      res.json(out);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        logger.error(e);
+        const out: PincodeResult = {ok: false, error: e.message};
+        res.status(500).json(out);
+      } else {
+        logger.error("Unknown error", e);
+        const out: PincodeResult = {ok: false, error: "lookup failed"};
+        res.status(500).json(out);
+      }
+    }
   }
 );
