@@ -28,6 +28,7 @@ export const routes: Routes = [
 {path:'lab-reports',loadComponent:()=>import('./lab-report/lab-reports-page.component').then(m=>m.LabReportsPageComponent)},
 {path:'orders',loadComponent:()=>import('./userprofiles/myorders/myorders.component').then(m=>m.MyOrdersComponent)},
 {path:'reviews',loadComponent:()=>import('./components/reviews-page/reviews-page.component').then(m=>m.ReviewsPageComponent)},
+{path:'data-deletion',loadComponent:()=>import('../../src/app/data-deletion/data-deletion.component').then(m=>m.DataDeletionComponent)},
 // {path:'offers/gym-offer-1000',loadComponent:()=>import('./gym-coupon-page/cashback-page.component').then(m=>m.CashbackPageComponent)},
 {
     path: 'orders/:orderId',

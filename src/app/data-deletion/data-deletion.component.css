@@ -1,0 +1,85 @@
+/* Page background */
+.privacy-bg {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #f5f7fa 0%,
+    #e9eff5 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* Card container */
+.policy-card {
+  max-width: 720px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px 36px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Heading */
+.policy-card h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1f2937; /* dark gray */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Paragraphs */
+.policy-card p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #4b5563; /* medium gray */
+  margin-bottom: 16px;
+}
+
+/* Highlight email */
+.policy-card strong {
+  color: #2563eb; /* blue */
+  font-weight: 600;
+}
+
+/* Subtle divider effect */
+.policy-card p:not(:last-child) {
+  padding-bottom: 8px;
+}
+
+/* Entry animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .policy-card {
+    padding: 24px 20px;
+    border-radius: 12px;
+  }
+
+  .policy-card h1 {
+    font-size: 1.5rem;
+  }
+
+  .policy-card p {
+    font-size: 0.95rem;
+  }
+}

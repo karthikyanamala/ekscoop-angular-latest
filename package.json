@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "build:ssr": "ng build && ng run ekscoop:server",
-    "serve:ssr": "node dist/ekscoop/server/main.cjs",
+    "serve:ssr": "node dist/ekscoop/server/main.js",
     "dev:ssr": "ng run ekscoop:serve-ssr",
     "serve:ssr:ekscoop": "node dist/ekscoop/server/main.cjs",
     "compile:server": "tsc -p tsconfig.server.json",
